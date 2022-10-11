@@ -8,15 +8,14 @@ using Montreal.Bot.Poc.Interfaces;
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
-        services.AddDbContext<BotDbContext>();
-
         services.AddHttpClient("telegram_bot_client")
                 .AddTypedClient<ITelegramBotClient>((httpClient, sp) =>
                 {
                     TelegramBotClientOptions options = new(context.Configuration["Telegram:ApiToken"]);
                     return new TelegramBotClient(options, httpClient);
                 });
-
+        services.AddDbContext<BotDbContext>();
+        services.AddScoped<IAppRepository, AppRepositoryService>();
         services.AddScoped<IUserRepository, UserRepositoryService>();
         services.AddScoped<UpdateHandlerService>();
         services.AddScoped<ReceiverService>();

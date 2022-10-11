@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Montreal.Bot.Poc.Infrastructure;
 
 namespace Montreal.Bot.Poc.Models;
 
@@ -8,7 +9,7 @@ namespace Montreal.Bot.Poc.Models;
 public record Fragment
 {
     public int Id { get; set; }
-    public MessageType Type { get; set; }
+    public FragmentType Type { get; set; }
     public Condition Conditions { get; set; }
 
     public string? Text { get; set; }

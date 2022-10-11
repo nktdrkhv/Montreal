@@ -1,6 +1,9 @@
+using Telegram.Bot;
+using Telegram.Bot.Types;
+
 namespace Montreal.Bot.Poc.Interfaces;
 
 public interface IUserRepository
 {
-    Task<(IChatBehaviour behaviour, object locker)?> GetUser(long id);
+    IChatBehaviour? GetBehaviour(Update update, CancellationToken ctn);
 }

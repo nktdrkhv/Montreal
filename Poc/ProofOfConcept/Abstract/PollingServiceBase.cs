@@ -21,7 +21,7 @@ public abstract class PollingServiceBase<TReceiverService> : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogTrace("Starting polling service");
+        _logger.LogInformation("Starting polling service");
 
         await DoWork(stoppingToken);
     }

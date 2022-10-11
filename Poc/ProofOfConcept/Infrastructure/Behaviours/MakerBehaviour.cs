@@ -1,25 +1,26 @@
 using Stateless;
-using Geolocation;
-using Telegram.Bot.Types;
+using Microsoft.Extensions.Logging;
 using Montreal.Bot.Poc.Interfaces;
 using Montreal.Bot.Poc.Models;
 
-namespace Montreal.Bot.Poc.Infrastructure;
+namespace Montreal.Bot.Poc.Infrastructure.Behaviours;
 
 public class MakerBehaviour : IChatBehaviour
 {
-    public ITelegramChat _chat;
+    private ITelegramChat _chat;
     private IAppRepository _repo;
+    private ILogger<MakerBehaviour> _logger;
 
-    public MakerBehaviour(ITelegramChat chat, IAppRepository repo)
+    public MakerBehaviour(ITelegramChat chat, IAppRepository repo, ILogger<MakerBehaviour> logger)
     {
         _chat = chat;
         _repo = repo;
+        _logger = logger;
 
         _machine = new StateMachine<MakerState, Trigger>(() => _state, s => _state = s);
         _textTrigger = _machine.SetTriggerParameters<string>(Trigger.Text);
         _commandTrigger = _machine.SetTriggerParameters<Command>(Trigger.Command);
-        _mediaTrigger = _machine.SetTriggerParameters<Fragment>(Trigger.Media);
+        _mediaTrigger = _machine.SetTriggerParameters<Fragment>(Trigger.Fragment);
 
         Configure();
     }
@@ -32,13 +33,6 @@ public class MakerBehaviour : IChatBehaviour
 
     private void Configure()
     {
-        _machine = new StateMachine<MakerState, Trigger>(() => _state, s => _state = s);
-
-        _machine.Configure(MakerState.Initial)
-            .PermitIf<Command>(_commandTrigger, MakerState.Initial, cmd => cmd.Label == "w");
-        //.Ignore(_mediaTrigger);
-
-
     }
 
     public Task SubmitAsync(string text) => throw new NotImplementedException();

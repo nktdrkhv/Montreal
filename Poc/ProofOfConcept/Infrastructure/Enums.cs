@@ -1,4 +1,4 @@
-namespace Montreal.Bot.Poc.Models;
+namespace Montreal.Bot.Poc.Infrastructure;
 
 public enum MakerState
 {
@@ -7,25 +7,26 @@ public enum MakerState
 
 public enum PersonState
 {
-
+    Initial, Start, Step, Stage, Route
 }
 
 public enum Trigger
 {
-    Text, Command, Callback, Media
+    Text, Command, Callback, Fragment, Target
 }
 
 //------------------------------------
 
 public enum FragmentType
 {
-    Photo, Video, VideoNote, Voice, Audio, Sticker, Location, Venue,
+    Text,
+    Photo, Video, VideoNote, Voice, Audio, Sticker, Location,
     Timer
 }
 
 public enum StageType
 {
-    Regular, Initial, Final
+    Regular, Start, Final
 }
 
 public enum ButtonType

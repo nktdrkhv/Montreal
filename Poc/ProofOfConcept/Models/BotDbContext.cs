@@ -10,6 +10,7 @@ public class BotDbContext : DbContext
     public DbSet<Step> Steps => Set<Step>();
     public DbSet<Stage> Stages => Set<Stage>();
     public DbSet<Route> Routes => Set<Route>();
+    public DbSet<Feedback> Feedbacks => Set<Feedback>();
 
     protected DbSet<ContentBase> Content => Set<ContentBase>();
     protected DbSet<FileBase> Files => Set<FileBase>();
