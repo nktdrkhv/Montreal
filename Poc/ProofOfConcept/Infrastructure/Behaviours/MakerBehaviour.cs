@@ -20,7 +20,7 @@ public class MakerBehaviour : IChatBehaviour
         _machine = new StateMachine<MakerState, Trigger>(() => _state, s => _state = s);
         _textTrigger = _machine.SetTriggerParameters<string>(Trigger.Text);
         _commandTrigger = _machine.SetTriggerParameters<Command>(Trigger.Command);
-        _mediaTrigger = _machine.SetTriggerParameters<Fragment>(Trigger.Fragment);
+        _fragmentTrigger = _machine.SetTriggerParameters<Fragment>(Trigger.Fragment);
 
         Configure();
     }
@@ -29,10 +29,27 @@ public class MakerBehaviour : IChatBehaviour
     private StateMachine<MakerState, Trigger> _machine;
     private StateMachine<MakerState, Trigger>.TriggerWithParameters<string> _textTrigger;
     private StateMachine<MakerState, Trigger>.TriggerWithParameters<Command> _commandTrigger;
-    private StateMachine<MakerState, Trigger>.TriggerWithParameters<Fragment> _mediaTrigger;
+    private StateMachine<MakerState, Trigger>.TriggerWithParameters<Fragment> _fragmentTrigger;
 
     private void Configure()
     {
+        _machine.Configure(MakerState.Initial)
+            .PermitIf<Command>(_commandTrigger, MakerState.Base, cmd => cmd.Name == "start");
+
+        _machine.Configure(MakerState.Base)
+            .PermitIf<Command>(_commandTrigger, MakerState.StepCreation, cmd => cmd.Name == "step")
+            .PermitIf<Command>(_commandTrigger, MakerState.StageCreation, cmd => cmd.Name == "stage")
+            .PermitIf<Command>(_commandTrigger, MakerState.RouteCreation, cmd => cmd.Name == "route");
+
+        _machine.Configure(MakerState.StepCreation)
+            .PermitIf<Command>(_commandTrigger, MakerState.Base, cmd => cmd.Name == "submit")
+            .Permit(Trigger.Fragment, MakerState.FragmentCreation)
+            .InternalTransitionAsync<Command>(_commandTrigger, (cmd, _) => Task.CompletedTask);
+
+        _machine.Configure(MakerState.FragmentCreation);
+
+
+
     }
 
     public Task SubmitAsync(string text) => throw new NotImplementedException();

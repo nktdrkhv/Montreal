@@ -62,7 +62,7 @@ public class PersonBehaviour : IChatBehaviour
     {
         var target = _buttonsLinks?.Find(button => button.link == text).target;
         if (target is not null)
-            await _machine.FireAsync<Target>(_targetTrigger, target);
+            await _machine.FireAsync<Target>(_targetTrigger, target); // выделено отдельно с целью уточнения Command
         else
             await _machine.FireAsync<string>(_textTrigger, text);
     }

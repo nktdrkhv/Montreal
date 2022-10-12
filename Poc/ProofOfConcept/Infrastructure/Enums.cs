@@ -2,7 +2,8 @@ namespace Montreal.Bot.Poc.Infrastructure;
 
 public enum MakerState
 {
-    Initial,
+    Initial, Base,
+    FragmentCreation, ButtonCreation, StepCreation, StageCreation, RouteCreation
 }
 
 public enum PersonState
@@ -32,7 +33,6 @@ public enum StageType
 public enum ButtonType
 {
     Inline, Keyboard,
-    InlineLink, KeyboardLink
 }
 
 

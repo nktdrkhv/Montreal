@@ -6,7 +6,7 @@ namespace Montreal.Bot.Poc.Abstract;
 public abstract record ContentBase
 {
     public int Id { get; set; }
-    public string Name { get; set; } = default!;
-    public string Label { get; set; } = default!;
+    public string Name { get; set; } = Guid.NewGuid().ToString()[0..7];
+    public string? Label { get; set; }
     public string? Description { get; set; }
 }
