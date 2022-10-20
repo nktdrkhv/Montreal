@@ -2,7 +2,7 @@ using Montreal.Bot.Poc.Abstract;
 
 namespace Montreal.Bot.Poc.Models;
 
-public record Step : ContentBase
+public class Step : ContentBase
 {
-    public Fragment[] Fragments { get; set; } = default!;
+    public List<Fragment> Fragments { get; set; } = default!;
 }

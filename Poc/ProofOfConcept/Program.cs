@@ -14,8 +14,8 @@ IHost host = Host.CreateDefaultBuilder(args)
                     TelegramBotClientOptions options = new(context.Configuration["Telegram:ApiToken"]);
                     return new TelegramBotClient(options, httpClient);
                 });
-        services.AddDbContext<BotDbContext>();
-        services.AddScoped<IAppRepository, AppRepositoryService>();
+        services.AddDbContext<BotDbContext>(contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Scoped);
+        services.AddTransient<IAppRepository, AppRepositoryService>();
         services.AddScoped<IUserRepository, UserRepositoryService>();
         services.AddScoped<UpdateHandlerService>();
         services.AddScoped<ReceiverService>();

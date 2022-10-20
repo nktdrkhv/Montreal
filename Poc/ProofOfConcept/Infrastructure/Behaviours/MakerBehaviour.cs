@@ -7,20 +7,19 @@ namespace Montreal.Bot.Poc.Infrastructure.Behaviours;
 
 public class MakerBehaviour : IChatBehaviour
 {
-    private ITelegramChat _chat;
+    public ITelegramChat Chat { get; set; }
     private IAppRepository _repo;
     private ILogger<MakerBehaviour> _logger;
 
     public MakerBehaviour(ITelegramChat chat, IAppRepository repo, ILogger<MakerBehaviour> logger)
     {
-        _chat = chat;
+        Chat = chat;
         _repo = repo;
         _logger = logger;
 
         _machine = new StateMachine<MakerState, Trigger>(() => _state, s => _state = s);
         _textTrigger = _machine.SetTriggerParameters<string>(Trigger.Text);
         _commandTrigger = _machine.SetTriggerParameters<Command>(Trigger.Command);
-        _fragmentTrigger = _machine.SetTriggerParameters<Fragment>(Trigger.Fragment);
 
         Configure();
     }
@@ -29,7 +28,6 @@ public class MakerBehaviour : IChatBehaviour
     private StateMachine<MakerState, Trigger> _machine;
     private StateMachine<MakerState, Trigger>.TriggerWithParameters<string> _textTrigger;
     private StateMachine<MakerState, Trigger>.TriggerWithParameters<Command> _commandTrigger;
-    private StateMachine<MakerState, Trigger>.TriggerWithParameters<Fragment> _fragmentTrigger;
 
     private void Configure()
     {
@@ -43,7 +41,7 @@ public class MakerBehaviour : IChatBehaviour
 
         _machine.Configure(MakerState.StepCreation)
             .PermitIf<Command>(_commandTrigger, MakerState.Base, cmd => cmd.Name == "submit")
-            .Permit(Trigger.Fragment, MakerState.FragmentCreation)
+            //.Permit(Trigger.Fragment, MakerState.FragmentCreation)
             .InternalTransitionAsync<Command>(_commandTrigger, (cmd, _) => Task.CompletedTask);
 
         _machine.Configure(MakerState.FragmentCreation);
@@ -54,5 +52,6 @@ public class MakerBehaviour : IChatBehaviour
 
     public Task SubmitAsync(string text) => throw new NotImplementedException();
     public Task SubmitAsync(Command command) => throw new NotImplementedException();
-    public Task SubmitAsync(Fragment fragment) => throw new NotImplementedException();
+    public Task SubmitAsync(Media media) => throw new NotImplementedException();
+    public Task SubmitAsync(Spot spot) => throw new NotImplementedException();
 }

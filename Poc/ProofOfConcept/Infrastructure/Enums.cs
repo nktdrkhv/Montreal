@@ -6,43 +6,26 @@ public enum MakerState
     FragmentCreation, ButtonCreation, StepCreation, StageCreation, RouteCreation
 }
 
-public enum PersonState
-{
-    Initial, Start, Step, Stage, Route
-}
+public enum PersonState { Initial, Start, Finish, Preparing, Demonstration, Viewing, Polling, DataInput }
 
-public enum Trigger
-{
-    Text, Command, Callback, Fragment, Target
-}
+public enum Trigger { Text, Command, Media, Pointer, PollAnswer }
 
 //------------------------------------
 
-public enum FragmentType
-{
-    Text,
-    Photo, Video, VideoNote, Voice, Audio, Sticker, Location,
-    Timer
-}
+[Flags]
+public enum ContentType { None = 0, Step = 1, Stage = 2, Route = 4, All = 7 }
 
-public enum StageType
-{
-    Regular, Start, Final
-}
+public enum MediaType { Photo, Video, VideoNote, Voice, Audio, Sticker }
 
-public enum ButtonType
-{
-    Inline, Keyboard,
-}
+public enum FragmentType { Text, Media, Location, Timer, Poll }
 
+public enum StageType { Regular, Start, Final }
 
-public enum TargetType
-{
-    Step, Stage, Route
-}
+public enum ButtonType { InlineLink, InlineTransition, KeyboardTransition }
+
+public enum SoundType { Sound, Voice }
+
+//------------------------------------
 
 [Flags]
-public enum Condition
-{
-
-}
+public enum Condition { }

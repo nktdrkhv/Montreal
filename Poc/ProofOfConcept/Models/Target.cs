@@ -1,14 +1,17 @@
-using Montreal.Bot.Poc.Infrastructure;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Montreal.Bot.Poc.Models;
 
-public record Target
+[Table("Target")]
+public class Target
 {
     public int Id { get; set; }
-    public TargetType Type;
-    public string Name = default!;
 
-    // public Step? Step { get; set; }
-    // public Stage? Stage { get; set; }
-    // public Route? Route { get; set; }
+    public bool IsBinded { get; set; } = false;
+
+    /// <summary>
+    /// In format: route:name_1:stage:name_2:step:name_3
+    /// </summary>
+    public string? Name { get; set; }
+    public ContentPointer? Pointer { get; set; }
 }

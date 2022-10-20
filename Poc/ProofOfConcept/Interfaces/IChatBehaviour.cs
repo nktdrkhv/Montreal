@@ -6,7 +6,9 @@ namespace Montreal.Bot.Poc.Interfaces;
 
 public interface IChatBehaviour
 {
+    ITelegramChat Chat { get; set; }
     Task SubmitAsync(string text);
     Task SubmitAsync(Command command);
-    Task SubmitAsync(Fragment fragment);
+    Task SubmitAsync(Media media);
+    Task SubmitAsync(Spot spot);
 }

@@ -18,16 +18,20 @@ public class TelegramChat : ITelegramChat
         _ctn = ctn;
     }
 
-    public Task AddAsync(Message message) => throw new NotImplementedException();
-    public Task AddAsync(CallbackQuery callback) => throw new NotImplementedException();
+    private Stack<Message> _recievedMessages = new();
+    private Stack<CallbackQuery> _recievedCallbacks = new();
+
+    public void Add(Message message) => _recievedMessages.Append(message);
+    public void Add(CallbackQuery callback) => _recievedCallbacks.Append(callback);
 
     public async Task<Message> SendAsync(Fragment fragment)
     {
         var action = fragment switch
         {
             { Text: { } text } => _bot.SendTextMessageAsync(_user.Id, text!),
+            _ => throw new ArgumentException(),
         };
         return await action;
     }
-    public async Task<Message> SendAsync(string text) => await _bot.SendTextMessageAsync(_user.Id, text, protectContent: true, cancellationToken: _ctn);
+    public async Task<Message> SendAsync(string text) => await _bot.SendTextMessageAsync(_user.Id, text, cancellationToken: _ctn);
 }

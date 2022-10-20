@@ -2,12 +2,39 @@ using Montreal.Bot.Poc.Infrastructure;
 
 namespace Montreal.Bot.Poc.Models;
 
-public record Button
+public class Button
 {
     public int Id { get; set; }
     public ButtonType Type { get; set; }
+    public Fragment Source { get; set; } = default!;
+    public Target? Target { get; set; }
+    public string? Link { get; set; }
 
-    public string? Label { get; set; } = default!;
-    public Target Target { get; set; } = default!;
-    public int Line { get; set; } = default;
+    private string? _label;
+    public string? Label
+    {
+        get
+        {
+            if (Type is ButtonType.InlineLink)
+                return _label;
+            else
+            {
+                var contentLabel = this?.Target?.Pointer?.Type switch
+                {
+                    ContentType.Step => this.Target.Pointer?.Step?.Label,
+                    ContentType.Stage => this.Target.Pointer?.Stage?.Label,
+                    ContentType.Route => this.Target.Pointer?.Route?.Label,
+                    _ => null,
+                };
+                return _label ?? contentLabel;
+            }
+        }
+        set
+        {
+            _label = value;
+        }
+    }
+
+    public int Number { get; set; }
+    public int Line { get; set; }
 }

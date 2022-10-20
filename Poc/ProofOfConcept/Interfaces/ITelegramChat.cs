@@ -6,8 +6,8 @@ namespace Montreal.Bot.Poc.Interfaces;
 
 public interface ITelegramChat
 {
-    Task AddAsync(Message message);
-    Task AddAsync(CallbackQuery callback);
+    void Add(Message message);
+    void Add(CallbackQuery callback);
 
     Task<Message> SendAsync(Fragment fragment);
     Task<Message> SendAsync(string text);

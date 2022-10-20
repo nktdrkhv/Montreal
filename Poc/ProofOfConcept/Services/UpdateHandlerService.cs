@@ -3,6 +3,8 @@ using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 using Montreal.Bot.Poc.Interfaces;
 using Montreal.Bot.Poc.Helpers;
 using Montreal.Bot.Poc.Models;
@@ -22,30 +24,54 @@ public class UpdateHandlerService : IUpdateHandler
 
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        var user = _repo.GetBehaviour(update, cancellationToken);
-        if (user is null) return;
-
-        try
-        {
-            var handler = update switch
+        _ = Task.Run(async () =>
             {
-                { Message: { } message } => HandleMessageAsync(message),
-                _ => Task.CompletedTask,
-            };
-            await handler;
-        }
-        catch (Exception e)
-        {
-            await HandlePollingErrorAsync(botClient, e, cancellationToken);
-        }
+                switch (update)
+                {
+                    case { Message: { } message }:
+                        if (_repo.GetBehaviour(update, cancellationToken) is IChatBehaviour userByMessage)
+                        {
+                            userByMessage.Chat.Add(message);
+                            await HandleMessageAsync(userByMessage, message);
+                        }
+                        break;
+                    case { CallbackQuery: { } callback }:
+                        if (_repo.GetBehaviour(update, cancellationToken) is IChatBehaviour userByCallback)
+                        {
+                            userByCallback.Chat.Add(callback);
+                            await HandleCallbackQueryAsync(userByCallback, callback);
+                        }
+                        break;
+                    case { InlineQuery: { } inline }:
+                        await Task.CompletedTask;
+                        break;
+                }
+            });
+        await Task.CompletedTask;
+    }
 
-        async Task HandleMessageAsync(Message message)
-        {
-            if (MessageHelper.ExtractCommand(message) is Command command)
-                await user.SubmitAsync(command);
-            else if (MessageHelper.ExtractText(message) is string text)
-                await user.SubmitAsync(text);
-        }
+    public async Task HandleMessageAsync(IChatBehaviour user, Message message)
+    {
+        if (MessageHelper.ExtractCommand(message) is Command command)
+            await user.SubmitAsync(command);
+        else if (MessageHelper.ExtractText(message) is string text)
+            await user.SubmitAsync(text);
+        else if (MessageHelper.ExtractSpot(message) is Spot spot)
+            await user.SubmitAsync(spot);
+        else if (MessageHelper.ExtractMedia(message) is Media media)
+            await user.SubmitAsync(media);
+        else
+            await Task.CompletedTask;
+    }
+
+    public async Task HandleCallbackQueryAsync(IChatBehaviour user, CallbackQuery callbackQuery)
+    {
+        if (CallbackQueryHelper.ExtractCommand(callbackQuery) is Command cmd)
+            await user.SubmitAsync(cmd);
+        else if (CallbackQueryHelper.ExtractText(callbackQuery) is string text)
+            await user.SubmitAsync(text);
+        else
+            await Task.CompletedTask;
     }
 
     public async Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
@@ -55,6 +81,7 @@ public class UpdateHandlerService : IUpdateHandler
             ApiRequestException apiRequestException => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
             _ => exception.ToString()
         };
+
         _logger.LogInformation("HandleError: {ErrorMessage}", ErrorMessage);
         if (exception is RequestException)
             await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);

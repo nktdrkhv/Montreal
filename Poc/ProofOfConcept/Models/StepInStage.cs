@@ -1,6 +1,9 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Montreal.Bot.Poc.Models;
 
-public record StepInStage
+[Table("StepInStage")]
+public class StepInStage
 {
     public int Id { get; set; }
     public Stage AttachedStage { get; set; } = default!;
