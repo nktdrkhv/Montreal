@@ -24,27 +24,46 @@ public class UpdateHandlerService : IUpdateHandler
 
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
+        // var message = update?.Message;
+        // var handler = message?.Type switch
+        // {
+        //     MessageType.Photo => botClient.SendTextMessageAsync(update?.Message?.From?.Id,
+        //     $"_Фото_:\n*Идентификатор:* {update?.Message?.Photo.Last().FileId}"),
+        //     MessageType.Audio => botClient.SendTextMessageAsync(update?.Message?.From?.Id,
+        //     $"_Аудио_:\n*Идентификатор:* {update?.Message?.Audio?.FileId}"),
+        // };
+        // await handler;
+
+        // return;
+
         _ = Task.Run(async () =>
             {
-                switch (update)
+                try
                 {
-                    case { Message: { } message }:
-                        if (_repo.GetBehaviour(update, cancellationToken) is IChatBehaviour userByMessage)
-                        {
-                            userByMessage.Chat.Add(message);
-                            await HandleMessageAsync(userByMessage, message);
-                        }
-                        break;
-                    case { CallbackQuery: { } callback }:
-                        if (_repo.GetBehaviour(update, cancellationToken) is IChatBehaviour userByCallback)
-                        {
-                            userByCallback.Chat.Add(callback);
-                            await HandleCallbackQueryAsync(userByCallback, callback);
-                        }
-                        break;
-                    case { InlineQuery: { } inline }:
-                        await Task.CompletedTask;
-                        break;
+                    switch (update)
+                    {
+                        case { Message: { } message }:
+                            if (_repo.GetBehaviour(update, cancellationToken) is IChatBehaviour userByMessage)
+                            {
+                                userByMessage.Chat.Add(message);
+                                await HandleMessageAsync(userByMessage, message);
+                            }
+                            break;
+                        case { CallbackQuery: { } callback }:
+                            if (_repo.GetBehaviour(update, cancellationToken) is IChatBehaviour userByCallback)
+                            {
+                                userByCallback.Chat.Add(callback);
+                                await HandleCallbackQueryAsync(userByCallback, callback);
+                            }
+                            break;
+                        case { InlineQuery: { } inline }:
+                            await Task.CompletedTask;
+                            break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Exception during handling");
                 }
             });
         await Task.CompletedTask;

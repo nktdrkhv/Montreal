@@ -11,18 +11,6 @@ public record Command
 }
 
 [Owned]
-public record Media
-{
-    public MediaType Type { get; set; }
-    public PhotoSize? Photo { get; set; }
-    public Video? Video { get; set; }
-    public VideoNote? VideoNote { get; set; }
-    public Sound? Sound { get; set; }
-    public Sticker? Sticker { get; set; }
-    public string? Caption { get; set; }
-}
-
-[Owned]
 public record Timer
 {
     /// <summary>
@@ -32,14 +20,14 @@ public record Timer
     public Target Target { get; set; } = default!;
 }
 
-[Owned]
-public record ContentPointer
-{
-    public ContentType Type { get; set; } = ContentType.None;
-    public Step? Step { get; set; }
-    public Stage? Stage { get; set; }
-    public Route? Route { get; set; }
-}
+// [Owned]
+// public record ContentPointer
+// {
+//     public ContentType Type { get; set; } = ContentType.None;
+//     public Step? Step { get; set; }
+//     public Stage? Stage { get; set; }
+//     public Route? Route { get; set; }
+// }
 
 [Owned]
 public record Spot

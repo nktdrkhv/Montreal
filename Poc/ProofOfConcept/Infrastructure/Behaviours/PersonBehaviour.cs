@@ -3,6 +3,7 @@ using Stateless;
 using Geolocation;
 using Montreal.Bot.Poc.Interfaces;
 using Montreal.Bot.Poc.Models;
+using Montreal.Bot.Poc.Services;
 
 namespace Montreal.Bot.Poc.Infrastructure.Behaviours;
 
@@ -12,7 +13,8 @@ public class PersonBehaviour : IChatBehaviour
     #region Infrastructure variables
 
     public ITelegramChat Chat { get; set; }
-    private IAppRepository _repo;
+    /*private IAppRepository _repo;*/
+    BotDbContext _repo = new();
     private ILogger<PersonBehaviour> _logger;
 
     #endregion Infrastructure variables
@@ -25,7 +27,7 @@ public class PersonBehaviour : IChatBehaviour
     {
         Chat = chat;
         _person = person;
-        _repo = repo;
+        //_repo = repo;
         _logger = logger;
 
         _machine = new StateMachine<PersonState, Trigger>(() => _state, s => _state = s);
@@ -58,36 +60,36 @@ public class PersonBehaviour : IChatBehaviour
             .PermitDynamic<Command>(_commandTrigger, InitialDestinationStateSelector);
 
         _machine.Configure(PersonState.Start)
+            .Permit(Trigger.Pointer, PersonState.Viewing)
             .OnEntry(() =>
             {
-                var startStage = _repo.Stages.Where(s => s.Type == StageType.Start).FirstOrDefault();
+                var startStage = _repo.Stages.Where(s => s.Type == StageType.Start).SingleOrDefault();
                 if (startStage is not null)
-                    _machine.FireAsync<ContentPointer>(_contentTrigger, new() { Stage = startStage });
+                    _machine.FireAsync<ContentPointer>(_contentTrigger, new() { Type = ContentType.Stage, Stage = startStage });
             });
 
-
-        // посмотреть что просят
-        // посмотреть что есть и можно ли связать по схеме
-        // подготовить кнопки, геопозиции и т.д (загрузить)
-        // передать в демонстрацию? или отправляет подготовка, а демонстрация ждет?
-
-        // ждем ответы, перенаправляя на подготовку в случае этапов
-        //      либо в опросы в случае ответа 
-        //      либо в получение данных, если ожидаем их, причем заранее перевод
 
         _machine.Configure(PersonState.Viewing)
             .PermitReentry(Trigger.Pointer)
             .OnEntryFrom<ContentPointer>(_contentTrigger, async pointer =>
             {
+                //await Chat.DeleteRecievedMessageAsync();
+                await Chat.SendStatusAsync();
                 NewCurrentDefine(pointer);
                 HandleCurrent(_currentContent!);
                 await DemonstrateFragments(_preparedFragments!);
             });
 
-        //_machine.Configure(PersonState.Polling);
-        //.OnEntryFromAsync(Trigger.PollAnswer, )
-
-        _machine.OnUnhandledTriggerAsync((_, _) => Chat.SendAsync($"Произошла ошибка"));
+        _machine.OnUnhandledTriggerAsync(async (_, _) =>
+        {
+            var now = DateTimeOffset.Now.ToUnixTimeSeconds();
+            if (_unhandledNotificationHold < now)
+            {
+                await Chat.SendAndDeleteAsync($"Что-то не то 😕", 2);
+                _unhandledNotificationHold = now + 5;
+            }
+            await Chat.DeleteRecievedMessageAsync();
+        });
     }
 
     #endregion Configuration
@@ -99,9 +101,10 @@ public class PersonBehaviour : IChatBehaviour
     private Person _person;
     private ContentPointer? _currentContent;
     private Condition? _cuurrentConditions;
+    private long _unhandledNotificationHold = DateTimeOffset.Now.ToUnixTimeSeconds();
     private List<(Coordinate coordinate, Stage stage)> _allowedPlaces = new();
     private List<(string label, ContentPointer pointer)> _allowedLinks = new();
-    private Queue<(Fragment payload, int delay)> _preparedFragments = new();
+    private List<(Fragment payload, int delay, bool isLinked)> _preparedFragments = new();
     private Queue<List<string>> _keyboardButtons = new();
 
     #endregion Business logic variables
@@ -111,19 +114,10 @@ public class PersonBehaviour : IChatBehaviour
     private PersonState InitialDestinationStateSelector(Command cmd)
     {
         if (cmd.Name == "start" && !string.IsNullOrWhiteSpace(cmd.Arguments))
-            return PersonState.Preparing;
+            return PersonState.Viewing; //todo:нужно сообщать уже готовый указатель
         else
             return PersonState.Start;
     }
-
-    // var args = cmd!.Arguments!.Split(':');
-    //         return args[0] switch
-    //         {
-    //             "stage" => PersonState.StageHandling,
-    //             "step" => PersonState.StepHandling,
-    //             "route" => PersonState.RouteHandling,
-    //             _ => PersonState.Start,
-    //         };
 
     private void NewCurrentDefine(ContentPointer pointer)
     {
@@ -207,14 +201,16 @@ public class PersonBehaviour : IChatBehaviour
 
     private void HandleCurrent(ContentPointer pointer)
     {
+        Chat.ClearMessageButtons();
         _allowedLinks.Clear();
         _allowedPlaces.Clear();
         _preparedFragments.Clear();
         _keyboardButtons.Clear();
-        //_cuurrentConditions = null;
+        //_currentConditions = null;
 
         if (pointer.Type.HasFlag(ContentType.Stage) && _currentContent?.Stage is Stage stage)
         {
+
             HandleStage(stage, _currentContent?.Step);
             if (pointer.Type.HasFlag(ContentType.Route) && _currentContent?.Route is Route route)
             {
@@ -291,35 +287,59 @@ public class PersonBehaviour : IChatBehaviour
 
     private void HandleStep(Step step, int delay)
     {
+        _repo.Entry(step).Collection(s => s.Fragments).Load();
         if (FragmentDetermine(step) is Fragment fragment)
         {
             var keyboardLine = new List<string>();
-            _preparedFragments.Enqueue((fragment, delay));
+            var isLinked = fragment.Buttons?.Count() == 0;
+            _preparedFragments.Add((fragment, delay, isLinked));
             foreach (var button in fragment?.Buttons ?? Enumerable.Empty<Button>())
                 if (button.Type is ButtonType.InlineTransition or ButtonType.KeyboardTransition &&
                     button?.Label is string label && button?.Target?.Pointer is ContentPointer pointer)
                 {
                     _allowedLinks.Add((label, pointer));
                     if (button.Type is ButtonType.KeyboardTransition)
-                        keyboardLine.Append(label);
+                        keyboardLine.Add(label);
                 }
             if (keyboardLine.Count > 0)
                 _keyboardButtons.Enqueue(keyboardLine);
         }
     }
 
-    private Fragment? FragmentDetermine(Step step) => step.Fragments.Find(f => f.Conditions == null); //todo: compare with current conditions
+    private Fragment? FragmentDetermine(Step step) => step.Fragments.Where(f => f.Conditions == null).First(); //todo: compare with current conditions
 
-    private async Task DemonstrateFragments(Queue<(Fragment payload, int delay)> fragments)
+    private async Task DemonstrateFragments(List<(Fragment payload, int delay, bool isLinked)> fragments)
     {
-        while (fragments.TryDequeue(out var fragment))
+        bool keyboardIsSent = _keyboardButtons.Count() > 0 ? false : true;
+        //todo: убирать клавиатуру первым сообщением, ставить новую в самом конце
+        // определить первое и последнее сообщение без кнопок
+
+        Fragment? lastUnLinked = null;
+        foreach (var frmt in fragments)
+            if (!frmt.isLinked)
+                lastUnLinked = frmt.payload;
+
+        foreach (var fragment in fragments)
         {
+            await Chat.SendStatusAsync();
             switch (fragment.payload.Type)
             {
                 case FragmentType.Text:
                 case FragmentType.Media:
                     await Task.Delay(TimeSpan.FromSeconds(fragment.delay));
-                    await Chat.SendAsync(fragment.payload);
+                    if (fragment.payload == lastUnLinked)
+                        await Chat.SendAsync(fragment.payload, _keyboardButtons);
+                    else
+                        await Chat.SendAsync(fragment.payload);
+                    // if (fragment.payload.Buttons is null)
+                    //     await Chat.SendAsync(fragment.payload);
+                    // else if (!keyboardIsSent)
+                    // {
+                    //     await Chat.SendAsync(fragment.payload, _keyboardButtons);
+                    //     keyboardIsSent = true;
+                    // }
+                    // else
+                    //     await Chat.SendAsync(fragment.payload);
                     break;
                 case FragmentType.Timer:
                     if (fragment.payload.Timer!.Target.IsBinded)
@@ -334,7 +354,6 @@ public class PersonBehaviour : IChatBehaviour
             }
         }
     }
-
 
     #endregion Business Logic
 

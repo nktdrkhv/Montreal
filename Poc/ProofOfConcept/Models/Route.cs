@@ -6,4 +6,6 @@ public class Route : ContentBase
 {
     public Stage InitialStage { get; set; } = default!;
     public List<StageSequence> Stages { get; set; } = default!;
+
+    //public List<ContentPointer> Pointers { get; set; }
 }

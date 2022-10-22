@@ -13,7 +13,7 @@ namespace Montreal.Bot.Poc.Services;
 
 public class UserRepositoryService : IUserRepository
 {
-    private static string _secret = Guid.NewGuid().ToString()[0..7];
+    private static string _secret = "add"; //Guid.NewGuid().ToString()[0..7];
     private static ConcurrentDictionary<long, IChatBehaviour> _cachedUsers = new();
 
     private IAppRepository _repo;

@@ -33,8 +33,8 @@ public static class MessageHelper
         var media = message!.Type switch
         {
             MessageType.Photo => new Media() { Type = MediaType.Photo, Photo = message.Photo![^1], Caption = caption },
-            MessageType.Audio => new Media() { Type = MediaType.Audio, Sound = new() { Type = SoundType.Sound }, Caption = caption },
-            MessageType.Voice => new Media() { Type = MediaType.Voice, Sound = new() { Type = SoundType.Voice }, Caption = caption },
+            MessageType.Audio => new Media() { Type = MediaType.Sound, Sound = new() { Type = SoundType.Audio }, Caption = caption },
+            MessageType.Voice => new Media() { Type = MediaType.Sound, Sound = new() { Type = SoundType.Voice }, Caption = caption },
             MessageType.VideoNote => new Media() { Type = MediaType.VideoNote, VideoNote = message.VideoNote, Caption = caption },
             MessageType.Video => new Media() { Type = MediaType.Video, Video = message.Video, Caption = caption },
             MessageType.Sticker => new Media() { Type = MediaType.Sticker, Sticker = message.Sticker, Caption = caption },

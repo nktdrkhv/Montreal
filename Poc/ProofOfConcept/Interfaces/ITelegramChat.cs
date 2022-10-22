@@ -1,5 +1,5 @@
-using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Montreal.Bot.Poc.Models;
 
 namespace Montreal.Bot.Poc.Interfaces;
@@ -9,6 +9,12 @@ public interface ITelegramChat
     void Add(Message message);
     void Add(CallbackQuery callback);
 
-    Task<Message> SendAsync(Fragment fragment);
+    Task<Message> SendAsync(Fragment fragment, Queue<List<string>>? uniteKeyboard = null);
     Task<Message> SendAsync(string text);
+
+    Task SendAndDeleteAsync(string text, int delay);
+    Task SendStatusAsync(ChatAction action = ChatAction.Typing);
+
+    Task DeleteRecievedMessageAsync();
+    Task ClearMessageButtons();
 }

@@ -11,7 +11,8 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddHttpClient("telegram_bot_client")
                 .AddTypedClient<ITelegramBotClient>((httpClient, sp) =>
                 {
-                    TelegramBotClientOptions options = new(context.Configuration["Telegram:ApiToken"]);
+                    //TelegramBotClientOptions options = new(context.Configuration["Telegram:ApiToken"]);
+                    TelegramBotClientOptions options = new("5433978144:AAGGHlGLYfGu5jlS-XirVzEHEAfy-sPYSy0");
                     return new TelegramBotClient(options, httpClient);
                 });
         services.AddDbContext<BotDbContext>(contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Scoped);
@@ -22,5 +23,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddHostedService<PollingService>();
     })
     .Build();
+
+SeedData.DoWork();
 
 await host.RunAsync();
