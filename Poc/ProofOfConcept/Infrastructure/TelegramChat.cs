@@ -55,9 +55,13 @@ public class TelegramChat : ITelegramChat
 
     private IReplyMarkup? CreateConcreteButtons(Fragment fragment)
     {
-        var inlineButtons = fragment.Buttons?.Where(b => b.Type is ButtonType.InlineLink or ButtonType.InlineTransition).GroupBy(b => b.Line);
+        // if (fragment?.Buttons?.First()?.Type == ButtonType.RemoveKayboard)
+        //     return new ReplyKeyboardRemove();
+
+        var inlineButtons = fragment?.Buttons?.Where(b => b.Type is ButtonType.InlineLink or ButtonType.InlineTransition).GroupBy(b => b.Line);
         if (inlineButtons?.Count() == 0)
             return null;
+
         var inlineKeyboard = new List<List<InlineKeyboardButton>>();
         foreach (var group in inlineButtons ?? Enumerable.Empty<IGrouping<int, Button>>())
         {
@@ -79,21 +83,25 @@ public class TelegramChat : ITelegramChat
         return inlineKeyboard.Count() > 0 ? new InlineKeyboardMarkup(inlineKeyboard) : null;
     }
 
-    public async Task<Message> SendAsync(Fragment fragment, Queue<List<string>>? uniteKeyboard = null)
+    public async Task<Message> SendAsync(Fragment fragment, Queue<List<string>>? uniteKeyboard = null, bool clearReplyMarkup = false)
     {
-        IReplyMarkup? replyMarkup = CreateConcreteButtons(fragment) ?? CreateConcreteButtons(uniteKeyboard);
+        IReplyMarkup? replyMarkup;
+        if (!clearReplyMarkup)
+            replyMarkup = CreateConcreteButtons(fragment) ?? CreateConcreteButtons(uniteKeyboard);
+        else
+            replyMarkup = new ReplyKeyboardRemove();
 
         switch (fragment.Type)
         {
             case FragmentType.Text:
-                return await _bot.SendTextMessageAsync(_user.Id, fragment.Text!, replyMarkup: replyMarkup);
+                return await _bot.SendTextMessageAsync(_user.Id, fragment.Text!, replyMarkup: replyMarkup, disableNotification: true);
             case FragmentType.Media:
                 var media = fragment.Media!.First();
                 var handler = media!.Type switch
                 {
-                    MediaType.Photo => _bot.SendPhotoAsync(_user.Id, media.Photo!.FileId, media.Caption, replyMarkup: replyMarkup),
+                    MediaType.Photo => _bot.SendPhotoAsync(_user.Id, media.Photo!.FileId, media.Caption, replyMarkup: replyMarkup, disableNotification: true),
                     MediaType.Sound when media.Sound!.Type == SoundType.Audio
-                        => _bot.SendAudioAsync(_user.Id, media.Sound.Audio!.FileId, replyMarkup: replyMarkup),
+                        => _bot.SendAudioAsync(_user.Id, media.Sound.Audio!.FileId, replyMarkup: replyMarkup, disableNotification: true),
                     _ => throw new ArgumentException(),
                 };
                 return await handler;
@@ -101,7 +109,8 @@ public class TelegramChat : ITelegramChat
                 throw new ArgumentException();
         }
     }
-    public async Task<Message> SendAsync(string text) => await _bot.SendTextMessageAsync(_user.Id, text, cancellationToken: _ctn);
+
+    public async Task<Message> SendAsync(string text) => await _bot.SendTextMessageAsync(_user.Id, text, parseMode: ParseMode.MarkdownV2, cancellationToken: _ctn);
 
     public async Task SendAndDeleteAsync(string text, int delay)
     {
@@ -111,8 +120,13 @@ public class TelegramChat : ITelegramChat
     }
 
     public async Task SendStatusAsync(ChatAction action = ChatAction.Typing) => await _bot.SendChatActionAsync(_user.Id, action, _ctn);
-    //public async Task RemoveKeyboard() => await _bot.De
-    public async Task DeleteRecievedMessageAsync() => await _bot.DeleteMessageAsync(_user.Id, _recievedMessages.Dequeue().MessageId);
+
+    public async Task DeleteRecievedMessageAsync()
+    {
+        if (_recievedMessages.TryDequeue(out var message))
+            await _bot.DeleteMessageAsync(_user.Id, message.MessageId);
+    }
+
     public async Task ClearMessageButtons()
     {
         while (_messagesWithInlineKeyboard.TryDequeue(out var message))

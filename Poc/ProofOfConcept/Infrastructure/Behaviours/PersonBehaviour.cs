@@ -14,7 +14,7 @@ public class PersonBehaviour : IChatBehaviour
 
     public ITelegramChat Chat { get; set; }
     /*private IAppRepository _repo;*/
-    BotDbContext _repo = new();
+    BotDbContext _context = new();
     private ILogger<PersonBehaviour> _logger;
 
     #endregion Infrastructure variables
@@ -23,11 +23,10 @@ public class PersonBehaviour : IChatBehaviour
 
     #region Ctor with FSM
 
-    public PersonBehaviour(Person person, ITelegramChat chat, IAppRepository repo, ILogger<PersonBehaviour> logger)
+    public PersonBehaviour(Person person, ITelegramChat chat, ILogger<PersonBehaviour> logger)
     {
         Chat = chat;
         _person = person;
-        //_repo = repo;
         _logger = logger;
 
         _machine = new StateMachine<PersonState, Trigger>(() => _state, s => _state = s);
@@ -56,6 +55,8 @@ public class PersonBehaviour : IChatBehaviour
 
     private void Configure()
     {
+        _context.Attach(_person);
+
         _machine.Configure(PersonState.Initial)
             .PermitDynamic<Command>(_commandTrigger, InitialDestinationStateSelector);
 
@@ -63,7 +64,7 @@ public class PersonBehaviour : IChatBehaviour
             .Permit(Trigger.Pointer, PersonState.Viewing)
             .OnEntry(() =>
             {
-                var startStage = _repo.Stages.Where(s => s.Type == StageType.Start).SingleOrDefault();
+                var startStage = _context.Stages.Where(s => s.Type == StageType.Start).SingleOrDefault();
                 if (startStage is not null)
                     _machine.FireAsync<ContentPointer>(_contentTrigger, new() { Type = ContentType.Stage, Stage = startStage });
             });
@@ -71,14 +72,56 @@ public class PersonBehaviour : IChatBehaviour
 
         _machine.Configure(PersonState.Viewing)
             .PermitReentry(Trigger.Pointer)
+            // .PermitDynamic<Command>(_commandTrigger, cmd =>
+            // {
+            //     if (cmd.Name == "start" && cmd.Arguments is string args && string.IsNullOrWhiteSpace(args))
+            //         return PersonState.Viewing;
+            //     else
+            //         return PersonState.Start;
+            // })
+            // .PermitReentryIf<Command>(_commandTrigger, cmd => cmd.Name == "start")
+            // .OnEntryFrom<Command>(_commandTrigger, async cmd =>
+            // {
+            //     var pointerParts = cmd.Arguments?.Trim().Split(':');
+            //     Route? route; Stage? stage; Step? step;
+            //     ContentPointer pointer = new();
+            //     foreach (var part in pointerParts ?? Array.Empty<string?>())
+            //     {
+            //         var splittedPart = part?.Trim().Split('=');
+            //         if (splittedPart is null)
+            //             return;
+            //         switch (splittedPart[0])
+            //         {
+            //             case "route":
+            //                 route = _context.Routes.Where(r => r.Name == splittedPart[1]).SingleOrDefault();
+            //                 pointer.Type = route is null ? pointer.Type : pointer.Type | ContentType.Route;
+            //                 break;
+            //             case "stage":
+            //                 stage = _context.Stages.Where(s => s.Name == splittedPart[1]).SingleOrDefault();
+            //                 pointer.Type = stage is null ? pointer.Type : pointer.Type | ContentType.Stage;
+            //                 break;
+            //             case "step":
+            //                 step = _context.Steps.Where(s => s.Name == splittedPart[1]).SingleOrDefault();
+            //                 pointer.Type = step is null ? pointer.Type : pointer.Type | ContentType.Step;
+            //                 break;
+            //             default:
+            //                 return;
+            //         }
+            //     }
+            //     if (pointer.Type is not ContentType.None)
+            //         await _machine.FireAsync<ContentPointer>(_contentTrigger, pointer);
+            // })
             .OnEntryFrom<ContentPointer>(_contentTrigger, async pointer =>
             {
-                //await Chat.DeleteRecievedMessageAsync();
                 await Chat.SendStatusAsync();
                 NewCurrentDefine(pointer);
                 HandleCurrent(_currentContent!);
                 await DemonstrateFragments(_preparedFragments!);
+
+                _context.Activities.Add(new() { Performer = _person, Pointer = _currentContent! });
+                await _context.SaveChangesAsync();
             });
+        //todo: on entry при замене текста
 
         _machine.OnUnhandledTriggerAsync(async (_, _) =>
         {
@@ -100,7 +143,7 @@ public class PersonBehaviour : IChatBehaviour
 
     private Person _person;
     private ContentPointer? _currentContent;
-    private Condition? _cuurrentConditions;
+    //private Condition? _cuurrentConditions;
     private long _unhandledNotificationHold = DateTimeOffset.Now.ToUnixTimeSeconds();
     private List<(Coordinate coordinate, Stage stage)> _allowedPlaces = new();
     private List<(string label, ContentPointer pointer)> _allowedLinks = new();
@@ -108,6 +151,8 @@ public class PersonBehaviour : IChatBehaviour
     private Queue<List<string>> _keyboardButtons = new();
 
     #endregion Business logic variables
+
+    // -------------------------------------------------------------------//
 
     #region Business logic
 
@@ -121,6 +166,7 @@ public class PersonBehaviour : IChatBehaviour
 
     private void NewCurrentDefine(ContentPointer pointer)
     {
+        //todo: возможны утечки памяти, проверить
         switch (pointer.Type)
         {
             case ContentType.Route:
@@ -129,13 +175,13 @@ public class PersonBehaviour : IChatBehaviour
             case ContentType.Stage:
                 if (_currentContent?.Route is not null && _currentContent?.Stage is not null)
                 {
-                    var sequence = (from s in _repo.Sequences
+                    var sequence = (from s in _context.Sequences
                                     where s.AttachedRoute.Id == _currentContent!.Route.Id &&
                                         s.From.Id == _currentContent!.Stage.Id &&
                                         s.To.Id == pointer!.Stage!.Id
                                     select s).SingleOrDefault();
                     if (sequence is not null)
-                        _currentContent = new() { Route = pointer!.Route, Stage = pointer!.Stage, Type = ContentType.Route | ContentType.Stage };
+                        _currentContent = new() { Route = sequence.AttachedRoute, Stage = pointer!.Stage, Type = ContentType.Route | ContentType.Stage };
                     else
                         _currentContent = new() { Stage = pointer!.Stage, Type = ContentType.Stage };
                 }
@@ -145,8 +191,8 @@ public class PersonBehaviour : IChatBehaviour
             case ContentType.Step:
                 if (_currentContent?.Route is not null && _currentContent?.Stage is not null)
                 {
-                    var pointers = from sequence in _repo.Sequences
-                                   join step in _repo.StepsInStage on sequence.To.Id equals step.AttachedStage.Id
+                    var pointers = from sequence in _context.Sequences
+                                   join step in _context.StepsInStage on sequence.To.Id equals step.AttachedStage.Id
                                    where sequence.AttachedRoute.Id == _currentContent!.Route.Id && step.Payload.Id == pointer!.Step!.Id
                                    select new ContentPointer()
                                    {
@@ -155,6 +201,7 @@ public class PersonBehaviour : IChatBehaviour
                                        Step = step.Payload,
                                        Type = ContentType.All
                                    };
+                    //todo:два запроса получается
                     if (pointers.Count() == 1)
                         _currentContent = pointers.Single();
                     else
@@ -166,8 +213,8 @@ public class PersonBehaviour : IChatBehaviour
             case ContentType.Stage | ContentType.Step:
                 if (_currentContent?.Route is not null && _currentContent?.Stage is not null)
                 {
-                    var pointers = from sequence in _repo.Sequences
-                                   join step in _repo.StepsInStage on sequence.To equals step.AttachedStage
+                    var pointers = from sequence in _context.Sequences
+                                   join step in _context.StepsInStage on sequence.To equals step.AttachedStage
                                    where sequence.AttachedRoute.Id == _currentContent!.Route.Id &&
                                         step.AttachedStage.Id == pointer!.Stage!.Id &&
                                         step.Payload.Id == pointer!.Step!.Id
@@ -184,7 +231,7 @@ public class PersonBehaviour : IChatBehaviour
                         _currentContent = new() { Stage = pointer!.Stage, Step = pointer!.Step, Type = ContentType.Stage | ContentType.Step };
                 }
                 else
-                    _currentContent = new() { Step = pointer!.Step, Type = ContentType.Step };
+                    _currentContent = new() { Stage = pointer!.Stage, Step = pointer!.Step, Type = ContentType.Stage | ContentType.Step };
                 break;
             case ContentType.Route | ContentType.Stage:
                 throw new NotImplementedException();
@@ -214,7 +261,7 @@ public class PersonBehaviour : IChatBehaviour
             HandleStage(stage, _currentContent?.Step);
             if (pointer.Type.HasFlag(ContentType.Route) && _currentContent?.Route is Route route)
             {
-                var availableStages = (from s in _repo.Sequences
+                var availableStages = (from s in _context.Sequences
                                        where s.AttachedRoute.Id == route.Id && s.From.Id == stage.Id
                                        select s.To).ToList();
 
@@ -251,7 +298,7 @@ public class PersonBehaviour : IChatBehaviour
                         string label;
 
                         if (stage.Label is string stageLabel)
-                            label = $"🔎 Расскажи про {stageLabel}";
+                            label = $"🔎 Что дальше? {stageLabel}";
                         else if (isLabelessStage is false)
                         {
                             label = $"💡 Что дальше?";
@@ -272,13 +319,20 @@ public class PersonBehaviour : IChatBehaviour
 
     private void HandleStage(Stage stage, Step? step = null)
     {
+        if (stage.Location is Spot spot)
+        {
+            //todo: проверить соответсвие, откуда берется текст и соответсвие локации
+            Coordinate coordinate = new(spot.Latitude, spot.Longitude);
+            _allowedPlaces.Add((coordinate, stage));
+        }
+
         var orderedSteps = stage.Steps.OrderBy(s => s.Order);
         bool isStepReached = step is null;
 
         foreach (var s in orderedSteps ?? Enumerable.Empty<StepInStage>())
             if (isStepReached)
                 HandleStep(s.Payload, s.Delay);
-            else if (s.Id == step?.Id)
+            else if (s.Payload.Id == step?.Id)
             {
                 isStepReached = true;
                 HandleStep(s.Payload, s.Delay);
@@ -287,11 +341,14 @@ public class PersonBehaviour : IChatBehaviour
 
     private void HandleStep(Step step, int delay)
     {
-        _repo.Entry(step).Collection(s => s.Fragments).Load();
+        //todo: желательно подгружать не всю коллекцию, а только подходящий фрагмент
+        _context.Entry(step).Collection(s => s.Fragments).Load();
         if (FragmentDetermine(step) is Fragment fragment)
         {
             var keyboardLine = new List<string>();
-            var isLinked = fragment.Buttons?.Count() == 0;
+            var isLinked = fragment.Buttons is null ? false :
+                    fragment.Buttons.Count() == 0 || fragment.Buttons.First().Type == ButtonType.KeyboardTransition ? false : true;
+            //var isLinked = fragment.Buttons?.Count() == 0; //todo: некорректное срабатывание
             _preparedFragments.Add((fragment, delay, isLinked));
             foreach (var button in fragment?.Buttons ?? Enumerable.Empty<Button>())
                 if (button.Type is ButtonType.InlineTransition or ButtonType.KeyboardTransition &&
@@ -311,13 +368,18 @@ public class PersonBehaviour : IChatBehaviour
     private async Task DemonstrateFragments(List<(Fragment payload, int delay, bool isLinked)> fragments)
     {
         bool keyboardIsSent = _keyboardButtons.Count() > 0 ? false : true;
-        //todo: убирать клавиатуру первым сообщением, ставить новую в самом конце
-        // определить первое и последнее сообщение без кнопок
 
+        Fragment? firstUnlinked = null;
         Fragment? lastUnLinked = null;
         foreach (var frmt in fragments)
             if (!frmt.isLinked)
+            {
+                if (firstUnlinked is null)
+                    firstUnlinked = frmt.payload;
                 lastUnLinked = frmt.payload;
+            }
+        if (firstUnlinked?.Id == lastUnLinked?.Id)
+            firstUnlinked = null;
 
         foreach (var fragment in fragments)
         {
@@ -327,19 +389,12 @@ public class PersonBehaviour : IChatBehaviour
                 case FragmentType.Text:
                 case FragmentType.Media:
                     await Task.Delay(TimeSpan.FromSeconds(fragment.delay));
-                    if (fragment.payload == lastUnLinked)
+                    if (fragment.payload.Id == firstUnlinked?.Id)
+                        await Chat.SendAsync(fragment.payload, clearReplyMarkup: true);
+                    else if (fragment.payload.Id == lastUnLinked?.Id)
                         await Chat.SendAsync(fragment.payload, _keyboardButtons);
                     else
                         await Chat.SendAsync(fragment.payload);
-                    // if (fragment.payload.Buttons is null)
-                    //     await Chat.SendAsync(fragment.payload);
-                    // else if (!keyboardIsSent)
-                    // {
-                    //     await Chat.SendAsync(fragment.payload, _keyboardButtons);
-                    //     keyboardIsSent = true;
-                    // }
-                    // else
-                    //     await Chat.SendAsync(fragment.payload);
                     break;
                 case FragmentType.Timer:
                     if (fragment.payload.Timer!.Target.IsBinded)

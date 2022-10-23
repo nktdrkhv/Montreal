@@ -71,7 +71,7 @@ public class UserRepositoryService : IUserRepository
                 false or null => new PersonBehaviour(
                     _repo.GetPerson(id),
                     telegramChat,
-                    _provider.GetRequiredService<IAppRepository>(),
+                    //_provider.GetRequiredService<IAppRepository>(),
                     _provider.GetRequiredService<ILogger<PersonBehaviour>>()),
             };
 

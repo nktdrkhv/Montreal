@@ -21,7 +21,7 @@ public class MakerBehaviour : IChatBehaviour
         _textTrigger = _machine.SetTriggerParameters<string>(Trigger.Text);
         _commandTrigger = _machine.SetTriggerParameters<Command>(Trigger.Command);
 
-        Configure();
+        //Configure();
     }
 
     private MakerState _state = MakerState.Initial;
@@ -45,13 +45,20 @@ public class MakerBehaviour : IChatBehaviour
             .InternalTransitionAsync<Command>(_commandTrigger, (cmd, _) => Task.CompletedTask);
 
         _machine.Configure(MakerState.FragmentCreation);
-
-
-
     }
 
-    public Task SubmitAsync(string text) => throw new NotImplementedException();
-    public Task SubmitAsync(Command command) => throw new NotImplementedException();
-    public Task SubmitAsync(Media media) => throw new NotImplementedException();
-    public Task SubmitAsync(Spot spot) => throw new NotImplementedException();
+    public async Task SubmitAsync(string text) => await Chat.SendAsync($"_Неподдерживаемый тип_");
+    public async Task SubmitAsync(Command command) => await Chat.SendAsync($"_Неподдерживаемый тип_");
+    public async Task SubmitAsync(Media media)
+    {
+        var handler = media.Type switch
+        {
+            MediaType.Photo => Chat.SendAsync($"*Фото:*\n`{media.Photo!.FileId}`"),
+            MediaType.Sound when media.Sound!.Type == SoundType.Audio => Chat.SendAsync($"*Аудио*\n`{media.Sound.Audio!.FileSize}`"),
+            _ => Chat.SendAsync($"_Неподдерживаемый тип_"),
+        };
+
+        await handler;
+    }
+    public async Task SubmitAsync(Spot spot) => await Chat.SendAsync($"_Неподдерживаемый тип_");
 }

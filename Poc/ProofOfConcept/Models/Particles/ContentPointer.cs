@@ -10,14 +10,14 @@ public class ContentPointer
     public int Id { get; set; }
     public ContentType Type { get; set; } = ContentType.None;
 
-    public int? StepId { get; set; }
-    public int? StageId { get; set; }
-    public int? RouteId { get; set; }
+    // public int? StepId { get; set; }
+    // public int? StageId { get; set; }
+    // public int? RouteId { get; set; }
 
-    [ForeignKey("StepId")]
+    //[ForeignKey("StepId")]
     public Step? Step { get; set; }
-    [ForeignKey("StageId")]
+    //[ForeignKey("StageId")]
     public Stage? Stage { get; set; }
-    [ForeignKey("RouteId")]
+    //[ForeignKey("RouteId")]
     public Route? Route { get; set; }
 }

@@ -1,4 +1,5 @@
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
 using Montreal.Bot.Poc.Models;
 
@@ -9,7 +10,7 @@ public interface ITelegramChat
     void Add(Message message);
     void Add(CallbackQuery callback);
 
-    Task<Message> SendAsync(Fragment fragment, Queue<List<string>>? uniteKeyboard = null);
+    Task<Message> SendAsync(Fragment fragment, Queue<List<string>>? uniteKeyboard = null, bool clearReplyMarkup = false);
     Task<Message> SendAsync(string text);
 
     Task SendAndDeleteAsync(string text, int delay);

@@ -7,8 +7,10 @@ public class Button
     public int Id { get; set; }
     public ButtonType Type { get; set; }
     public Fragment Source { get; set; } = default!;
+
     public Target? Target { get; set; }
     public string? Link { get; set; }
+    public string? ReplaceText { get; set; }
 
     private string? _label;
     public string? Label
@@ -26,7 +28,7 @@ public class Button
                     ContentType.Route => this.Target.Pointer?.Route?.Label,
                     _ => null,
                 };
-                return _label ?? contentLabel;
+                return _label ?? contentLabel ?? "Кнопка";
             }
         }
         set

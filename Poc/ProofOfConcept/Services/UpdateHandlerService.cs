@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
+using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -15,27 +17,17 @@ public class UpdateHandlerService : IUpdateHandler
 {
     private readonly ILogger<UpdateHandlerService> _logger;
     private readonly IUserRepository _repo;
+    private readonly BotDbContext _context;
 
-    public UpdateHandlerService(ILogger<UpdateHandlerService> logger, IUserRepository repo)
+    public UpdateHandlerService(ILogger<UpdateHandlerService> logger, IUserRepository repo, BotDbContext context)
     {
         _logger = logger;
         _repo = repo;
+        _context = context;
     }
 
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        // var message = update?.Message;
-        // var handler = message?.Type switch
-        // {
-        //     MessageType.Photo => botClient.SendTextMessageAsync(update?.Message?.From?.Id,
-        //     $"_Фото_:\n*Идентификатор:* {update?.Message?.Photo.Last().FileId}"),
-        //     MessageType.Audio => botClient.SendTextMessageAsync(update?.Message?.From?.Id,
-        //     $"_Аудио_:\n*Идентификатор:* {update?.Message?.Audio?.FileId}"),
-        // };
-        // await handler;
-
-        // return;
-
         _ = Task.Run(async () =>
             {
                 try
@@ -57,7 +49,7 @@ public class UpdateHandlerService : IUpdateHandler
                             }
                             break;
                         case { InlineQuery: { } inline }:
-                            await Task.CompletedTask;
+                            await HandleInlineQueryAsync(botClient, inline, cancellationToken);
                             break;
                     }
                 }
@@ -91,6 +83,25 @@ public class UpdateHandlerService : IUpdateHandler
             await user.SubmitAsync(text);
         else
             await Task.CompletedTask;
+    }
+
+    public async Task HandleInlineQueryAsync(ITelegramBotClient bot, InlineQuery inlineQuery, CancellationToken ctn)
+    {
+        var routes = await _context.Routes.IgnoreAutoIncludes().ToListAsync();
+        if (routes is not null)
+        {
+            List<InlineQueryResultArticle> articles = new();
+            foreach (var route in routes)
+            {
+                InputTextMessageContent textMessageContent = new(route.Description!);
+                InlineQueryResultArticle article = new(route.Name, route.Label!, textMessageContent);
+                article.ReplyMarkup = new InlineKeyboardMarkup(InlineKeyboardButton.WithUrl("Посмотреть", "https://t.me/yefim_bot"));
+                article.ThumbUrl = "AgACAgIAAxkBAAIF6mNUsLXIqlO-oAlR_FKF_qImth1PAAJhvzEbL4aoSlN3_wJsC5UMAQADAgADeQADKgQ";
+                article.Url = "https://t.me/yefim_bot";
+                articles.Add(article);
+            }
+            await bot.AnswerInlineQueryAsync(inlineQuery.Id, articles, 5000, false);
+        }
     }
 
     public async Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)

@@ -43,11 +43,12 @@ public class BotDbContext : DbContext
         modelBuilder.Entity<Target>().HasOne(t => t.Pointer);
         modelBuilder.Entity<Fragment>().HasMany(f => f.Buttons);
         modelBuilder.Entity<Fragment>().HasMany(f => f.Media);
-        modelBuilder.Entity<Stage>().OwnsOne(s => s.Location);
+        modelBuilder.Entity<Stage>().HasOne(s => s.Location);
         modelBuilder.Entity<Feedback>().HasOne(f => f.Cause);
         modelBuilder.Entity<Feedback>().HasMany(f => f.Payload);
         modelBuilder.Entity<Person>().HasMany(p => p.ActivityLog);
         modelBuilder.Entity<Activity>().HasOne(a => a.Pointer);
+
         modelBuilder.Entity<FileBase>().Ignore(fb => fb.FileUniqueId);
         modelBuilder.Entity<Audio>().Ignore(fb => fb.FileUniqueId);
         modelBuilder.Entity<PhotoSize>().Ignore(fb => fb.FileUniqueId);
@@ -59,6 +60,7 @@ public class BotDbContext : DbContext
         modelBuilder.Entity<StageSequence>().Navigation(s => s.To).AutoInclude();
         modelBuilder.Entity<StageSequence>().Navigation(s => s.From).AutoInclude();
         modelBuilder.Entity<Stage>().Navigation(s => s.Steps).AutoInclude();
+        modelBuilder.Entity<Stage>().Navigation(s => s.Location).AutoInclude();
         modelBuilder.Entity<StepInStage>().Navigation(s => s.Payload).AutoInclude();
         modelBuilder.Entity<Fragment>().Navigation(f => f.Media).AutoInclude();
         modelBuilder.Entity<Fragment>().Navigation(f => f.Buttons).AutoInclude();
@@ -70,6 +72,5 @@ public class BotDbContext : DbContext
         modelBuilder.Entity<Media>().Navigation(m => m.Sound).AutoInclude();
         modelBuilder.Entity<Media>().Navigation(m => m.Photo).AutoInclude();
         modelBuilder.Entity<Sound>().Navigation(s => s.Audio).AutoInclude();
-
     }
 }

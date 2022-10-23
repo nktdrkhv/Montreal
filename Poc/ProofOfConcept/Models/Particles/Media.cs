@@ -7,7 +7,7 @@ namespace Montreal.Bot.Poc.Models;
 
 public class Media
 {
-    public int Id { get; set; }
+    public string Id { get; set; } = Guid.NewGuid().ToString()[..7];
     public MediaType Type { get; set; }
     public PhotoSize? Photo { get; set; }
     public Video? Video { get; set; }

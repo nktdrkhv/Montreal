@@ -21,7 +21,7 @@ public enum FragmentType { Text, Media, Location, Timer, Poll }
 
 public enum StageType { Regular, Start, Final }
 
-public enum ButtonType { InlineLink, InlineTransition, KeyboardTransition }
+public enum ButtonType { InlineLink, InlineReplace, InlineTransition, KeyboardTransition, RemoveKayboard }
 
 public enum SoundType { Audio, Voice }
 
