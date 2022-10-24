@@ -10,7 +10,7 @@ public class Button
 
     public Target? Target { get; set; }
     public string? Link { get; set; }
-    public string? ReplaceText { get; set; }
+    public string? ReplacementUniqueId { get; set; }
 
     private string? _label;
     public string? Label

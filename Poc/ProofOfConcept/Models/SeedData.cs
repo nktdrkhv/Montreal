@@ -80,23 +80,23 @@ public static class SeedData
 
     public static Route CreateRoute_BTU()
     {
-        var stage1 = CreateStage_BTU_1();
-        var stage2 = CreateStage_BTU_2();
-        var stage3 = CreateStage_BTU_3();
-        var stage4 = CreateStage_BTU_4();
-        var stage5 = CreateStage_BTU_5();
-        var stage6 = CreateStage_BTU_6();
-        var stage7 = CreateStage_BTU_7();
-        var stage8 = CreateStage_BTU_8();
-        var stage9 = CreateStage_BTU_9();
-        var stage10 = CreateStage_BTU_10();
-        var stage11 = CreateStage_BTU_11();
-        var stage12 = CreateStage_BTU_12();
-        var stage13 = CreateStage_BTU_13();
-        var stage14 = CreateStage_BTU_14();
-        var stage15 = CreateStage_BTU_15();
-        var stage16 = CreateStage_BTU_16();
-        var stage17 = CreateStage_BTU_17();
+        var stage1 = BTU.CreateStage_BTU_1();
+        var stage2 = BTU.CreateStage_BTU_2();
+        var stage3 = BTU.CreateStage_BTU_3();
+        var stage4 = BTU.CreateStage_BTU_4();
+        var stage5 = BTU.CreateStage_BTU_5();
+        var stage6 = BTU.CreateStage_BTU_6();
+        var stage7 = BTU.CreateStage_BTU_7();
+        var stage8 = BTU.CreateStage_BTU_8();
+        var stage9 = BTU.CreateStage_BTU_9();
+        var stage10 = BTU.CreateStage_BTU_10();
+        var stage11 = BTU.CreateStage_BTU_11();
+        var stage12 = BTU.CreateStage_BTU_12();
+        var stage13 = BTU.CreateStage_BTU_13();
+        var stage14 = BTU.CreateStage_BTU_14();
+        var stage15 = BTU.CreateStage_BTU_15();
+        var stage16 = BTU.CreateStage_BTU_16();
+        var stage17 = BTU.CreateStage_BTU_17();
 
         var route = new Route()
         {
@@ -117,7 +117,9 @@ public static class SeedData
             new() {AttachedRoute = route, From = stage7, To = stage8},
             new() {AttachedRoute = route, From = stage7, To = stage11},
             new() {AttachedRoute = route, From = stage8, To = stage9},
+            new() {AttachedRoute = route, From = stage9, To = stage11},
             new() {AttachedRoute = route, From = stage8, To = stage10},
+            new() {AttachedRoute = route, From = stage10, To = stage11},
             new() {AttachedRoute = route, From = stage11, To = stage12},
             new() {AttachedRoute = route, From = stage12, To = stage13},
             new() {AttachedRoute = route, From = stage13, To = stage14},
@@ -153,33 +155,41 @@ public static class SeedData
         var fragment6_1 = new Fragment() { Type = FragmentType.Text, Text = "Выбирай маршрут, по которому пойдем гулять!", Buttons = buttons6 };
         var step6 = new Step() { Name = "start_6", Label = "Выбор маршрута", Fragments = new() { fragment6_1 } };
 
-        var stageStart = new Stage() { Name = "start", Type = StageType.Start };
+        var stageStart = new Stage() { Name = "start", Type = StageType.Welcome };
 
-        var order1 = new StepInStage() { AttachedStage = stageStart, Payload = step1, Order = 1, Delay = 1 };
-        var order2 = new StepInStage() { AttachedStage = stageStart, Payload = step2, Order = 2, Delay = 1 };
-        var order3 = new StepInStage() { AttachedStage = stageStart, Payload = step3, Order = 3, Delay = 1 };
-        var order4 = new StepInStage() { AttachedStage = stageStart, Payload = step4, Order = 4, Delay = 1 };
-        var order5 = new StepInStage() { AttachedStage = stageStart, Payload = step5, Order = 5, Delay = 1 };
-        var order6 = new StepInStage() { AttachedStage = stageStart, Payload = step6, Order = 6, Delay = 1 };
+        var order1 = new StepInStage() { AttachedStage = stageStart, Payload = step1, Order = 1, Delay = 0 };
+        var order2 = new StepInStage() { AttachedStage = stageStart, Payload = step2, Order = 2, Delay = 0 };
+        var order3 = new StepInStage() { AttachedStage = stageStart, Payload = step3, Order = 3, Delay = 0 };
+        var order4 = new StepInStage() { AttachedStage = stageStart, Payload = step4, Order = 4, Delay = 0 };
+        var order5 = new StepInStage() { AttachedStage = stageStart, Payload = step5, Order = 5, Delay = 0 };
+        var order6 = new StepInStage() { AttachedStage = stageStart, Payload = step6, Order = 6, Delay = 0 };
 
         stageStart.Steps = new() { order1, order2, order3, order4, order5, order6 };
 
         return stageStart;
     }
 
-    public static Stage CreateStage_BTU_1()
+    public static Step CreateStep_Choose()
     {
-        var fragment7_1 = new Fragment() { Type = FragmentType.Text, Text = "А ты знал, что официально Томск — студенческая столица России? Администрация города зарегистрировала соответствующий товарный знак в специальном государственном реестре. По количеству студентов Томск на третьем место после Москвы и Санкт-Петербурга, а еще он входит в международный рейтинг лучших городов для студентов. По сути, Томск – это город-университет. И в 2019 году все вузы и научно-исследовательские институты объединились в мегапроект «Большой университет Томска». Давай-ка прогуляемся по нашему городу-университету! Кстати, по дороге ты можешь встретить местных любимиц – белок. Не забудь взять с собой какие-нибудь лакомства – орехи или семечки, чтобы их порадовать." };
-        var step7 = new Step() { Name = "btu_1_7", Label = "Томск – город-университет", Fragments = new() { fragment7_1 } };
 
-        var fragment8_1 = new Fragment() { Type = FragmentType.Text, Text = "Давай будем гулять в светлое время суток! Выбери день с хорошей погодой. Возьми с собой наушники и бутылку воды. " };
-        var step8 = new Step() { Name = "btu_1_8", Label = "Давай гулять", Fragments = new() { fragment8_1 } };
+        return null;
+    }
 
-        var step9 = new Step()
+    public static class BTU
+    {
+        public static Stage CreateStage_BTU_1()
         {
-            Label = "Наш маршрут",
-            Name = "btu_1_9",
-            Fragments = new()
+            var fragment7_1 = new Fragment() { Type = FragmentType.Text, Text = "А ты знал, что официально Томск — студенческая столица России? Администрация города зарегистрировала соответствующий товарный знак в специальном государственном реестре. По количеству студентов Томск на третьем место после Москвы и Санкт-Петербурга, а еще он входит в международный рейтинг лучших городов для студентов. По сути, Томск – это город-университет. И в 2019 году все вузы и научно-исследовательские институты объединились в мегапроект «Большой университет Томска». Давай-ка прогуляемся по нашему городу-университету! Кстати, по дороге ты можешь встретить местных любимиц – белок. Не забудь взять с собой какие-нибудь лакомства – орехи или семечки, чтобы их порадовать." };
+            var step7 = new Step() { Name = "btu_1_7", Label = "Томск – город-университет", Fragments = new() { fragment7_1 } };
+
+            var fragment8_1 = new Fragment() { Type = FragmentType.Text, Text = "Давай будем гулять в светлое время суток! Выбери день с хорошей погодой. Возьми с собой наушники и бутылку воды. " };
+            var step8 = new Step() { Name = "btu_1_8", Label = "Давай гулять", Fragments = new() { fragment8_1 } };
+
+            var step9 = new Step()
+            {
+                Label = "Наш маршрут",
+                Name = "btu_1_9",
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -195,97 +205,97 @@ public static class SeedData
                     }
                 }
             }
-        };
+            };
 
-        var buttons10 = new List<Button>()
+            var buttons10 = new List<Button>()
         {
             new(){ Type = ButtonType.KeyboardTransition, Label = "⚠️ Хочу другой маршрут", Target = new() { Name = "stage=start:step=start_6"}},
             new(){ Type = ButtonType.KeyboardTransition, Label = "🎯 Давай", Target = new() { Name = "stage=btu_2"}}
         };
-        var fragment10_1 = new Fragment() { Type = FragmentType.Text, Text = "Ну что? Идем?", Buttons = buttons10 };
-        var step10 = new Step() { Name = "btu_1_10", Fragments = new() { fragment10_1 } };
+            var fragment10_1 = new Fragment() { Type = FragmentType.Text, Text = "Ну что? Идем?", Buttons = buttons10 };
+            var step10 = new Step() { Name = "btu_1_10", Fragments = new() { fragment10_1 } };
 
-        var stage1 = new Stage() { Name = "btu_1", Label = "Выбор Большого томского университета", Type = StageType.Regular };
+            var stage1 = new Stage() { Name = "btu_1", Label = "Выбор Большого томского университета", Type = StageType.Regular };
 
-        var order7 = new StepInStage() { AttachedStage = stage1, Payload = step7, Order = 1, Delay = 1 };
-        var order8 = new StepInStage() { AttachedStage = stage1, Payload = step8, Order = 2, Delay = 1 };
-        var order9 = new StepInStage() { AttachedStage = stage1, Payload = step9, Order = 3, Delay = 1 };
-        var order10 = new StepInStage() { AttachedStage = stage1, Payload = step10, Order = 4, Delay = 1 };
+            var order7 = new StepInStage() { AttachedStage = stage1, Payload = step7, Order = 1, Delay = 0 };
+            var order8 = new StepInStage() { AttachedStage = stage1, Payload = step8, Order = 2, Delay = 0 };
+            var order9 = new StepInStage() { AttachedStage = stage1, Payload = step9, Order = 3, Delay = 0 };
+            var order10 = new StepInStage() { AttachedStage = stage1, Payload = step10, Order = 4, Delay = 0 };
 
-        stage1.Steps = new() { order7, order8, order9, order10 };
+            stage1.Steps = new() { order7, order8, order9, order10 };
 
-        return stage1;
-    }
+            return stage1;
+        }
 
-    public static Stage CreateStage_BTU_2()
-    {
-        var fragment11_1 = new Fragment()
+        public static Stage CreateStage_BTU_2()
         {
-            Type = FragmentType.Media,
-            Media = new() {
+            var fragment11_1 = new Fragment()
+            {
+                Type = FragmentType.Media,
+                Media = new() {
             new() { Photo = new() { FileId = "AgACAgIAAxkBAAIFXGNUk7zo6zkSXQABIZTtrYJs_IjoXwACUL8xGy-GqEpfSz5k-GafYgEAAwIAA3kAAyoE" }, Caption = "Главный корпус ТПУ" } }
-        };
-        var step11 = new Step() { Name = "btu_2_11", Fragments = new() { fragment11_1 } };
+            };
+            var step11 = new Step() { Name = "btu_2_11", Fragments = new() { fragment11_1 } };
 
-        var fragment12_1 = new Fragment()
-        {
-            Type = FragmentType.Text,
-            Text = "Начинаем прогулку с места, где был открыт первый за Уралом технический вуз. Это Томский политехнический университет. Адрес Главного корпуса вуза: проспект Ленина, 30. Посмотри, сильно ли здание изменилось за более чем 120 лет? В начале ХХ века этот корпус носил название Лекционный, потому что был открыт первым в 1900 году, и именно здесь начались занятия у будущих инженеров."
-        };
-        var step12 = new Step() { Name = "btu_2_12", Fragments = new() { fragment12_1 } };
+            var fragment12_1 = new Fragment()
+            {
+                Type = FragmentType.Text,
+                Text = "Начинаем прогулку с места, где был открыт первый за Уралом технический вуз. Это Томский политехнический университет. Адрес Главного корпуса вуза: проспект Ленина, 30. Посмотри, сильно ли здание изменилось за более чем 120 лет? В начале ХХ века этот корпус носил название Лекционный, потому что был открыт первым в 1900 году, и именно здесь начались занятия у будущих инженеров."
+            };
+            var step12 = new Step() { Name = "btu_2_12", Fragments = new() { fragment12_1 } };
 
-        var fragment13_1 = new Fragment()
-        {
-            Type = FragmentType.Media,
-            Media = new() {
+            var fragment13_1 = new Fragment()
+            {
+                Type = FragmentType.Media,
+                Media = new() {
             new() { /*Id = 2,*/ Photo = new() { FileId = "AgACAgIAAxkBAAIFXmNUlA27HQs_yrgxuJ9zRcnHBsBLAAJRvzEbL4aoSm_wHBXC3z2LAQADAgADeQADKgQ" }, Caption = "Главный корпус ТПУ, начало XX в." } }
-        };
-        var step13 = new Step() { Name = "btu_2_13", Fragments = new() { fragment13_1 } };
+            };
+            var step13 = new Step() { Name = "btu_2_13", Fragments = new() { fragment13_1 } };
 
-        var buttons14_1 = new List<Button>()
+            var buttons14_1 = new List<Button>()
         {
             new(){ Type = ButtonType.KeyboardTransition, Label = "💁‍♂️ Да, хочу узнать", Target = new() { Name = "stage=btu_3"}},
             new(){ Type = ButtonType.KeyboardTransition, Label = "🙅‍♂️ Нет, не хочу", Target = new() { Name = "stage=btu_4"}}
         };
-        var fragment14_1 = new Fragment()
-        {
-            Type = FragmentType.Text,
-            Buttons = buttons14_1,
-            Text = "Посмотри вокруг! Ты видишь первый университетский квартал в Томске. И это всё – Томский политех. Сейчас у вуза 32 учебных и лабораторных корпуса. Если хочешь узнать про Главный корпус ТПУ и университетский квартал больше, послушай историю строительства первого вузовского кампуса. "
-        };
-        var step14 = new Step() { Name = "btu_2_14", Fragments = new() { fragment14_1 } };
-
-        var stage2 = new Stage()
-        {
-            Name = "btu_2",
-            Label = "Начало прогулки",
-            Type = StageType.Regular,
-            Location = new Spot()
+            var fragment14_1 = new Fragment()
             {
-                Number = 1,
-                Latitude = 56.465386,
-                Longitude = 84.950481,
-                Label = "Вход в ГК ТПУ",
-                Address = "Ленина, 30; Главный вход"
-            }
-        };
+                Type = FragmentType.Text,
+                Buttons = buttons14_1,
+                Text = "Посмотри вокруг! Ты видишь первый университетский квартал в Томске. И это всё – Томский политех. Сейчас у вуза 32 учебных и лабораторных корпуса. Если хочешь узнать про Главный корпус ТПУ и университетский квартал больше, послушай историю строительства первого вузовского кампуса. "
+            };
+            var step14 = new Step() { Name = "btu_2_14", Fragments = new() { fragment14_1 } };
 
-        var order11 = new StepInStage() { AttachedStage = stage2, Payload = step11, Order = 1, Delay = 1 };
-        var order12 = new StepInStage() { AttachedStage = stage2, Payload = step12, Order = 2, Delay = 1 };
-        var order13 = new StepInStage() { AttachedStage = stage2, Payload = step13, Order = 3, Delay = 1 };
-        var order14 = new StepInStage() { AttachedStage = stage2, Payload = step14, Order = 4, Delay = 1 };
+            var stage2 = new Stage()
+            {
+                Name = "btu_2",
+                Label = "Начало прогулки",
+                Type = StageType.Regular,
+                Location = new Spot()
+                {
+                    Number = 1,
+                    Latitude = 56.465386,
+                    Longitude = 84.950481,
+                    Label = "Вход в ГК ТПУ",
+                    Address = "Ленина, 30; Главный вход"
+                }
+            };
 
-        stage2.Steps = new() { order12, order13, order14, order11 };
+            var order11 = new StepInStage() { AttachedStage = stage2, Payload = step11, Order = 1, Delay = 0 };
+            var order12 = new StepInStage() { AttachedStage = stage2, Payload = step12, Order = 2, Delay = 0 };
+            var order13 = new StepInStage() { AttachedStage = stage2, Payload = step13, Order = 3, Delay = 0 };
+            var order14 = new StepInStage() { AttachedStage = stage2, Payload = step14, Order = 4, Delay = 0 };
 
-        return stage2;
-    }
+            stage2.Steps = new() { order12, order13, order14, order11 };
 
-    public static Stage CreateStage_BTU_3()
-    {
-        var step15 = new Step()
+            return stage2;
+        }
+
+        public static Stage CreateStage_BTU_3()
         {
-            Name = "btu_3_15",
-            Fragments = new()
+            var step15 = new Step()
+            {
+                Name = "btu_3_15",
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -313,11 +323,11 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step16 = new Step()
-        {
-            Name = "btu_3_16",
-            Fragments = new()
+            };
+            var step16 = new Step()
+            {
+                Name = "btu_3_16",
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -325,11 +335,11 @@ public static class SeedData
                     Text = "Если тебе интересно, как же жили томские профессора в начале XX века, то предлагаю посетить очень интересный музей. Это настоящая профессорская квартира, где можно увидеть подлинную мебель, предметы быта, фотографии, картины и другие уникальные свидетельства эпохи. И все это – без всяких заграждений – можно рассмотреть и потрогать. И музей этот совсем рядом с нашим маршрутом, можешь зайти и туда. Вот ссылка на сайт:\nhttps://museum.tomsk.ru/",
                 }
             }
-        };
-        var step17 = new Step()
-        {
-            Name = "btu_3_17",
-            Fragments = new()
+            };
+            var step17 = new Step()
+            {
+                Name = "btu_3_17",
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -345,30 +355,30 @@ public static class SeedData
                     }
                 }
             }
-        };
+            };
 
-        var stage3 = new Stage()
+            var stage3 = new Stage()
+            {
+                Name = "btu_3",
+                Label = "Про главный корпус ТПУ",
+                Type = StageType.Regular,
+            };
+            var order3 = new List<StepInStage>()
         {
-            Name = "btu_3",
-            Label = "Про главный корпус ТПУ",
-            Type = StageType.Regular,
+            new() {AttachedStage =  stage3, Payload = step15, Order = 1, Delay = 0 },
+            new() {AttachedStage =  stage3, Payload = step16, Order = 2, Delay = 0 },
+            new() {AttachedStage =  stage3, Payload = step17, Order = 3, Delay = 0 },
         };
-        var order3 = new List<StepInStage>()
-        {
-            new() {AttachedStage =  stage3, Payload = step15, Order = 1, Delay = 1 },
-            new() {AttachedStage =  stage3, Payload = step16, Order = 2, Delay = 1 },
-            new() {AttachedStage =  stage3, Payload = step17, Order = 3, Delay = 1 },
-        };
-        stage3.Steps = order3;
+            stage3.Steps = order3;
 
-        return stage3;
-    }
+            return stage3;
+        }
 
-    public static Stage CreateStage_BTU_4()
-    {
-        var step19 = new Step()
+        public static Stage CreateStage_BTU_4()
         {
-            Fragments = new()
+            var step19 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -384,10 +394,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step21 = new Step()
-        {
-            Fragments = new()
+            };
+            var step21 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -403,10 +413,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step22 = new Step()
-        {
-            Fragments = new()
+            };
+            var step22 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -414,10 +424,10 @@ public static class SeedData
                     Text = "Но Кирова в Томске не забыли. У студентов ТПУ есть давняя традиция: перекрашивать в яркие цвета сапоги у памятника в дни экзаменов, выпускных или перед защитой диплома. Но долго «обновками» Киров не хвастается – обычно служба кампуса ТПУ моментально перекрашивает сапоги обратно в белый цвет. Но студенты не сдаются, поэтому история повторяется регулярно.",
                 }
             }
-        };
-        var step23 = new Step()
-        {
-            Fragments = new()
+            };
+            var step23 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -433,11 +443,11 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step25 = new Step()
-        {
-            Name = "btu_4_25",
-            Fragments = new()
+            };
+            var step25 = new Step()
+            {
+                Name = "btu_4_25",
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -453,32 +463,32 @@ public static class SeedData
                     }
                 }
             }
-        };
+            };
 
-        var stage4 = new Stage()
+            var stage4 = new Stage()
+            {
+                Name = "btu_4",
+                Label = "Дорога до университетских общежитий",
+                Type = StageType.Regular,
+            };
+            var order4 = new List<StepInStage>()
         {
-            Name = "btu_4",
-            Label = "Дорога до университетских общежитий",
-            Type = StageType.Regular,
+            new() {AttachedStage =  stage4, Payload = step19, Order = 1, Delay = 0 },
+            new() {AttachedStage =  stage4, Payload = step21, Order = 2, Delay = 0 },
+            new() {AttachedStage =  stage4, Payload = step22, Order = 3, Delay = 0 },
+            new() {AttachedStage =  stage4, Payload = step23, Order = 4, Delay = 0 },
+            new() {AttachedStage =  stage4, Payload = step25, Order = 5, Delay = 0 },
         };
-        var order4 = new List<StepInStage>()
-        {
-            new() {AttachedStage =  stage4, Payload = step19, Order = 1, Delay = 1 },
-            new() {AttachedStage =  stage4, Payload = step21, Order = 2, Delay = 1 },
-            new() {AttachedStage =  stage4, Payload = step22, Order = 3, Delay = 1 },
-            new() {AttachedStage =  stage4, Payload = step23, Order = 4, Delay = 1 },
-            new() {AttachedStage =  stage4, Payload = step25, Order = 5, Delay = 1 },
-        };
-        stage4.Steps = order4;
-        return stage4;
-    }
+            stage4.Steps = order4;
+            return stage4;
+        }
 
-    public static Stage CreateStage_BTU_5()
-    {
-        var step26 = new Step()
+        public static Stage CreateStage_BTU_5()
         {
-            Name = "btu_5_26",
-            Fragments = new()
+            var step26 = new Step()
+            {
+                Name = "btu_5_26",
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -493,11 +503,11 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step27 = new Step()
-        {
-            Name = "btu_5_27",
-            Fragments = new()
+            };
+            var step27 = new Step()
+            {
+                Name = "btu_5_27",
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -505,37 +515,37 @@ public static class SeedData
                     Text = "«Приют для учащихся» или Дом общежития студентов –так называлось первое студенческое общежитие Императорского Томского университета. Общежитие вмещало чуть более 75 студентов. Раньше считали, что, сколько в комнате окон, столько и студентов должно там жить. Да, шикарные условия, скажу вам! Ну а сейчас, это третий корпус ТГУ, где проходят занятия у современных студентов. Загляни за угол! Ты увидишь здания Научной библиотеки Томского государственного университета.",
                 }
             }
-        };
+            };
 
-        var stage5 = new Stage()
-        {
-            Name = "btu_5",
-            Label = "Научная библиотека ТГУ",
-            Type = StageType.Regular,
-            Location = new Spot()
+            var stage5 = new Stage()
             {
-                Number = 2,
-                Latitude = 56.467007,
-                Longitude = 84.950389,
-                Label = "3-й корпус ТГУ",
-                Address = "пр. Ленина, 34"
-            },
-        };
-        var order5 = new List<StepInStage>()
+                Name = "btu_5",
+                Label = "Научная библиотека ТГУ",
+                Type = StageType.Regular,
+                Location = new Spot()
+                {
+                    Number = 2,
+                    Latitude = 56.467007,
+                    Longitude = 84.950389,
+                    Label = "3-й корпус ТГУ",
+                    Address = "пр. Ленина, 34"
+                },
+            };
+            var order5 = new List<StepInStage>()
         {
-            new() {AttachedStage =  stage5, Payload = step26, Order = 1, Delay = 1 },
-            new() {AttachedStage =  stage5, Payload = step27, Order = 2, Delay = 1 },
+            new() {AttachedStage =  stage5, Payload = step26, Order = 1, Delay = 0 },
+            new() {AttachedStage =  stage5, Payload = step27, Order = 2, Delay = 0 },
         };
-        stage5.Steps = order5;
-        return stage5;
-    }
+            stage5.Steps = order5;
+            return stage5;
+        }
 
-    public static Stage CreateStage_BTU_6()
-    {
-        var step28 = new Step()
+        public static Stage CreateStage_BTU_6()
         {
-            Name = "btu_6_28",
-            Fragments = new()
+            var step28 = new Step()
+            {
+                Name = "btu_6_28",
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -550,11 +560,11 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step29 = new Step()
-        {
-            Name = "btu_6_29",
-            Fragments = new()
+            };
+            var step29 = new Step()
+            {
+                Name = "btu_6_29",
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -582,11 +592,11 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step31 = new Step()
-        {
-            Name = "btu_6_31",
-            Fragments = new()
+            };
+            var step31 = new Step()
+            {
+                Name = "btu_6_31",
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -605,37 +615,37 @@ public static class SeedData
                     // }
                 }
             }
-        };
+            };
 
-        var stage6 = new Stage()
-        {
-            Name = "btu_6",
-            Label = "Научная библиотека ТГУ",
-            Type = StageType.Regular,
-            Location = new Spot()
+            var stage6 = new Stage()
             {
-                Number = 3,
-                Latitude = 56.467561,
-                Longitude = 84.950342,
+                Name = "btu_6",
                 Label = "Научная библиотека ТГУ",
-                Address = "пр. Ленина, 34а"
-            },
-        };
-        var order6 = new List<StepInStage>()
+                Type = StageType.Regular,
+                Location = new Spot()
+                {
+                    Number = 3,
+                    Latitude = 56.467561,
+                    Longitude = 84.950342,
+                    Label = "Научная библиотека ТГУ",
+                    Address = "пр. Ленина, 34а"
+                },
+            };
+            var order6 = new List<StepInStage>()
         {
-            new() {AttachedStage =  stage6, Payload = step28, Order = 1, Delay = 1 },
-            new() {AttachedStage =  stage6, Payload = step29, Order = 2, Delay = 1 },
-            new() {AttachedStage =  stage6, Payload = step31, Order = 3, Delay = 1 },
+            new() {AttachedStage =  stage6, Payload = step28, Order = 1, Delay = 0 },
+            new() {AttachedStage =  stage6, Payload = step29, Order = 2, Delay = 0 },
+            new() {AttachedStage =  stage6, Payload = step31, Order = 3, Delay = 0 },
         };
-        stage6.Steps = order6;
-        return stage6;
-    }
+            stage6.Steps = order6;
+            return stage6;
+        }
 
-    public static Stage CreateStage_BTU_7()
-    {
-        var step32 = new Step()
+        public static Stage CreateStage_BTU_7()
         {
-            Fragments = new()
+            var step32 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -658,34 +668,34 @@ public static class SeedData
                     }
                 },
             }
-        };
-        var stage7 = new Stage()
-        {
-            Name = "btu_7",
-            Label = "Университетская роща",
-            Type = StageType.Regular,
-            Location = new Spot()
+            };
+            var stage7 = new Stage()
             {
-                Number = 4,
-                Latitude = 56.467919,
-                Longitude = 84.948684,
+                Name = "btu_7",
                 Label = "Университетская роща",
-                Address = "Ленина, 34а; Университетская роща"
-            },
-        };
-        var order7 = new List<StepInStage>()
+                Type = StageType.Regular,
+                Location = new Spot()
+                {
+                    Number = 4,
+                    Latitude = 56.467919,
+                    Longitude = 84.948684,
+                    Label = "Университетская роща",
+                    Address = "Ленина, 34а; Университетская роща"
+                },
+            };
+            var order7 = new List<StepInStage>()
         {
-            new() {AttachedStage =  stage7, Payload = step32, Order = 1, Delay = 1 },
+            new() {AttachedStage =  stage7, Payload = step32, Order = 1, Delay = 0 },
         };
-        stage7.Steps = order7;
-        return stage7;
-    }
+            stage7.Steps = order7;
+            return stage7;
+        }
 
-    public static Stage CreateStage_BTU_8()
-    {
-        var step33 = new Step()
+        public static Stage CreateStage_BTU_8()
         {
-            Fragments = new()
+            var step33 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -701,10 +711,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step34 = new Step()
-        {
-            Fragments = new()
+            };
+            var step34 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -732,10 +742,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step35 = new Step()
-        {
-            Fragments = new()
+            };
+            var step35 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -751,10 +761,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step36 = new Step()
-        {
-            Fragments = new()
+            };
+            var step36 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -782,10 +792,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step37 = new Step()
-        {
-            Fragments = new()
+            };
+            var step37 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -801,10 +811,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step38 = new Step()
-        {
-            Fragments = new()
+            };
+            var step38 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -832,10 +842,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step39 = new Step()
-        {
-            Fragments = new()
+            };
+            var step39 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -851,10 +861,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step40 = new Step()
-        {
-            Fragments = new()
+            };
+            var step40 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -882,10 +892,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step41 = new Step()
-        {
-            Fragments = new()
+            };
+            var step41 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -897,44 +907,44 @@ public static class SeedData
                         {
                             Type = ButtonType.KeyboardTransition,
                             Label = "🔘 Да",
-                            Target = new() { Name = "btu_9" }
+                            Target = new() { Name = "route=btu:stage=btu_9" }
                         },
                         new Button()
                         {
                             Type = ButtonType.KeyboardTransition,
                             Label = "⚪️ Нет",
-                            Target = new() { Name = "btu_10" }
+                            Target = new() { Name = "route=btu:stage=btu_10" }
                         },
                     }
                 }
             }
-        };
-        var stage8 = new Stage()
+            };
+            var stage8 = new Stage()
+            {
+                Name = "btu_8",
+                Type = StageType.Regular,
+            };
+            var order8 = new List<StepInStage>()
         {
-            Name = "btu_8",
-            Type = StageType.Regular,
+            new() {AttachedStage = stage8, Payload = step33, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage8, Payload = step34, Order = 2, Delay = 0 },
+            new() {AttachedStage = stage8, Payload = step35, Order = 3, Delay = 0 },
+            new() {AttachedStage = stage8, Payload = step36, Order = 4, Delay = 0 },
+            new() {AttachedStage = stage8, Payload = step37, Order = 5, Delay = 0 },
+            new() {AttachedStage = stage8, Payload = step38, Order = 6, Delay = 0 },
+            new() {AttachedStage = stage8, Payload = step39, Order = 7, Delay = 0 },
+            new() {AttachedStage = stage8, Payload = step40, Order = 8, Delay = 0 },
+            new() {AttachedStage = stage8, Payload = step41, Order = 9, Delay = 0 },
         };
-        var order8 = new List<StepInStage>()
-        {
-            new() {AttachedStage = stage8, Payload = step33, Order = 1, Delay = 1 },
-            new() {AttachedStage = stage8, Payload = step34, Order = 2, Delay = 1 },
-            new() {AttachedStage = stage8, Payload = step35, Order = 3, Delay = 1 },
-            new() {AttachedStage = stage8, Payload = step36, Order = 4, Delay = 1 },
-            new() {AttachedStage = stage8, Payload = step37, Order = 5, Delay = 1 },
-            new() {AttachedStage = stage8, Payload = step38, Order = 6, Delay = 1 },
-            new() {AttachedStage = stage8, Payload = step39, Order = 7, Delay = 1 },
-            new() {AttachedStage = stage8, Payload = step40, Order = 8, Delay = 1 },
-            new() {AttachedStage = stage8, Payload = step41, Order = 9, Delay = 1 },
-        };
-        stage8.Steps = order8;
-        return stage8;
-    }
+            stage8.Steps = order8;
+            return stage8;
+        }
 
-    public static Stage CreateStage_BTU_9()
-    {
-        var step42 = new Step()
+        public static Stage CreateStage_BTU_9()
         {
-            Fragments = new()
+            var step42 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -942,26 +952,26 @@ public static class SeedData
                     Text = "Такие каменные изваяния воздвигали на просторах Евразии в VI-IX веках во времена тюркских каганатов. Эти скульптуры посвящали воинам-героям и знатным людям. В ТГУ средневековые изваяния попали из Семиречья и Алтая в 1886 – 1900 годах. Со дня установки и до нашего времени каменные бабы успели обрасти легендами и стали неотъемлемой частью Университетской рощи.",
                 }
             }
-        };
-        var stage9 = new Stage()
+            };
+            var stage9 = new Stage()
+            {
+                Name = "btu_9",
+                Type = StageType.Regular,
+            };
+            var order9 = new List<StepInStage>()
         {
-            Name = "btu_9",
-            Type = StageType.Regular,
-        };
-        var order9 = new List<StepInStage>()
-        {
-            new() {AttachedStage = stage9, Payload = step42, Order = 1, Delay = 1 },
+            new() {AttachedStage = stage9, Payload = step42, Order = 1, Delay = 0 },
 
         };
-        stage9.Steps = order9;
-        return stage9;
-    }
+            stage9.Steps = order9;
+            return stage9;
+        }
 
-    public static Stage CreateStage_BTU_10()
-    {
-        var step43 = new Step()
+        public static Stage CreateStage_BTU_10()
         {
-            Fragments = new()
+            var step43 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -978,10 +988,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step44 = new Step()
-        {
-            Fragments = new()
+            };
+            var step44 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -989,10 +999,10 @@ public static class SeedData
                     Text = "Такие каменные изваяния воздвигали на просторах Евразии в VI-IX веках во времена тюркских каганатов. Эти скульптуры посвящали воинам-героям и знатным людям. В ТГУ средневековые изваяния попали из Семиречья и Алтая в 1886 – 1900 годах. Со дня установки и до нашего времени каменные бабы успели обрасти легендами и стали неотъемлемой частью Университетской рощи.",
                 }
             }
-        };
-        var step45 = new Step()
-        {
-            Fragments = new()
+            };
+            var step45 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1009,10 +1019,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step46 = new Step()
-        {
-            Fragments = new()
+            };
+            var step46 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1020,29 +1030,29 @@ public static class SeedData
                     Text = "А вот и он – первый университет Сибири!",
                 }
             }
-        };
-        var stage10 = new Stage()
+            };
+            var stage10 = new Stage()
+            {
+                Name = "btu_10",
+                Type = StageType.Regular,
+            };
+            var order10 = new List<StepInStage>()
         {
-            Name = "btu_10",
-            Type = StageType.Regular,
-        };
-        var order10 = new List<StepInStage>()
-        {
-            new() {AttachedStage = stage10, Payload = step43, Order = 1, Delay = 1 },
-            new() {AttachedStage = stage10, Payload = step44, Order = 2, Delay = 1 },
-            new() {AttachedStage = stage10, Payload = step45, Order = 3, Delay = 1 },
-            new() {AttachedStage = stage10, Payload = step46, Order = 4, Delay = 1 },
+            new() {AttachedStage = stage10, Payload = step43, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage10, Payload = step44, Order = 2, Delay = 0 },
+            new() {AttachedStage = stage10, Payload = step45, Order = 3, Delay = 0 },
+            new() {AttachedStage = stage10, Payload = step46, Order = 4, Delay = 0 },
 
         };
-        stage10.Steps = order10;
-        return stage10;
-    }
+            stage10.Steps = order10;
+            return stage10;
+        }
 
-    public static Stage CreateStage_BTU_11()
-    {
-        var step47 = new Step()
+        public static Stage CreateStage_BTU_11()
         {
-            Fragments = new()
+            var step47 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1050,26 +1060,26 @@ public static class SeedData
                     Text = "Прогуляйся по университетской роще, подыши чистым воздухом, послушай пение птиц. Как дойдешь до главного корпуса Томского государственного университета, скажи. ",
                 }
             }
-        };
-        var stage11 = new Stage()
+            };
+            var stage11 = new Stage()
+            {
+                Name = "btu_11",
+                Type = StageType.Regular,
+            };
+            var order11 = new List<StepInStage>()
         {
-            Name = "btu_11",
-            Type = StageType.Regular,
-        };
-        var order11 = new List<StepInStage>()
-        {
-            new() {AttachedStage = stage11, Payload = step47, Order = 1, Delay = 1 },
+            new() {AttachedStage = stage11, Payload = step47, Order = 1, Delay = 0 },
 
         };
-        stage11.Steps = order11;
-        return stage11;
-    }
+            stage11.Steps = order11;
+            return stage11;
+        }
 
-    public static Stage CreateStage_BTU_12()
-    {
-        var step48 = new Step()
+        public static Stage CreateStage_BTU_12()
         {
-            Fragments = new()
+            var step48 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1086,10 +1096,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step49 = new Step()
-        {
-            Fragments = new()
+            };
+            var step49 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1117,10 +1127,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step50 = new Step()
-        {
-            Fragments = new()
+            };
+            var step50 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1137,28 +1147,28 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var stage12 = new Stage()
+            };
+            var stage12 = new Stage()
+            {
+                Name = "btu_12",
+                Type = StageType.Regular,
+            };
+            var order12 = new List<StepInStage>()
         {
-            Name = "btu_12",
-            Type = StageType.Regular,
+            new() {AttachedStage = stage12, Payload = step48, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage12, Payload = step49, Order = 2, Delay = 0 },
+            new() {AttachedStage = stage12, Payload = step50, Order = 3, Delay = 0 },
         };
-        var order12 = new List<StepInStage>()
-        {
-            new() {AttachedStage = stage12, Payload = step48, Order = 1, Delay = 1 },
-            new() {AttachedStage = stage12, Payload = step49, Order = 2, Delay = 1 },
-            new() {AttachedStage = stage12, Payload = step50, Order = 3, Delay = 1 },
-        };
-        stage12.Steps = order12;
-        return stage12;
+            stage12.Steps = order12;
+            return stage12;
 
-    }
+        }
 
-    public static Stage CreateStage_BTU_13()
-    {
-        var step51 = new Step()
+        public static Stage CreateStage_BTU_13()
         {
-            Fragments = new()
+            var step51 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1166,10 +1176,10 @@ public static class SeedData
                     Text = "Сейчас мы с тобой выйдем на проспект Ленина и двинемся в сторону еще одного университета, который появился благодаря ТГУ. Но об этом я расскажу чуть позже.",
                 }
             }
-        };
-        var step52 = new Step()
-        {
-            Fragments = new()
+            };
+            var step52 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1186,10 +1196,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step53 = new Step()
-        {
-            Fragments = new()
+            };
+            var step53 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1197,10 +1207,10 @@ public static class SeedData
                     Text = "Мало кто знает, что эта пешеходная часть проспекта Ленина неофициально называется Александровским бульваром. Так аллею назвали в память о трех императорах: Александре I, Александре II и Александре III. Именно благодаря им и появился первый в Сибири университет.",
                 }
             }
-        };
-        var step54 = new Step()
-        {
-            Fragments = new()
+            };
+            var step54 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1217,28 +1227,28 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var stage13 = new Stage()
+            };
+            var stage13 = new Stage()
+            {
+                Name = "btu_13",
+                Type = StageType.Regular,
+            };
+            var order13 = new List<StepInStage>()
         {
-            Name = "btu_13",
-            Type = StageType.Regular,
+            new() {AttachedStage = stage13, Payload = step51, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage13, Payload = step52, Order = 2, Delay = 0 },
+            new() {AttachedStage = stage13, Payload = step53, Order = 3, Delay = 0 },
+            new() {AttachedStage = stage13, Payload = step54, Order = 4, Delay = 0 },
         };
-        var order13 = new List<StepInStage>()
-        {
-            new() {AttachedStage = stage13, Payload = step51, Order = 1, Delay = 1 },
-            new() {AttachedStage = stage13, Payload = step52, Order = 2, Delay = 1 },
-            new() {AttachedStage = stage13, Payload = step53, Order = 3, Delay = 1 },
-            new() {AttachedStage = stage13, Payload = step54, Order = 4, Delay = 1 },
-        };
-        stage13.Steps = order13;
-        return stage13;
-    }
+            stage13.Steps = order13;
+            return stage13;
+        }
 
-    public static Stage CreateStage_BTU_14()
-    {
-        var step55 = new Step()
+        public static Stage CreateStage_BTU_14()
         {
-            Fragments = new()
+            var step55 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1255,10 +1265,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step56 = new Step()
-        {
-            Fragments = new()
+            };
+            var step56 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1286,10 +1296,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step57 = new Step()
-        {
-            Fragments = new()
+            };
+            var step57 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1306,35 +1316,35 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var stage14 = new Stage()
-        {
-            Name = "btu_14",
-            Type = StageType.Regular,
-            Location = new Spot()
+            };
+            var stage14 = new Stage()
             {
-                Number = 6,
-                Latitude = 56.472977,
-                Longitude = 84.950107,
-                Label = "Факультетские клиники СибГМУ",
-                Address = "пр. Ленина, 38; Факультетские клиники СибГМУ"
-            },
-        };
-        var order14 = new List<StepInStage>()
+                Name = "btu_14",
+                Type = StageType.Regular,
+                Location = new Spot()
+                {
+                    Number = 6,
+                    Latitude = 56.472977,
+                    Longitude = 84.950107,
+                    Label = "Факультетские клиники СибГМУ",
+                    Address = "пр. Ленина, 38; Факультетские клиники СибГМУ"
+                },
+            };
+            var order14 = new List<StepInStage>()
         {
-            new() {AttachedStage = stage14, Payload = step55, Order = 1, Delay = 1 },
-            new() {AttachedStage = stage14, Payload = step56, Order = 2, Delay = 1 },
-            new() {AttachedStage = stage14, Payload = step57, Order = 3, Delay = 1 },
+            new() {AttachedStage = stage14, Payload = step55, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage14, Payload = step56, Order = 2, Delay = 0 },
+            new() {AttachedStage = stage14, Payload = step57, Order = 3, Delay = 0 },
         };
-        stage14.Steps = order14;
-        return stage14;
-    }
+            stage14.Steps = order14;
+            return stage14;
+        }
 
-    public static Stage CreateStage_BTU_15()
-    {
-        var step58 = new Step()
+        public static Stage CreateStage_BTU_15()
         {
-            Fragments = new()
+            var step58 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1351,10 +1361,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step59 = new Step()
-        {
-            Fragments = new()
+            };
+            var step59 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1382,10 +1392,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step60 = new Step()
-        {
-            Fragments = new()
+            };
+            var step60 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1393,10 +1403,10 @@ public static class SeedData
                     Text = "Тебе нужно вернуться на проспект Ленина и перейти по пешеходному переходу со светофором на другую сторону. Мы — на площади Ново-Соборной. Обрати внимание на здание на углу площади и проспекта Ленина.",
                 }
             }
-        };
-        var step61 = new Step()
-        {
-            Fragments = new()
+            };
+            var step61 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1413,10 +1423,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step62 = new Step()
-        {
-            Fragments = new()
+            };
+            var step62 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1424,38 +1434,38 @@ public static class SeedData
                     Text = "А сейчас поворачивай налево и иди к фонтану в центре Ново-Соборной площади. Как будешь на месте, маякни!",
                 }
             }
-        };
+            };
 
-        var stage15 = new Stage()
-        {
-            Name = "btu_15",
-            Type = StageType.Regular,
-            Location = new Spot()
+            var stage15 = new Stage()
             {
-                Number = 7,
-                Latitude = 56.472977,
-                Longitude = 84.948348,
-                Label = "Главный корпус СибГМУ",
-                Address = "Московский тракт, 2; Главный корпус СибГМУ"
-            },
-        };
-        var order15 = new List<StepInStage>()
+                Name = "btu_15",
+                Type = StageType.Regular,
+                Location = new Spot()
+                {
+                    Number = 7,
+                    Latitude = 56.472977,
+                    Longitude = 84.948348,
+                    Label = "Главный корпус СибГМУ",
+                    Address = "Московский тракт, 2; Главный корпус СибГМУ"
+                },
+            };
+            var order15 = new List<StepInStage>()
         {
-            new() {AttachedStage = stage15, Payload = step58, Order = 1, Delay = 1 },
-            new() {AttachedStage = stage15, Payload = step59, Order = 2, Delay = 1 },
-            new() {AttachedStage = stage15, Payload = step60, Order = 3, Delay = 1 },
-            new() {AttachedStage = stage15, Payload = step61, Order = 4, Delay = 1 },
-            new() {AttachedStage = stage15, Payload = step62, Order = 5, Delay = 1 },
+            new() {AttachedStage = stage15, Payload = step58, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage15, Payload = step59, Order = 2, Delay = 0 },
+            new() {AttachedStage = stage15, Payload = step60, Order = 3, Delay = 0 },
+            new() {AttachedStage = stage15, Payload = step61, Order = 4, Delay = 0 },
+            new() {AttachedStage = stage15, Payload = step62, Order = 5, Delay = 0 },
         };
-        stage15.Steps = order15;
-        return stage15;
-    }
+            stage15.Steps = order15;
+            return stage15;
+        }
 
-    public static Stage CreateStage_BTU_16()
-    {
-        var step63 = new Step()
+        public static Stage CreateStage_BTU_16()
         {
-            Fragments = new()
+            var step63 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1472,10 +1482,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step64 = new Step()
-        {
-            Fragments = new()
+            };
+            var step64 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1483,10 +1493,10 @@ public static class SeedData
                     Text = "Есть в Томске еще одно место, куда студенты приходят перед важными учебными делами и просят помощи и удачи. Это памятник Святой Татьяне. По поверью, Святая Татьяна была покровительницей всех учащихся и студентов. Она помогала «грызть гранит науки», хорошо учиться и сдавать экзамены. Студенты Томска не забывают свою покровительницу: зимой, в самые морозы, они «утепляют» Татьяну, одевая ее в шарф и шапку. Обязательно сделай с Татьяной фото на память!",
                 }
             }
-        };
-        var step65 = new Step()
-        {
-            Fragments = new()
+            };
+            var step65 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1494,36 +1504,36 @@ public static class SeedData
                     Text = "Ну а сейчас я покажу тебе самый молодой университет Томска. Возвращайся к фонтану и посмотри на противоположную сторону проспекта Ленина. ",
                 }
             }
-        };
+            };
 
-        var stage16 = new Stage()
-        {
-            Name = "btu_16",
-            Type = StageType.Regular,
-            Location = new Spot()
+            var stage16 = new Stage()
             {
-                Number = 8,
-                Latitude = 56.474273,
-                Longitude = 84.951418,
-                Label = "Памятник Студенчевству",
-                Address = "Новособорная площадь; Памятник Татьяне"
-            },
-        };
-        var order16 = new List<StepInStage>()
+                Name = "btu_16",
+                Type = StageType.Regular,
+                Location = new Spot()
+                {
+                    Number = 8,
+                    Latitude = 56.474273,
+                    Longitude = 84.951418,
+                    Label = "Памятник Студенчевству",
+                    Address = "Новособорная площадь; Памятник Татьяне"
+                },
+            };
+            var order16 = new List<StepInStage>()
         {
-            new() {AttachedStage = stage16, Payload = step63, Order = 1, Delay = 1 },
-            new() {AttachedStage = stage16, Payload = step64, Order = 2, Delay = 1 },
-            new() {AttachedStage = stage16, Payload = step65, Order = 3, Delay = 1 },
+            new() {AttachedStage = stage16, Payload = step63, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage16, Payload = step64, Order = 2, Delay = 0 },
+            new() {AttachedStage = stage16, Payload = step65, Order = 3, Delay = 0 },
         };
-        stage16.Steps = order16;
-        return stage16;
-    }
+            stage16.Steps = order16;
+            return stage16;
+        }
 
-    public static Stage CreateStage_BTU_17()
-    {
-        var step66 = new Step()
+        public static Stage CreateStage_BTU_17()
         {
-            Fragments = new()
+            var step66 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1540,17 +1550,17 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step67 = new Step()
-        {
-            Fragments = new()
+            };
+            var step67 = new Step()
             {
-                new Fragment()
+                Fragments = new()
+            {
+                 new Fragment()
                 {
                     Type = FragmentType.Media,
                     Media = new()
-                    {
-                         new Media()
+                          {
+                            new Media()
                         {
                             Type = MediaType.Sound,
                             Sound = new Sound()
@@ -1571,10 +1581,10 @@ public static class SeedData
                     }
                 }
             }
-        };
-        var step68 = new Step()
-        {
-            Fragments = new()
+            };
+            var step68 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1582,10 +1592,10 @@ public static class SeedData
                     Text = "У студентов ТУСУРа есть необычная традиция. Каждый год в День радио, 7 мая, они выкидывают из окон общежития радиотехнического факультета старые телевизоры и другую неработающую технику. Это очень эффектное зрелище! Традиция зародилась в 1988 году – с тех пор студенты разбивают старые телевизоры в ознаменование победы технического прогресса. Технический мусор после выбрасывания университет передает на переработку.",
                 }
             }
-        };
-        var step69 = new Step()
-        {
-            Fragments = new()
+            };
+            var step69 = new Step()
+            {
+                Fragments = new()
             {
                 new Fragment()
                 {
@@ -1593,36 +1603,52 @@ public static class SeedData
                     Text = "Мы с тобой можем двигаться дальше. Предлагаю тебе подойти на остановку и ждать маршрутку. Тебе подойдет любой автобус, который идет в сторону Белого озера: 23, 33, 26, 130, 1, 3 троллейбусы и другие. Выйти нужно на остановке ТГАСУ.",
                 }
             }
-        };
+            };
 
-        var stage17 = new Stage()
-        {
-            Name = "btu_17",
-            Type = StageType.Regular,
-            Location = new Spot()
+            var stage17 = new Stage()
             {
-                Number = 9,
-                Latitude = 56.474246,
-                Longitude = 84.95097,
-                Label = "Фонтан",
-                Address = "Ново-Соборная площадь. Возле фонтана"
-            },
-        };
-        var order17 = new List<StepInStage>()
+                Name = "btu_17",
+                Type = StageType.Regular,
+                Location = new Spot()
+                {
+                    Number = 9,
+                    Latitude = 56.474246,
+                    Longitude = 84.95097,
+                    Label = "Фонтан",
+                    Address = "Ново-Соборная площадь. Возле фонтана"
+                },
+            };
+            var order17 = new List<StepInStage>()
         {
-            new() {AttachedStage = stage17, Payload = step66, Order = 1, Delay = 1 },
-            new() {AttachedStage = stage17, Payload = step67, Order = 2, Delay = 1 },
-            new() {AttachedStage = stage17, Payload = step68, Order = 3, Delay = 1 },
-            new() {AttachedStage = stage17, Payload = step69, Order = 4, Delay = 1 },
+            new() {AttachedStage = stage17, Payload = step66, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage17, Payload = step67, Order = 2, Delay = 0 },
+            new() {AttachedStage = stage17, Payload = step68, Order = 3, Delay = 0 },
+            new() {AttachedStage = stage17, Payload = step69, Order = 4, Delay = 0 },
         };
-        stage17.Steps = order17;
-        return stage17;
+            stage17.Steps = order17;
+            return stage17;
+        }
+
+        // public static Stage CreateStage_BTU_18()
     }
+
+
+    // {
+    // }
 
     /*------------------------------------------------------------------*/
 
     public static Stage CreateStage_BTU_00()
     {
+        // var step = new Step()
+        // {
+        //     Fragments = new(){new(){
+        //         Buttons = new(){
+        //             new(){Label = }
+        //         }
+        //     }}
+        // };
+
         //text
         var step00 = new Step()
         {
@@ -1718,8 +1744,8 @@ public static class SeedData
         };
         var order00 = new List<StepInStage>()
         {
-            new() {AttachedStage =  stage00, Payload = step00, Order = 1, Delay = 1 },
-            new() {AttachedStage =  stage00, Payload = step00, Order = 2, Delay = 1 },
+            new() {AttachedStage =  stage00, Payload = step00, Order = 1, Delay = 0 },
+            new() {AttachedStage =  stage00, Payload = step00, Order = 2, Delay = 0 },
         };
         stage00.Steps = order00;
 

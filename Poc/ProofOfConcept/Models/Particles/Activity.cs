@@ -9,6 +9,6 @@ public class Activity
     public int Id { get; set; }
     public Person Performer { get; set; } = default!;
     public ContentPointer Pointer { get; set; } = default!;
-    public long CurrentTime { get; set; } = DateTimeOffset.Now.ToUnixTimeSeconds();
+    public long CurrentTime { get; set; } = DateTimeOffset.Now.ToUnixTimeMilliseconds();
     public Condition Contitions { get; set; }
 }

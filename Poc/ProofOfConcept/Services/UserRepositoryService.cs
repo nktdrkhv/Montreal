@@ -16,17 +16,27 @@ public class UserRepositoryService : IUserRepository
     private static string _secret = "add"; //Guid.NewGuid().ToString()[0..7];
     private static ConcurrentDictionary<long, IChatBehaviour> _cachedUsers = new();
 
-    private IAppRepository _repo;
     private ILogger<UserRepositoryService> _logger;
     private IServiceProvider _provider;
 
-    public UserRepositoryService(IAppRepository appRepository, IServiceProvider serviceProvider, ILogger<UserRepositoryService> logger)
+    public UserRepositoryService(IServiceProvider serviceProvider, ILogger<UserRepositoryService> logger)
     {
-        _repo = appRepository;
         _provider = serviceProvider;
         _logger = logger;
-
         _logger.LogInformation($"Maker secret is [{_secret}]");
+    }
+
+    public Person GetPerson(long telegramId)
+    {
+        using var context = new BotDbContext();
+        var person = context.People.Where(p => p.TelegramIdentity == telegramId).SingleOrDefault();
+        if (person is null)
+        {
+            person = new Person() { TelegramIdentity = telegramId };
+            context.People.Add(person);
+            context.SaveChanges();
+        }
+        return person;
     }
 
     public IChatBehaviour? GetBehaviour(Update update, CancellationToken ctn)
@@ -66,10 +76,10 @@ public class UserRepositoryService : IUserRepository
             {
                 true => new MakerBehaviour(
                     telegramChat,
-                    _provider.GetRequiredService<IAppRepository>(),
+                    /*_provider.GetRequiredService<IAppRepository>(),*/
                     _provider.GetRequiredService<ILogger<MakerBehaviour>>()),
                 false or null => new PersonBehaviour(
-                    _repo.GetPerson(id),
+                    GetPerson(id),
                     telegramChat,
                     //_provider.GetRequiredService<IAppRepository>(),
                     _provider.GetRequiredService<ILogger<PersonBehaviour>>()),

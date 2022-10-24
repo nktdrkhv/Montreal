@@ -16,7 +16,7 @@ IHost host = Host.CreateDefaultBuilder(args)
                     return new TelegramBotClient(options, httpClient);
                 });
         services.AddDbContext<BotDbContext>(contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Scoped);
-        services.AddTransient<IAppRepository, AppRepositoryService>();
+        //services.AddTransient<IAppRepository, AppRepositoryService>();
         services.AddScoped<IUserRepository, UserRepositoryService>();
         services.AddScoped<UpdateHandlerService>();
         services.AddScoped<ReceiverService>();

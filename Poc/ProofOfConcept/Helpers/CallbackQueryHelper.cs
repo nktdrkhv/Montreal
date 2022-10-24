@@ -12,7 +12,7 @@ public static class CallbackQueryHelper
         if (data?.Length == 2)
             return data?[0] switch
             {
-                "transcript" => new Command() { Name = data[0], Arguments = data[1] },
+                "replace" => new Command() { Name = "replace", Arguments = data[1] },
                 _ => null
             };
         else

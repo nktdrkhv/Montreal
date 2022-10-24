@@ -7,7 +7,7 @@ namespace Montreal.Bot.Poc.Models;
 
 public class ContentPointer
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public ContentType Type { get; set; } = ContentType.None;
 
     // public int? StepId { get; set; }

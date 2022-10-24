@@ -3,7 +3,6 @@ using Stateless;
 using Geolocation;
 using Montreal.Bot.Poc.Interfaces;
 using Montreal.Bot.Poc.Models;
-using Montreal.Bot.Poc.Services;
 
 namespace Montreal.Bot.Poc.Infrastructure.Behaviours;
 
@@ -13,7 +12,6 @@ public class PersonBehaviour : IChatBehaviour
     #region Infrastructure variables
 
     public ITelegramChat Chat { get; set; }
-    /*private IAppRepository _repo;*/
     BotDbContext _context = new();
     private ILogger<PersonBehaviour> _logger;
 
@@ -37,6 +35,7 @@ public class PersonBehaviour : IChatBehaviour
         _mediaTrigger = _machine.SetTriggerParameters<Media>(Trigger.Media);
 
         Configure();
+        _machine.Activate();
     }
 
     private PersonState _state = PersonState.Initial;
@@ -58,70 +57,66 @@ public class PersonBehaviour : IChatBehaviour
         _context.Attach(_person);
 
         _machine.Configure(PersonState.Initial)
-            .PermitDynamic<Command>(_commandTrigger, InitialDestinationStateSelector);
+            .PermitDynamic<Command>(_commandTrigger, InitialDestinationStateSelector)
+            .Permit(Trigger.Text, PersonState.Start)
+            .Permit(Trigger.Pointer, PersonState.Viewing)
+            .OnActivate(() =>
+            {
+                _currentContent = _context.Activities.Where(a => a.Performer.Id == _person.Id).OrderByDescending(a => a.CurrentTime).Select(a => a.Pointer).FirstOrDefault();
+                if (_currentContent is not null)
+                    HandleCurrent(_currentContent);
+            });
 
         _machine.Configure(PersonState.Start)
             .Permit(Trigger.Pointer, PersonState.Viewing)
-            .OnEntry(() =>
+            .OnEntryAsync(async () =>
             {
-                var startStage = _context.Stages.Where(s => s.Type == StageType.Start).SingleOrDefault();
+                var startStage = _context.Stages.Where(s => s.Type == StageType.Welcome).SingleOrDefault();
                 if (startStage is not null)
-                    _machine.FireAsync<ContentPointer>(_contentTrigger, new() { Type = ContentType.Stage, Stage = startStage });
+                    await _machine.FireAsync<ContentPointer>(_contentTrigger, new() { Type = ContentType.Stage, Stage = startStage });
             });
 
 
         _machine.Configure(PersonState.Viewing)
+            .PermitReentry(Trigger.Command)
             .PermitReentry(Trigger.Pointer)
-            // .PermitDynamic<Command>(_commandTrigger, cmd =>
-            // {
-            //     if (cmd.Name == "start" && cmd.Arguments is string args && string.IsNullOrWhiteSpace(args))
-            //         return PersonState.Viewing;
-            //     else
-            //         return PersonState.Start;
-            // })
-            // .PermitReentryIf<Command>(_commandTrigger, cmd => cmd.Name == "start")
-            // .OnEntryFrom<Command>(_commandTrigger, async cmd =>
-            // {
-            //     var pointerParts = cmd.Arguments?.Trim().Split(':');
-            //     Route? route; Stage? stage; Step? step;
-            //     ContentPointer pointer = new();
-            //     foreach (var part in pointerParts ?? Array.Empty<string?>())
-            //     {
-            //         var splittedPart = part?.Trim().Split('=');
-            //         if (splittedPart is null)
-            //             return;
-            //         switch (splittedPart[0])
-            //         {
-            //             case "route":
-            //                 route = _context.Routes.Where(r => r.Name == splittedPart[1]).SingleOrDefault();
-            //                 pointer.Type = route is null ? pointer.Type : pointer.Type | ContentType.Route;
-            //                 break;
-            //             case "stage":
-            //                 stage = _context.Stages.Where(s => s.Name == splittedPart[1]).SingleOrDefault();
-            //                 pointer.Type = stage is null ? pointer.Type : pointer.Type | ContentType.Stage;
-            //                 break;
-            //             case "step":
-            //                 step = _context.Steps.Where(s => s.Name == splittedPart[1]).SingleOrDefault();
-            //                 pointer.Type = step is null ? pointer.Type : pointer.Type | ContentType.Step;
-            //                 break;
-            //             default:
-            //                 return;
-            //         }
-            //     }
-            //     if (pointer.Type is not ContentType.None)
-            //         await _machine.FireAsync<ContentPointer>(_contentTrigger, pointer);
-            // })
-            .OnEntryFrom<ContentPointer>(_contentTrigger, async pointer =>
+            .OnEntryFromAsync<Command>(_commandTrigger, async (cmd) =>
+            {
+                if (cmd.Name == "start" && cmd.Arguments is string args)
+                    if (MatchStringData(args) is ContentPointer pointer)
+                        await _machine.FireAsync(_contentTrigger, pointer);
+                if (cmd.Name == "back")
+                {
+                    if (FindPreviousContent(_currentContent) is ContentPointer prevoiousContent && _currentContent is ContentPointer presentContent)
+                    {
+                        await Chat.SendStatusAsync();
+                        _currentContent = prevoiousContent;
+                        HandleCurrent(presentContent);
+                        await DemonstrateFragments(_preparedFragments!);
+                        //await _machine.FireAsync(_contentTrigger, prevoiousContent);
+                    }
+                }
+            })
+            .OnEntryFromAsync<ContentPointer>(_contentTrigger, async pointer =>
             {
                 await Chat.SendStatusAsync();
                 NewCurrentDefine(pointer);
                 HandleCurrent(_currentContent!);
                 await DemonstrateFragments(_preparedFragments!);
 
-                _context.Activities.Add(new() { Performer = _person, Pointer = _currentContent! });
-                await _context.SaveChangesAsync();
-            });
-        //todo: on entry при замене текста
+                if (_currentContent is not null)
+                {
+                    var activity = new Activity() { Performer = _person, Pointer = _currentContent! };
+                    _context.Activities.Add(activity);
+
+                    _previousTime = activity.CurrentTime;
+                    //if (_updatePreviousTime) _previousTime = activity.CurrentTime;
+                    //else _updatePreviousTime = true;
+
+                    await _context.SaveChangesAsync();
+                }
+            })
+            .Ignore(Trigger.Text);
 
         _machine.OnUnhandledTriggerAsync(async (_, _) =>
         {
@@ -145,10 +140,13 @@ public class PersonBehaviour : IChatBehaviour
     private ContentPointer? _currentContent;
     //private Condition? _cuurrentConditions;
     private long _unhandledNotificationHold = DateTimeOffset.Now.ToUnixTimeSeconds();
+    private long _previousTime = long.MaxValue;
+
     private List<(Coordinate coordinate, Stage stage)> _allowedPlaces = new();
     private List<(string label, ContentPointer pointer)> _allowedLinks = new();
-    private List<(Fragment payload, int delay, bool isLinked)> _preparedFragments = new();
     private Queue<List<string>> _keyboardButtons = new();
+    private List<(Fragment payload, int delay, bool hasInlineButton)> _preparedFragments = new();
+    private List<(string uniqueId, Step replacement)> _replacementSteps = new();
 
     #endregion Business logic variables
 
@@ -156,12 +154,66 @@ public class PersonBehaviour : IChatBehaviour
 
     #region Business logic
 
+    private ContentPointer? MatchStringData(string stringPointer)
+    {
+        string[] pointerParts = stringPointer.Trim().Split(':');
+        if (pointerParts.Length == 0)
+            return null;
+
+        ContentPointer pointer = new();
+        foreach (var part in pointerParts ?? Array.Empty<string>())
+        {
+            var splittedPart = part?.Trim().Split('=');
+            if (splittedPart is null)
+                return null;
+            switch (splittedPart[0])
+            {
+                case "r":
+                case "route":
+                    pointer.Route = _context.Routes.Where(r => r.Name == splittedPart[1]).SingleOrDefault();
+                    if (pointer.Route is null)
+                        return null;
+                    pointer.Type = pointer.Type | ContentType.Route;
+                    break;
+                case "sg":
+                case "stage":
+                    pointer.Stage = _context.Stages.Where(s => s.Name == splittedPart[1]).SingleOrDefault();
+                    if (pointer.Stage is null)
+                        return null;
+                    pointer.Type = pointer.Type | ContentType.Stage;
+                    break;
+                case "sp":
+                case "step":
+                    pointer.Step = _context.Steps.Where(s => s.Name == splittedPart[1]).SingleOrDefault();
+                    if (pointer.Step is null)
+                        return null;
+                    pointer.Type = pointer.Type | ContentType.Step;
+                    break;
+                default:
+                    return null;
+            }
+        }
+        return pointer;
+    }
+
+    private ContentPointer? FindPreviousContent(ContentPointer? pointer)
+    {
+        var previous = (from a in _context.Activities
+                        where a.Performer.Id == _person.Id && a.CurrentTime < _previousTime
+                        orderby a.CurrentTime descending
+                        select a).FirstOrDefault();
+        if (previous is not null)
+            _previousTime = previous.CurrentTime;
+        return previous?.Pointer;
+    }
+
     private PersonState InitialDestinationStateSelector(Command cmd)
     {
-        if (cmd.Name == "start" && !string.IsNullOrWhiteSpace(cmd.Arguments))
-            return PersonState.Viewing; //todo:нужно сообщать уже готовый указатель
-        else
-            return PersonState.Start;
+        return cmd.Name switch
+        {
+            "start" when !string.IsNullOrWhiteSpace(cmd.Arguments) => PersonState.Viewing,
+            _ => PersonState.Start,
+        };
     }
 
     private void NewCurrentDefine(ContentPointer pointer)
@@ -172,6 +224,7 @@ public class PersonBehaviour : IChatBehaviour
             case ContentType.Route:
                 _currentContent = new() { Route = pointer!.Route, Stage = pointer!.Route!.InitialStage, Type = ContentType.Route | ContentType.Stage };
                 break;
+            case ContentType.Route | ContentType.Stage:
             case ContentType.Stage:
                 if (_currentContent?.Route is not null && _currentContent?.Stage is not null)
                 {
@@ -233,8 +286,8 @@ public class PersonBehaviour : IChatBehaviour
                 else
                     _currentContent = new() { Stage = pointer!.Stage, Step = pointer!.Step, Type = ContentType.Stage | ContentType.Step };
                 break;
-            case ContentType.Route | ContentType.Stage:
-                throw new NotImplementedException();
+            // case ContentType.Route | ContentType.Stage:
+            //     throw new NotImplementedException();
             case ContentType.Route | ContentType.Step:
                 throw new NotImplementedException();
             case ContentType.All:
@@ -257,7 +310,6 @@ public class PersonBehaviour : IChatBehaviour
 
         if (pointer.Type.HasFlag(ContentType.Stage) && _currentContent?.Stage is Stage stage)
         {
-
             HandleStage(stage, _currentContent?.Step);
             if (pointer.Type.HasFlag(ContentType.Route) && _currentContent?.Route is Route route)
             {
@@ -272,10 +324,14 @@ public class PersonBehaviour : IChatBehaviour
 
                 bool isLabelessSpot = false;
                 bool isLabelessStage = false;
-                foreach (var indirect in notPresent) //todo: внешний источник текста
+                foreach (var indirect in notPresent) //todo: внешний источник текста для 📍 Я на месте
                 {
                     if (indirect.Location is Spot spot)
                     {
+
+                        Coordinate coordinate = new(spot.Latitude, spot.Longitude);
+                        _allowedPlaces.Add((coordinate, stage));
+
                         string label;
 
                         if ((spot.Address ?? spot.Label) is string place)
@@ -297,7 +353,7 @@ public class PersonBehaviour : IChatBehaviour
                     {
                         string label;
 
-                        if (stage.Label is string stageLabel)
+                        if (indirect.Label is string stageLabel)
                             label = $"🔎 Что дальше? {stageLabel}";
                         else if (isLabelessStage is false)
                         {
@@ -319,13 +375,6 @@ public class PersonBehaviour : IChatBehaviour
 
     private void HandleStage(Stage stage, Step? step = null)
     {
-        if (stage.Location is Spot spot)
-        {
-            //todo: проверить соответсвие, откуда берется текст и соответсвие локации
-            Coordinate coordinate = new(spot.Latitude, spot.Longitude);
-            _allowedPlaces.Add((coordinate, stage));
-        }
-
         var orderedSteps = stage.Steps.OrderBy(s => s.Order);
         bool isStepReached = step is null;
 
@@ -351,13 +400,23 @@ public class PersonBehaviour : IChatBehaviour
             //var isLinked = fragment.Buttons?.Count() == 0; //todo: некорректное срабатывание
             _preparedFragments.Add((fragment, delay, isLinked));
             foreach (var button in fragment?.Buttons ?? Enumerable.Empty<Button>())
-                if (button.Type is ButtonType.InlineTransition or ButtonType.KeyboardTransition &&
+            {
+                //todo : проверка на наличие лейбла 
+                if (button.Type is ButtonType.InlineReplace
+                    && button?.Target?.Pointer?.Step is Step replacement)
+                {
+                    button.ReplacementUniqueId = Guid.NewGuid().ToString()[..7];
+                    _replacementSteps.Add((button.ReplacementUniqueId, step));
+                }
+
+                if (button?.Type is ButtonType.InlineTransition or ButtonType.KeyboardTransition &&
                     button?.Label is string label && button?.Target?.Pointer is ContentPointer pointer)
                 {
                     _allowedLinks.Add((label, pointer));
                     if (button.Type is ButtonType.KeyboardTransition)
                         keyboardLine.Add(label);
                 }
+            }
             if (keyboardLine.Count > 0)
                 _keyboardButtons.Enqueue(keyboardLine);
         }
@@ -383,7 +442,7 @@ public class PersonBehaviour : IChatBehaviour
 
         foreach (var fragment in fragments)
         {
-            await Chat.SendStatusAsync();
+            //await Chat.SendStatusAsync();
             switch (fragment.payload.Type)
             {
                 case FragmentType.Text:

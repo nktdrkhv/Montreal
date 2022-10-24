@@ -41,6 +41,7 @@ public class BotDbContext : DbContext
         /*-----------------------------------------------------------------------------*/
 
         modelBuilder.Entity<Target>().HasOne(t => t.Pointer);
+        //modelBuilder.Entity<Button>().HasOne(t => t.Replacement);
         modelBuilder.Entity<Fragment>().HasMany(f => f.Buttons);
         modelBuilder.Entity<Fragment>().HasMany(f => f.Media);
         modelBuilder.Entity<Stage>().HasOne(s => s.Location);
@@ -69,6 +70,7 @@ public class BotDbContext : DbContext
         modelBuilder.Entity<ContentPointer>().Navigation(p => p.Stage).AutoInclude();
         modelBuilder.Entity<ContentPointer>().Navigation(p => p.Step).AutoInclude();
         modelBuilder.Entity<ContentPointer>().Navigation(p => p.Route).AutoInclude();
+        modelBuilder.Entity<Activity>().Navigation(a => a.Pointer).AutoInclude();
         modelBuilder.Entity<Media>().Navigation(m => m.Sound).AutoInclude();
         modelBuilder.Entity<Media>().Navigation(m => m.Photo).AutoInclude();
         modelBuilder.Entity<Sound>().Navigation(s => s.Audio).AutoInclude();

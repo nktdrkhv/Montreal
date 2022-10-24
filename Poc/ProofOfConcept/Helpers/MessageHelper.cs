@@ -18,6 +18,7 @@ public static class MessageHelper
             return command switch
             {
                 "/start" => new Command() { Name = "start", Arguments = arguments },
+                "/back" => new Command() { Name = "back", Arguments = null },
                 _ => null
             };
         }

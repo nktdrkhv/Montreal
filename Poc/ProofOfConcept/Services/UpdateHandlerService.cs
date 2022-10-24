@@ -77,12 +77,14 @@ public class UpdateHandlerService : IUpdateHandler
 
     public async Task HandleCallbackQueryAsync(IChatBehaviour user, CallbackQuery callbackQuery)
     {
+        Task handler;
         if (CallbackQueryHelper.ExtractCommand(callbackQuery) is Command cmd)
-            await user.SubmitAsync(cmd);
+            handler = user.SubmitAsync(cmd);
         else if (CallbackQueryHelper.ExtractText(callbackQuery) is string text)
-            await user.SubmitAsync(text);
+            handler = user.SubmitAsync(text);
         else
-            await Task.CompletedTask;
+            handler = Task.CompletedTask;
+        await handler;
     }
 
     public async Task HandleInlineQueryAsync(ITelegramBotClient bot, InlineQuery inlineQuery, CancellationToken ctn)
@@ -97,7 +99,7 @@ public class UpdateHandlerService : IUpdateHandler
                 InlineQueryResultArticle article = new(route.Name, route.Label!, textMessageContent);
                 article.ReplyMarkup = new InlineKeyboardMarkup(InlineKeyboardButton.WithUrl("Посмотреть", "https://t.me/yefim_bot"));
                 article.ThumbUrl = "AgACAgIAAxkBAAIF6mNUsLXIqlO-oAlR_FKF_qImth1PAAJhvzEbL4aoSlN3_wJsC5UMAQADAgADeQADKgQ";
-                article.Url = "https://t.me/yefim_bot";
+                //article.Url = "https://t.me/yefim_bot";
                 articles.Add(article);
             }
             await bot.AnswerInlineQueryAsync(inlineQuery.Id, articles, 5000, false);

@@ -9,24 +9,14 @@ public class AppRepositoryService : IAppRepository
 {
     #region Ctor and properties
 
-    private BotDbContext _context;
+    //private BotDbContext _context;
     private ILogger<AppRepositoryService> _logger;
 
-    public AppRepositoryService(BotDbContext context, ILogger<AppRepositoryService> logger)
+    public AppRepositoryService(/*BotDbContext context,*/ ILogger<AppRepositoryService> logger)
     {
-        _context = context;
+        //_context = context;
         _logger = logger;
     }
-
-    public IQueryable<Target> Targets => _context.Targets;
-    public IQueryable<Fragment> Fragments => _context.Fragments;
-    public IQueryable<Step> Steps => _context.Steps;
-    public IQueryable<StepInStage> StepsInStage => _context.StepsInStage;
-    public IQueryable<Stage> Stages => _context.Stages;
-    public IQueryable<StageSequence> Sequences => _context.Sequences;
-    public IQueryable<Route> Routes => _context.Routes;
-    public IQueryable<Feedback> Feedbacks => _context.Feedbacks;
-    public IQueryable<Person> People => _context.People;
 
     #endregion Ctor and properties
 
@@ -34,18 +24,19 @@ public class AppRepositoryService : IAppRepository
 
     public void SaveAndDispose()
     {
-        _context.SaveChanges();
-        _context.Dispose();
+        // _context.SaveChanges();
+        // _context.Dispose();
     }
 
     public Person GetPerson(long telegramId)
     {
-        var person = People.Where(p => p.TelegramIdentity == telegramId).SingleOrDefault();
+        using var context = new BotDbContext();
+        var person = context.People.Where(p => p.TelegramIdentity == telegramId).SingleOrDefault();
         if (person is null)
         {
             person = new Person() { TelegramIdentity = telegramId };
-            _context.People.Add(person);
-            _context.SaveChanges();
+            context.People.Add(person);
+            context.SaveChanges();
         }
         return person;
     }

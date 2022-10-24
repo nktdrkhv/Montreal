@@ -22,11 +22,18 @@ public class TelegramChat : ITelegramChat
 
     private Queue<Message> _recievedMessages = new();
     private Queue<CallbackQuery> _recievedCallbacks = new();
-    private Queue<Message> _messagesWithInlineKeyboard = new();
-    private Dictionary<string, Message> _namedSentMessages = new();
+    private Queue<Message> _messagesWithReplyMarkup = new();
+    /// <summary>
+    /// UniqueId for step in PersonBehaviour and
+    /// </summary>
+    private Dictionary<string, SentMessage> _namedSentMessages = new();
+
+    /*-----------------------------------------------------------------------*/
 
     public void Add(Message message) => _recievedMessages.Enqueue(message);
     public void Add(CallbackQuery callback) => _recievedCallbacks.Enqueue(callback);
+
+    /*-----------------------------------------------------------------------*/
 
     private IReplyMarkup? CreateConcreteButtons(Queue<List<string>>? uniteKeyboard)
     {
@@ -53,61 +60,108 @@ public class TelegramChat : ITelegramChat
         }
     }
 
-    private IReplyMarkup? CreateConcreteButtons(Fragment fragment)
+    private IReplyMarkup? CreateConcreteButtons(Fragment fragment, out string? uniqueId)
     {
-        // if (fragment?.Buttons?.First()?.Type == ButtonType.RemoveKayboard)
-        //     return new ReplyKeyboardRemove();
-
         var inlineButtons = fragment?.Buttons?.Where(b => b.Type is ButtonType.InlineLink or ButtonType.InlineTransition).GroupBy(b => b.Line);
         if (inlineButtons?.Count() == 0)
+        {
+            uniqueId = null;
             return null;
+        }
 
         var inlineKeyboard = new List<List<InlineKeyboardButton>>();
+        string? uId = null;
         foreach (var group in inlineButtons ?? Enumerable.Empty<IGrouping<int, Button>>())
         {
             var row = new List<InlineKeyboardButton>();
             foreach (var button in group)
             {
-                var concreteButton = button.Type switch
+                switch (button.Type)
                 {
-                    ButtonType.InlineLink => InlineKeyboardButton.WithUrl(button.Label!, button.Link!),
-                    ButtonType.InlineTransition => InlineKeyboardButton.WithCallbackData(button.Label!),
-                    _ => InlineKeyboardButton.WithCallbackData("🌐"),
-                };
-                row.Add(concreteButton);
+                    case ButtonType.InlineLink:
+                        row.Add(InlineKeyboardButton.WithUrl(button.Label!, button.Link!));
+                        break;
+                    case ButtonType.InlineTransition:
+                        row.Add(InlineKeyboardButton.WithCallbackData(button.Label!));
+                        break;
+                    case ButtonType.InlineReplace:
+                        row.Add(InlineKeyboardButton.WithCallbackData(button.Label!, $"replace {button.ReplacementUniqueId!}"));
+                        uniqueId = uId;
+                        break;
+                    default:
+                        row.Add(InlineKeyboardButton.WithCallbackData("🌐"));
+                        break;
+                }
             }
             if (row.Count > 0)
                 inlineKeyboard.Add(row);
         }
 
+        uniqueId = uId;
         return inlineKeyboard.Count() > 0 ? new InlineKeyboardMarkup(inlineKeyboard) : null;
     }
 
+    /*-----------------------------------------------------------------------*/
+
     public async Task<Message> SendAsync(Fragment fragment, Queue<List<string>>? uniteKeyboard = null, bool clearReplyMarkup = false)
     {
-        IReplyMarkup? replyMarkup;
+        IReplyMarkup? replyMarkup = null;
+        string? uniqueId = null;
+        Task<Message>? handler = null;
+        FragmentType? fragmentType = null;
+        MediaType? mediaType = null;
+
         if (!clearReplyMarkup)
-            replyMarkup = CreateConcreteButtons(fragment) ?? CreateConcreteButtons(uniteKeyboard);
+            replyMarkup = CreateConcreteButtons(fragment, out uniqueId) ?? CreateConcreteButtons(uniteKeyboard);
         else
             replyMarkup = new ReplyKeyboardRemove();
 
         switch (fragment.Type)
         {
             case FragmentType.Text:
-                return await _bot.SendTextMessageAsync(_user.Id, fragment.Text!, replyMarkup: replyMarkup, disableNotification: true);
+                handler = _bot.SendTextMessageAsync(_user.Id, fragment.Text!, replyMarkup: replyMarkup, disableNotification: true);
+                fragmentType = FragmentType.Text;
+                break;
             case FragmentType.Media:
                 var media = fragment.Media!.First();
-                var handler = media!.Type switch
+                fragmentType = FragmentType.Media;
+                mediaType = media.Type;
+                handler = media!.Type switch
                 {
-                    MediaType.Photo => _bot.SendPhotoAsync(_user.Id, media.Photo!.FileId, media.Caption, replyMarkup: replyMarkup, disableNotification: true),
+                    MediaType.Photo => _bot.SendPhotoAsync(_user.Id, media.Photo!.FileId, media.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.MarkdownV2),
+
                     MediaType.Sound when media.Sound!.Type == SoundType.Audio
-                        => _bot.SendAudioAsync(_user.Id, media.Sound.Audio!.FileId, replyMarkup: replyMarkup, disableNotification: true),
+                        => _bot.SendAudioAsync(_user.Id, media.Sound.Audio!.FileId, caption: media.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.MarkdownV2),
+
+                    MediaType.Sound when media.Sound!.Type == SoundType.Voice
+                    => _bot.SendVoiceAsync(_user.Id, media.Sound.Audio!.FileId, caption: media.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.MarkdownV2),
+
+                    MediaType.Sticker => _bot.SendStickerAsync(_user.Id, media.Sticker!.FileId, disableNotification: true, replyMarkup: replyMarkup, cancellationToken: _ctn),
+
                     _ => throw new ArgumentException(),
                 };
-                return await handler;
+                break;
+            case FragmentType.Location:
+                var spot = fragment.Location;
+                if (spot?.Latitude is double latitude && spot?.Longitude is double longtitude)
+                    if (spot?.Address is string address && spot?.Label is string label)
+                        handler = _bot.SendVenueAsync(_user.Id, latitude, longtitude, label, address, replyMarkup: replyMarkup);
+                    else
+                        handler = _bot.SendLocationAsync(_user.Id, latitude, longtitude, replyMarkup: replyMarkup, cancellationToken: _ctn);
+                break;
             default:
                 throw new ArgumentException();
         }
+
+        if (uniqueId is not null && handler is not null)
+        {
+            var message = await handler;
+            var sentMessage = new SentMessage(fragmentType, mediaType, message.MessageId);
+            _namedSentMessages.Add(uniqueId, sentMessage);
+            return await Task.FromResult<Message>(message);
+        }
+        else
+            return await handler;
     }
 
     public async Task<Message> SendAsync(string text) => await _bot.SendTextMessageAsync(_user.Id, text, parseMode: ParseMode.MarkdownV2, cancellationToken: _ctn);
@@ -121,6 +175,8 @@ public class TelegramChat : ITelegramChat
 
     public async Task SendStatusAsync(ChatAction action = ChatAction.Typing) => await _bot.SendChatActionAsync(_user.Id, action, _ctn);
 
+    /*-----------------------------------------------------------------------*/
+
     public async Task DeleteRecievedMessageAsync()
     {
         if (_recievedMessages.TryDequeue(out var message))
@@ -129,8 +185,8 @@ public class TelegramChat : ITelegramChat
 
     public async Task ClearMessageButtons()
     {
-        while (_messagesWithInlineKeyboard.TryDequeue(out var message))
+        while (_messagesWithReplyMarkup.TryDequeue(out var message))
             await _bot.EditMessageReplyMarkupAsync(_user.Id, message.MessageId, replyMarkup: null, _ctn);
-        _messagesWithInlineKeyboard.Clear();
+        _messagesWithReplyMarkup.Clear();
     }
 }

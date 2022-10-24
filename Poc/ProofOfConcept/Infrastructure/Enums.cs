@@ -19,9 +19,9 @@ public enum MediaType { Photo, Video, VideoNote, Sound, Sticker }
 
 public enum FragmentType { Text, Media, Location, Timer, Poll }
 
-public enum StageType { Regular, Start, Final }
+public enum StageType { Regular, Welcome, RouteList, Final }
 
-public enum ButtonType { InlineLink, InlineReplace, InlineTransition, KeyboardTransition, RemoveKayboard }
+public enum ButtonType { InlineLink, InlineReplace, InlineTransition, KeyboardTransition }
 
 public enum SoundType { Audio, Voice }
 

@@ -8,13 +8,13 @@ namespace Montreal.Bot.Poc.Infrastructure.Behaviours;
 public class MakerBehaviour : IChatBehaviour
 {
     public ITelegramChat Chat { get; set; }
-    private IAppRepository _repo;
+    // private IAppRepository _repo;
     private ILogger<MakerBehaviour> _logger;
 
-    public MakerBehaviour(ITelegramChat chat, IAppRepository repo, ILogger<MakerBehaviour> logger)
+    public MakerBehaviour(ITelegramChat chat,/* IAppRepository repo,*/ ILogger<MakerBehaviour> logger)
     {
         Chat = chat;
-        _repo = repo;
+        //_repo = repo;
         _logger = logger;
 
         _machine = new StateMachine<MakerState, Trigger>(() => _state, s => _state = s);
@@ -54,10 +54,9 @@ public class MakerBehaviour : IChatBehaviour
         var handler = media.Type switch
         {
             MediaType.Photo => Chat.SendAsync($"*Фото:*\n`{media.Photo!.FileId}`"),
-            MediaType.Sound when media.Sound!.Type == SoundType.Audio => Chat.SendAsync($"*Аудио*\n`{media.Sound.Audio!.FileSize}`"),
-            _ => Chat.SendAsync($"_Неподдерживаемый тип_"),
+            MediaType.Sound => Chat.SendAsync($"*Звук*\n`{media?.Sound?.Audio?.FileId ?? media?.Sound?.Voice?.FileId}`"),
+            _ => Chat.SendAsync($"_Неподдерживаемый тип_")
         };
-
         await handler;
     }
     public async Task SubmitAsync(Spot spot) => await Chat.SendAsync($"_Неподдерживаемый тип_");

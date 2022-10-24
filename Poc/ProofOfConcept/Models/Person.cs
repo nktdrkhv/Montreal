@@ -7,7 +7,7 @@ namespace Montreal.Bot.Poc.Models;
 [Index("TelegramIdentity", IsUnique = true, Name = "TelegramId")]
 public class Person
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public long TelegramIdentity { get; set; } = default!;
     public string? FullName { get; set; }
     public List<Activity>? ActivityLog { get; set; }
