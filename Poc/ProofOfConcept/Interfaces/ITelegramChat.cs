@@ -16,6 +16,8 @@ public interface ITelegramChat
     Task SendAndDeleteAsync(string text, int delay);
     Task SendStatusAsync(ChatAction action = ChatAction.Typing);
 
+    Task EditAsync(Fragment fragment, string uniqueId);
+
     Task DeleteRecievedMessageAsync();
     Task ClearMessageButtons();
 }

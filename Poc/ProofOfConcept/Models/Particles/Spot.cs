@@ -1,7 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Telegram.Bot.Types;
-using Montreal.Bot.Poc.Infrastructure;
-
 public class Spot
 {
     public Guid Id { get; set; } = Guid.NewGuid();

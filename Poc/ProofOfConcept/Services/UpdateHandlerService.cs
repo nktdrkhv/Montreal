@@ -45,7 +45,7 @@ public class UpdateHandlerService : IUpdateHandler
                             if (_repo.GetBehaviour(update, cancellationToken) is IChatBehaviour userByCallback)
                             {
                                 userByCallback.Chat.Add(callback);
-                                await HandleCallbackQueryAsync(userByCallback, callback);
+                                await HandleCallbackQueryAsync(botClient, userByCallback, callback);
                             }
                             break;
                         case { InlineQuery: { } inline }:
@@ -75,7 +75,7 @@ public class UpdateHandlerService : IUpdateHandler
             await Task.CompletedTask;
     }
 
-    public async Task HandleCallbackQueryAsync(IChatBehaviour user, CallbackQuery callbackQuery)
+    public async Task HandleCallbackQueryAsync(ITelegramBotClient botClient, IChatBehaviour user, CallbackQuery callbackQuery)
     {
         Task handler;
         if (CallbackQueryHelper.ExtractCommand(callbackQuery) is Command cmd)
@@ -85,6 +85,7 @@ public class UpdateHandlerService : IUpdateHandler
         else
             handler = Task.CompletedTask;
         await handler;
+        await botClient.AnswerCallbackQueryAsync(callbackQuery.Id);
     }
 
     public async Task HandleInlineQueryAsync(ITelegramBotClient bot, InlineQuery inlineQuery, CancellationToken ctn)

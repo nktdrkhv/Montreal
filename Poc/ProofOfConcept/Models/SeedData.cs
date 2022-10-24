@@ -1632,123 +1632,1156 @@ public static class SeedData
         // public static Stage CreateStage_BTU_18()
     }
 
-
-    // {
-    // }
-
-    /*------------------------------------------------------------------*/
-
-    public static Stage CreateStage_BTU_00()
+    public static class MUR
     {
-        // var step = new Step()
-        // {
-        //     Fragments = new(){new(){
-        //         Buttons = new(){
-        //             new(){Label = }
-        //         }
-        //     }}
-        // };
-
-        //text
-        var step00 = new Step()
+        public static Stage CreateStage_MUR_0()
         {
-            Fragments = new()
+
+            var step5 = new Step()
             {
-                new Fragment()
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIOtWNW-p4X_6_FkrgJOjCnDsg6SP-QAAKywzEbhDm4Sqp26tGNxR_eAQADAgADeQADKgQ"}, Caption ="«Муралы, граффити, заплатки» – это прогулка, во время которой покажу тебе уличное искусство Томска. От огромной надписи на стене библиотеки до крошечных арт-заплаток на тротуарах, от нелегальных муралов до основательных арт-консерваций. Это очень разные авторы и работы. Но объединяет их одно – желание оставить свой след в городе, поговорить с нами о том, что их волнует, что они любят, что хотят сохранить. И, конечно, дух свободы, без которого не бывает уличного искусства. Мы с тобой увидим работы, появившиеся не только после больших фестивалей, но и в результате бунтарских захватов/вторжений. Мне очень хочется, чтобы ты полюбил это новое искусство в нашем старинном городе так же, как и я!"}}}}
+            };
+            var step6 = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "Фишка бота – возможность делиться геопозицией и получать информацию сразу по прибытию. Для этого нужно поделиться геопозицией и выбрать режим «Трансляция», но это необязательно!",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step7 = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "Можно по-разному относиться к уличному искусству, но это важная часть жизни города. Мне кажется, нельзя понять Томск по-настоящему, если игнорировать стрит-арт. На этой прогулке нам с тобой придется часто куда-то сворачивать, искать объекты в арках, закоулках, внимательно смотреть под ноги. Давай будем гулять в светлое время суток! Выбери день с хорошей погодой. Возьми с собой наушники и бутылку воды. И не забудь внимательно изучить карту – нам многое с тобой предстоит увидеть! Как будешь на месте, дай мне знать.",
+               }}
+            };
+
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Location = new()
                 {
-                    Type = FragmentType.Text,
-                    Text = "",
-                    Buttons = new()
-                    {
-                        new Button()
-                        {
-                            Type = ButtonType.KeyboardTransition,
-                            Label = "",
-                            Target = new() { Name = "" }
-                        }
-                    }
+                    Latitude = 0.0,
+                    Longitude = 0.0,
+                    Label = "",
+                    Address = "",
                 }
-            }
-        };
-
-        // audio
-        var step01 = new Step()
-        {
-            Name = "step_00_01",
-            Fragments = new()
+            };
+            var order = new List<StepInStage>()
             {
-                new Fragment()
-                {
-                    Type = FragmentType.Media,
-                    Media = new()
-                    {
-                         new Media()
-                        {
-                            Type = MediaType.Sound,
-                            Sound = new Sound()
-                            {
-                                Type = SoundType.Audio,
-                                Audio = new(){ FileId = "" }
-                            }
-                        }
-                    },
-                    Buttons = new()
-                    {
-                        new Button()
-                        {
-                            Label = "Расшифровка",
-                            Type = ButtonType.InlineLink,
-                            Link = "",
-                        }
-                    }
-                }
-            }
-        };
-
-        // photo
-        var step02 = new Step()
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step, Order = 2, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step, Order = 3, Delay = 0 },
+            };
+            stage.Steps = order;
+        }
+        public static Stage CreateStage_MUR_1()
         {
-            Name = "step_00_02",
-            Fragments = new()
+            var step = new Step()
             {
-                new Fragment()
-                {
-                    Type = FragmentType.Media,
-                    Media = new()
-                    {
-                         new Media()
-                        {
-                            /*Id = 14,*/
-                            Caption = "",
-                            Type = MediaType.Photo,
-                            Photo = new() {FileId = ""}
-                        }
-                    }
-                }
-            }
-        };
-
-        var stage00 = new Stage()
-        {
-            Name = "00",
-            Label = "",
-            Type = StageType.Regular,
-            Location = new Spot()
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
             {
-                Number = 0,
-                Latitude = 0.05,
-                Longitude = 0.08,
-                Label = "",
-                Address = ""
-            },
-        };
-        var order00 = new List<StepInStage>()
-        {
-            new() {AttachedStage =  stage00, Payload = step00, Order = 1, Delay = 0 },
-            new() {AttachedStage =  stage00, Payload = step00, Order = 2, Delay = 0 },
-        };
-        stage00.Steps = order00;
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
 
-        return stage00;
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_2()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_3()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_4()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_5()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_6()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_7()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_8()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_9()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_10()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_11()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_12()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_13()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_14()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_15()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_16()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_17()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_18()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_19()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_20()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_21()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_22()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_23()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_24()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_25()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_26()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_27()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_28()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_29()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_30()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+        public static Stage CreateStage_MUR_33()
+        {
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+            var step = new Step()
+            {
+                Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId=""}}, Caption =""}},
+                Buttons = new() {new() {Type = ButtonType.InlineLink, Link = ""} }}}
+            };
+
+
+            var order = new List<StepInStage>()
+            {
+                new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+            };
+            var stage = new Stage()
+            {
+                Name = "mur_",
+                Type = StageType.Regular,
+                Steps = order,
+            };
+        }
+
     }
 }
+
+
+/*------------------------------------------------------------------*/
+
+// public static Stage CreateStage_BTU_00()
+// {
+//     // var step = new Step()
+//     // {
+//     //     Fragments = new(){new(){
+//     //         Buttons = new(){
+//     //             new(){Label = }
+//     //         }
+//     //     }}
+//     // };
+
+//     //text
+//     var step00 = new Step()
+//     {
+//         Fragments = new()
+//             {
+//                 new Fragment()
+//                 {
+//                     Type = FragmentType.Text,
+//                     Text = "",
+//                     Buttons = new()
+//                     {
+//                         new Button()
+//                         {
+//                             Type = ButtonType.KeyboardTransition,
+//                             Label = "",
+//                             Target = new() { Name = "" }
+//                         }
+//                     }
+//                 }
+//             }
+//     };
+
+//     // audio
+//     var step01 = new Step()
+//     {
+//         Name = "step_00_01",
+//         Fragments = new()
+//             {
+//                 new Fragment()
+//                 {
+//                     Type = FragmentType.Media,
+//                     Media = new()
+//                     {
+//                          new Media()
+//                         {
+//                             Type = MediaType.Sound,
+//                             Sound = new Sound()
+//                             {
+//                                 Type = SoundType.Audio,
+//                                 Audio = new(){ FileId = "" }
+//                             }
+//                         }
+//                     },
+//                     Buttons = new()
+//                     {
+//                         new Button()
+//                         {
+//                             Label = "Расшифровка",
+//                             Type = ButtonType.InlineLink,
+//                             Link = "",
+//                         }
+//                     }
+//                 }
+//             }
+//     };
+
+//     // photo
+//     var step02 = new Step()
+//     {
+//         Name = "step_00_02",
+//         Fragments = new()
+//             {
+//                 new Fragment()
+//                 {
+//                     Type = FragmentType.Media,
+//                     Media = new()
+//                     {
+//                          new Media()
+//                         {
+//                             /*Id = 14,*/
+//                             Caption = "",
+//                             Type = MediaType.Photo,
+//                             Photo = new() {FileId = ""}
+//                         }
+//                     }
+//                 }
+//             }
+//     };
+
+//     var stage00 = new Stage()
+//     {
+//         Name = "00",
+//         Label = "",
+//         Type = StageType.Regular,
+//         Location = new Spot()
+//         {
+//             Number = 0,
+//             Latitude = 0.05,
+//             Longitude = 0.08,
+//             Label = "",
+//             Address = ""
+//         },
+//     };
+//     var order00 = new List<StepInStage>()
+//         {
+//             new() {AttachedStage =  stage00, Payload = step00, Order = 1, Delay = 0 },
+//             new() {AttachedStage =  stage00, Payload = step00, Order = 2, Delay = 0 },
+//         };
+//     stage00.Steps = order00;
+
+//     return stage00;
+// }

@@ -22,7 +22,7 @@ public class TelegramChat : ITelegramChat
 
     private Queue<Message> _recievedMessages = new();
     private Queue<CallbackQuery> _recievedCallbacks = new();
-    private Queue<Message> _messagesWithReplyMarkup = new();
+    private Queue<Message> _messagesWithReplyMarkup = new(); //todo: убрать или заменить на _namedSentMessages. Заменяет ли его?
     /// <summary>
     /// UniqueId for step in PersonBehaviour and
     /// </summary>
@@ -60,9 +60,9 @@ public class TelegramChat : ITelegramChat
         }
     }
 
-    private IReplyMarkup? CreateConcreteButtons(Fragment fragment, out string? uniqueId)
+    private IReplyMarkup? CreateConcreteButtons(Fragment fragment, out List<string>? uniqueId)
     {
-        var inlineButtons = fragment?.Buttons?.Where(b => b.Type is ButtonType.InlineLink or ButtonType.InlineTransition).GroupBy(b => b.Line);
+        var inlineButtons = fragment?.Buttons?.Where(b => b.Type is ButtonType.InlineLink or ButtonType.InlineTransition or ButtonType.InlineReplace).GroupBy(b => b.Line);
         if (inlineButtons?.Count() == 0)
         {
             uniqueId = null;
@@ -70,7 +70,7 @@ public class TelegramChat : ITelegramChat
         }
 
         var inlineKeyboard = new List<List<InlineKeyboardButton>>();
-        string? uId = null;
+        uniqueId = new();
         foreach (var group in inlineButtons ?? Enumerable.Empty<IGrouping<int, Button>>())
         {
             var row = new List<InlineKeyboardButton>();
@@ -82,11 +82,11 @@ public class TelegramChat : ITelegramChat
                         row.Add(InlineKeyboardButton.WithUrl(button.Label!, button.Link!));
                         break;
                     case ButtonType.InlineTransition:
-                        row.Add(InlineKeyboardButton.WithCallbackData(button.Label!));
+                        row.Add(InlineKeyboardButton.WithCallbackData(button.Label!, button.UniqueId!));
                         break;
                     case ButtonType.InlineReplace:
-                        row.Add(InlineKeyboardButton.WithCallbackData(button.Label!, $"replace {button.ReplacementUniqueId!}"));
-                        uniqueId = uId;
+                        row.Add(InlineKeyboardButton.WithCallbackData(button.Label!, $"replace {button.UniqueId!}"));
+                        uniqueId.Add(button.UniqueId!);
                         break;
                     default:
                         row.Add(InlineKeyboardButton.WithCallbackData("🌐"));
@@ -97,7 +97,6 @@ public class TelegramChat : ITelegramChat
                 inlineKeyboard.Add(row);
         }
 
-        uniqueId = uId;
         return inlineKeyboard.Count() > 0 ? new InlineKeyboardMarkup(inlineKeyboard) : null;
     }
 
@@ -106,7 +105,7 @@ public class TelegramChat : ITelegramChat
     public async Task<Message> SendAsync(Fragment fragment, Queue<List<string>>? uniteKeyboard = null, bool clearReplyMarkup = false)
     {
         IReplyMarkup? replyMarkup = null;
-        string? uniqueId = null;
+        List<string>? uniqueId = null;
         Task<Message>? handler = null;
         FragmentType? fragmentType = null;
         MediaType? mediaType = null;
@@ -128,13 +127,13 @@ public class TelegramChat : ITelegramChat
                 mediaType = media.Type;
                 handler = media!.Type switch
                 {
-                    MediaType.Photo => _bot.SendPhotoAsync(_user.Id, media.Photo!.FileId, media.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.MarkdownV2),
+                    MediaType.Photo => _bot.SendPhotoAsync(_user.Id, media.Photo!.FileId, media.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
 
                     MediaType.Sound when media.Sound!.Type == SoundType.Audio
-                        => _bot.SendAudioAsync(_user.Id, media.Sound.Audio!.FileId, caption: media.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.MarkdownV2),
+                        => _bot.SendAudioAsync(_user.Id, media.Sound.Audio!.FileId, caption: media.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
 
                     MediaType.Sound when media.Sound!.Type == SoundType.Voice
-                    => _bot.SendVoiceAsync(_user.Id, media.Sound.Audio!.FileId, caption: media.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.MarkdownV2),
+                    => _bot.SendVoiceAsync(_user.Id, media.Sound.Audio!.FileId, caption: media.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
 
                     MediaType.Sticker => _bot.SendStickerAsync(_user.Id, media.Sticker!.FileId, disableNotification: true, replyMarkup: replyMarkup, cancellationToken: _ctn),
 
@@ -142,6 +141,7 @@ public class TelegramChat : ITelegramChat
                 };
                 break;
             case FragmentType.Location:
+                fragmentType = FragmentType.Location;
                 var spot = fragment.Location;
                 if (spot?.Latitude is double latitude && spot?.Longitude is double longtitude)
                     if (spot?.Address is string address && spot?.Label is string label)
@@ -153,15 +153,18 @@ public class TelegramChat : ITelegramChat
                 throw new ArgumentException();
         }
 
-        if (uniqueId is not null && handler is not null)
+        if (uniqueId is not null && uniqueId.Count > 0 && handler is not null)
         {
             var message = await handler;
-            var sentMessage = new SentMessage(fragmentType, mediaType, message.MessageId);
-            _namedSentMessages.Add(uniqueId, sentMessage);
+            var sentMessage = new SentMessage(fragmentType.Value, mediaType, message.MessageId);
+            foreach (var id in uniqueId)
+                _namedSentMessages.Add(id, sentMessage);
             return await Task.FromResult<Message>(message);
         }
-        else
+        else if (handler is not null)
             return await handler;
+        else
+            throw new ArgumentNullException();
     }
 
     public async Task<Message> SendAsync(string text) => await _bot.SendTextMessageAsync(_user.Id, text, parseMode: ParseMode.MarkdownV2, cancellationToken: _ctn);
@@ -174,6 +177,49 @@ public class TelegramChat : ITelegramChat
     }
 
     public async Task SendStatusAsync(ChatAction action = ChatAction.Typing) => await _bot.SendChatActionAsync(_user.Id, action, _ctn);
+
+    /*-----------------------------------------------------------------------*/
+
+    public async Task EditAsync(Fragment fragment, string uniqueId)
+    {
+        if (_namedSentMessages.TryGetValue(uniqueId, out var sentMessage))
+        {
+            IReplyMarkup? newMarkup = CreateConcreteButtons(fragment, out var newUniqueId);
+
+            if (sentMessage.fragmentType == fragment.Type)
+            {
+                switch (fragment.Type)
+                {
+                    case FragmentType.Text:
+                        await _bot.EditMessageTextAsync(_user.Id, sentMessage.message, fragment.Text!, ParseMode.Html, replyMarkup: newMarkup as InlineKeyboardMarkup, cancellationToken: _ctn);
+                        break;
+                    case FragmentType.Media:
+                        var handler = sentMessage.mediaType! switch
+                        {
+                            MediaType.Photo => _bot.EditMessageMediaAsync(_user.Id, sentMessage.message, new InputMediaPhoto(fragment.Media!.First().Photo!.FileId), newMarkup as InlineKeyboardMarkup, _ctn),
+                            _ => throw new ArgumentException()
+                        };
+                        await handler;
+                        break;
+                    case FragmentType.Location:
+                        await SendAsync(fragment);
+                        break;
+                    default:
+                        throw new ArgumentException();
+                }
+
+                if (newUniqueId is not null)
+                    foreach (var id in newUniqueId)
+                        _namedSentMessages.Add(id, sentMessage);
+            }
+            else
+            {
+                await _bot.DeleteMessageAsync(_user.Id, sentMessage.message, _ctn);
+                await SendAsync(fragment);
+            }
+        }
+        await Task.CompletedTask;
+    }
 
     /*-----------------------------------------------------------------------*/
 

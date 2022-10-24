@@ -38,7 +38,7 @@ public class PersonBehaviour : IChatBehaviour
         _machine.Activate();
     }
 
-    private PersonState _state = PersonState.Initial;
+    private PersonState _state = PersonState.Initializing;
     private StateMachine<PersonState, Trigger> _machine;
     private StateMachine<PersonState, Trigger>.TriggerWithParameters<string> _textTrigger;
     private StateMachine<PersonState, Trigger>.TriggerWithParameters<string> _pollAnswerTrigger;
@@ -56,18 +56,22 @@ public class PersonBehaviour : IChatBehaviour
     {
         _context.Attach(_person);
 
-        _machine.Configure(PersonState.Initial)
+        _machine.Configure(PersonState.Initializing)
             .PermitDynamic<Command>(_commandTrigger, InitialDestinationStateSelector)
-            .Permit(Trigger.Text, PersonState.Start)
+            .Permit(Trigger.Text, PersonState.Starting)
+            .Permit(Trigger.Media, PersonState.Starting)
             .Permit(Trigger.Pointer, PersonState.Viewing)
             .OnActivate(() =>
             {
+                // todo: может произойти ошибка
                 _currentContent = _context.Activities.Where(a => a.Performer.Id == _person.Id).OrderByDescending(a => a.CurrentTime).Select(a => a.Pointer).FirstOrDefault();
                 if (_currentContent is not null)
                     HandleCurrent(_currentContent);
             });
 
-        _machine.Configure(PersonState.Start)
+        _machine.Configure(PersonState.Starting)
+            .Ignore(Trigger.Text)
+            .Ignore(Trigger.Media)
             .Permit(Trigger.Pointer, PersonState.Viewing)
             .OnEntryAsync(async () =>
             {
@@ -76,14 +80,16 @@ public class PersonBehaviour : IChatBehaviour
                     await _machine.FireAsync<ContentPointer>(_contentTrigger, new() { Type = ContentType.Stage, Stage = startStage });
             });
 
-
         _machine.Configure(PersonState.Viewing)
+            .Ignore(Trigger.Text)
+            .Ignore(Trigger.Media)
             .PermitReentry(Trigger.Command)
             .PermitReentry(Trigger.Pointer)
             .OnEntryFromAsync<Command>(_commandTrigger, async (cmd) =>
             {
-                if (cmd.Name == "start" && cmd.Arguments is string args)
-                    if (MatchStringData(args) is ContentPointer pointer)
+
+                if (cmd.Name == "start" && cmd.Arguments is string startArgs)
+                    if (MatchStringData(startArgs) is ContentPointer pointer)
                         await _machine.FireAsync(_contentTrigger, pointer);
                 if (cmd.Name == "back")
                 {
@@ -93,12 +99,32 @@ public class PersonBehaviour : IChatBehaviour
                         _currentContent = prevoiousContent;
                         HandleCurrent(presentContent);
                         await DemonstrateFragments(_preparedFragments!);
-                        //await _machine.FireAsync(_contentTrigger, prevoiousContent);
                     }
+                }
+
+                if (cmd.Name == "replace" && cmd.Arguments is string uniqueId)
+                {
+                    var replacementStep = _replacementSteps.Find(rs => rs.uniqueId == uniqueId).replacement;
+                    if (replacementStep is null)
+                        return;
+
+                    _currentContent = new() { Step = replacementStep, Type = ContentType.Step };
+                    HandleCurrent(_currentContent);
+
+                    if (_preparedFragments.First().payload is Fragment determinedFragment)
+                        await Chat.EditAsync(determinedFragment, uniqueId);
+                }
+                if (cmd.Name == "choose")
+                {
+                    await Chat.SendStatusAsync();
+                    var chooseStage = _context.Stages.Where(s => s.Type == StageType.RouteList).SingleOrDefault();
+                    if (chooseStage is not null)
+                        await _machine.FireAsync<ContentPointer>(_contentTrigger, new() { Type = ContentType.Stage, Stage = chooseStage });
                 }
             })
             .OnEntryFromAsync<ContentPointer>(_contentTrigger, async pointer =>
             {
+                //todo: Chat.RemoveInlineButtons (у тех, что именованы)
                 await Chat.SendStatusAsync();
                 NewCurrentDefine(pointer);
                 HandleCurrent(_currentContent!);
@@ -106,25 +132,22 @@ public class PersonBehaviour : IChatBehaviour
 
                 if (_currentContent is not null)
                 {
-                    var activity = new Activity() { Performer = _person, Pointer = _currentContent! };
+                    var activity = new Activity() { Performer = _person, Pointer = _currentContent! }; //todo: найти существующий аналогичный указатель
                     _context.Activities.Add(activity);
-
                     _previousTime = activity.CurrentTime;
-                    //if (_updatePreviousTime) _previousTime = activity.CurrentTime;
-                    //else _updatePreviousTime = true;
-
                     await _context.SaveChangesAsync();
                 }
-            })
-            .Ignore(Trigger.Text);
+            });
+
+
 
         _machine.OnUnhandledTriggerAsync(async (_, _) =>
         {
-            var now = DateTimeOffset.Now.ToUnixTimeSeconds();
+            var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             if (_unhandledNotificationHold < now)
             {
-                await Chat.SendAndDeleteAsync($"Что-то не то 😕", 2);
-                _unhandledNotificationHold = now + 5;
+                await Chat.SendAndDeleteAsync($"Что-то не то 😕\nПопробуйте воспользоваться командами из меню", 5);
+                _unhandledNotificationHold = now + 5000;
             }
             await Chat.DeleteRecievedMessageAsync();
         });
@@ -139,7 +162,7 @@ public class PersonBehaviour : IChatBehaviour
     private Person _person;
     private ContentPointer? _currentContent;
     //private Condition? _cuurrentConditions;
-    private long _unhandledNotificationHold = DateTimeOffset.Now.ToUnixTimeSeconds();
+    private long _unhandledNotificationHold = DateTimeOffset.Now.ToUnixTimeMilliseconds();
     private long _previousTime = long.MaxValue;
 
     private List<(Coordinate coordinate, Stage stage)> _allowedPlaces = new();
@@ -212,7 +235,7 @@ public class PersonBehaviour : IChatBehaviour
         return cmd.Name switch
         {
             "start" when !string.IsNullOrWhiteSpace(cmd.Arguments) => PersonState.Viewing,
-            _ => PersonState.Start,
+            _ => PersonState.Starting,
         };
     }
 
@@ -405,17 +428,21 @@ public class PersonBehaviour : IChatBehaviour
                 if (button.Type is ButtonType.InlineReplace
                     && button?.Target?.Pointer?.Step is Step replacement)
                 {
-                    button.ReplacementUniqueId = Guid.NewGuid().ToString()[..7];
-                    _replacementSteps.Add((button.ReplacementUniqueId, step));
+                    button.UniqueId = Guid.NewGuid().ToString()[..7];
+                    _replacementSteps.Add((button.UniqueId, step));
                 }
 
-                if (button?.Type is ButtonType.InlineTransition or ButtonType.KeyboardTransition &&
-                    button?.Label is string label && button?.Target?.Pointer is ContentPointer pointer)
-                {
-                    _allowedLinks.Add((label, pointer));
-                    if (button.Type is ButtonType.KeyboardTransition)
+                if (button?.Label is string label && button?.Target?.Pointer is ContentPointer pointer)
+                    if (button?.Type is ButtonType.KeyboardTransition)
+                    {
                         keyboardLine.Add(label);
-                }
+                        _allowedLinks.Add((label, pointer));
+                    }
+                    else if (button?.Type is ButtonType.InlineTransition)
+                    {
+                        button.UniqueId = Guid.NewGuid().ToString()[..7];
+                        _allowedLinks.Add((label, pointer));
+                    }
             }
             if (keyboardLine.Count > 0)
                 _keyboardButtons.Enqueue(keyboardLine);
@@ -490,7 +517,7 @@ public class PersonBehaviour : IChatBehaviour
         var submittedPosition = new Coordinate(spot.Latitude, spot.Longitude);
         var results = from loc in _allowedPlaces
                       let distanse = GeoCalculator.GetDistance(submittedPosition, loc.coordinate, distanceUnit: DistanceUnit.Meters)
-                      where distanse <= 50 //todo: учесть погрешность 
+                      where distanse <= 25 //todo: учесть погрешность 
                       orderby distanse
                       select loc.stage;
         if (results.Count() > 0)

@@ -20,8 +20,11 @@ public class BotDbContext : DbContext
     public DbSet<Feedback> Feedbacks => Set<Feedback>();
     public DbSet<Activity> Activities => Set<Activity>();
 
-    protected DbSet<ContentBase> Content => Set<ContentBase>();
-    protected DbSet<FileBase> Files => Set<FileBase>();
+
+    public DbSet<FileIdentity> FileIdentities => Set<FileIdentity>();
+    public DbSet<ContentBase> Content => Set<ContentBase>();
+    public DbSet<FileBase> Files => Set<FileBase>();
+
 
     public BotDbContext()
     {
@@ -41,7 +44,6 @@ public class BotDbContext : DbContext
         /*-----------------------------------------------------------------------------*/
 
         modelBuilder.Entity<Target>().HasOne(t => t.Pointer);
-        //modelBuilder.Entity<Button>().HasOne(t => t.Replacement);
         modelBuilder.Entity<Fragment>().HasMany(f => f.Buttons);
         modelBuilder.Entity<Fragment>().HasMany(f => f.Media);
         modelBuilder.Entity<Stage>().HasOne(s => s.Location);

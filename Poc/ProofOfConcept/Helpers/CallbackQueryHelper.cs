@@ -10,7 +10,7 @@ public static class CallbackQueryHelper
     {
         var data = callback.Data?.Split(' ');
         if (data?.Length == 2)
-            return data?[0] switch
+            return data[0] switch
             {
                 "replace" => new Command() { Name = "replace", Arguments = data[1] },
                 _ => null
