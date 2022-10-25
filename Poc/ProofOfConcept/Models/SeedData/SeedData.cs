@@ -185,7 +185,7 @@ public static class SeedData
                     Label ="Главный корпус Томского политического Университета ",
                 },
                 Buttons = new() {
-                    //new() {Type = ButtonType.InlineReplace, Label ="Идём гулять", Target = new(){Name = "step=choose_0"}},
+                    new() {Type = ButtonType.InlineReplace, Label ="Идём гулять", Target = new(){Name = "route=mur"}},
                     new() {Type = ButtonType.InlineReplace, Label ="Назад", Target = new(){Name = "step=choose_0"}},
                 }}}
         };
