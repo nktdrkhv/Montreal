@@ -67,6 +67,7 @@ public class BotDbContext : DbContext
         modelBuilder.Entity<StepInStage>().Navigation(s => s.Payload).AutoInclude();
         modelBuilder.Entity<Fragment>().Navigation(f => f.Media).AutoInclude();
         modelBuilder.Entity<Fragment>().Navigation(f => f.Buttons).AutoInclude();
+        modelBuilder.Entity<Fragment>().Navigation(f => f.Location).AutoInclude();
         modelBuilder.Entity<Button>().Navigation(b => b.Target).AutoInclude();
         modelBuilder.Entity<Target>().Navigation(t => t.Pointer).AutoInclude();
         modelBuilder.Entity<ContentPointer>().Navigation(p => p.Stage).AutoInclude();
@@ -75,6 +76,8 @@ public class BotDbContext : DbContext
         modelBuilder.Entity<Activity>().Navigation(a => a.Pointer).AutoInclude();
         modelBuilder.Entity<Media>().Navigation(m => m.Sound).AutoInclude();
         modelBuilder.Entity<Media>().Navigation(m => m.Photo).AutoInclude();
+        modelBuilder.Entity<Media>().Navigation(m => m.Sticker).AutoInclude();
         modelBuilder.Entity<Sound>().Navigation(s => s.Audio).AutoInclude();
+        modelBuilder.Entity<Sound>().Navigation(s => s.Voice).AutoInclude();
     }
 }

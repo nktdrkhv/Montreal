@@ -91,6 +91,12 @@ public class PersonBehaviour : IChatBehaviour
                 if (cmd.Name == "start" && cmd.Arguments is string startArgs)
                     if (MatchStringData(startArgs) is ContentPointer pointer)
                         await _machine.FireAsync(_contentTrigger, pointer);
+                    else if (cmd.Name == "start")
+                    {
+                        var startStage = _context.Stages.Where(s => s.Type == StageType.Welcome).SingleOrDefault();
+                        if (startStage is not null)
+                            await _machine.FireAsync<ContentPointer>(_contentTrigger, new() { Type = ContentType.Stage, Stage = startStage });
+                    }
                 if (cmd.Name == "back")
                 {
                     if (FindPreviousContent(_currentContent) is ContentPointer prevoiousContent && _currentContent is ContentPointer presentContent)
@@ -235,6 +241,7 @@ public class PersonBehaviour : IChatBehaviour
         return cmd.Name switch
         {
             "start" when !string.IsNullOrWhiteSpace(cmd.Arguments) => PersonState.Viewing,
+            "choose" => PersonState.Viewing,
             _ => PersonState.Starting,
         };
     }
@@ -324,11 +331,11 @@ public class PersonBehaviour : IChatBehaviour
 
     private void HandleCurrent(ContentPointer pointer)
     {
-        Chat.ClearMessageButtons();
+        //Chat.ClearMessageButtons();
         _allowedLinks.Clear();
         _allowedPlaces.Clear();
         _preparedFragments.Clear();
-        _keyboardButtons.Clear();
+        _replacementSteps.Clear();
         //_currentConditions = null;
 
         if (pointer.Type.HasFlag(ContentType.Stage) && _currentContent?.Stage is Stage stage)
@@ -398,7 +405,7 @@ public class PersonBehaviour : IChatBehaviour
 
     private void HandleStage(Stage stage, Step? step = null)
     {
-        var orderedSteps = stage.Steps.OrderBy(s => s.Order);
+        var orderedSteps = stage.Steps.OrderBy(s => s.Order).AsEnumerable();
         bool isStepReached = step is null;
 
         foreach (var s in orderedSteps ?? Enumerable.Empty<StepInStage>())
@@ -429,7 +436,7 @@ public class PersonBehaviour : IChatBehaviour
                     && button?.Target?.Pointer?.Step is Step replacement)
                 {
                     button.UniqueId = Guid.NewGuid().ToString()[..7];
-                    _replacementSteps.Add((button.UniqueId, step));
+                    _replacementSteps.Add((button.UniqueId, replacement));
                 }
 
                 if (button?.Label is string label && button?.Target?.Pointer is ContentPointer pointer)
@@ -472,6 +479,7 @@ public class PersonBehaviour : IChatBehaviour
             //await Chat.SendStatusAsync();
             switch (fragment.payload.Type)
             {
+                case FragmentType.Location:
                 case FragmentType.Text:
                 case FragmentType.Media:
                     await Task.Delay(TimeSpan.FromSeconds(fragment.delay));

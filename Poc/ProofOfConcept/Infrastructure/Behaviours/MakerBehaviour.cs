@@ -55,6 +55,7 @@ public class MakerBehaviour : IChatBehaviour
         {
             MediaType.Photo => Chat.SendAsync($"*Фото:*\n`{media.Photo!.FileId}`"),
             MediaType.Sound => Chat.SendAsync($"*Звук*\n`{media?.Sound?.Audio?.FileId ?? media?.Sound?.Voice?.FileId}`"),
+            MediaType.Sticker => Chat.SendAsync($"*Стикер*\n`{media?.Sticker?.FileId}`"),
             _ => Chat.SendAsync($"_Неподдерживаемый тип_")
         };
         await handler;

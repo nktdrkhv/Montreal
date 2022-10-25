@@ -62,7 +62,7 @@ public class TelegramChat : ITelegramChat
 
     private IReplyMarkup? CreateConcreteButtons(Fragment fragment, out List<string>? uniqueId)
     {
-        var inlineButtons = fragment?.Buttons?.Where(b => b.Type is ButtonType.InlineLink or ButtonType.InlineTransition or ButtonType.InlineReplace).GroupBy(b => b.Line);
+        var inlineButtons = fragment?.Buttons?.Where(b => b.Type is ButtonType.InlineLink or ButtonType.InlineTransition or ButtonType.InlineReplace or ButtonType.InlineRecommend).GroupBy(b => b.Line);
         if (inlineButtons?.Count() == 0)
         {
             uniqueId = null;
@@ -87,6 +87,9 @@ public class TelegramChat : ITelegramChat
                     case ButtonType.InlineReplace:
                         row.Add(InlineKeyboardButton.WithCallbackData(button.Label!, $"replace {button.UniqueId!}"));
                         uniqueId.Add(button.UniqueId!);
+                        break;
+                    case ButtonType.InlineRecommend:
+                        row.Add(InlineKeyboardButton.WithSwitchInlineQuery(button.Label!));
                         break;
                     default:
                         row.Add(InlineKeyboardButton.WithCallbackData("🌐"));
@@ -118,7 +121,7 @@ public class TelegramChat : ITelegramChat
         switch (fragment.Type)
         {
             case FragmentType.Text:
-                handler = _bot.SendTextMessageAsync(_user.Id, fragment.Text!, replyMarkup: replyMarkup, disableNotification: true);
+                handler = _bot.SendTextMessageAsync(_user.Id, fragment.Text!, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html);
                 fragmentType = FragmentType.Text;
                 break;
             case FragmentType.Media:
@@ -127,13 +130,13 @@ public class TelegramChat : ITelegramChat
                 mediaType = media.Type;
                 handler = media!.Type switch
                 {
-                    MediaType.Photo => _bot.SendPhotoAsync(_user.Id, media.Photo!.FileId, media.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
+                    MediaType.Photo => _bot.SendPhotoAsync(_user.Id, media.Photo!.FileId, media?.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
 
                     MediaType.Sound when media.Sound!.Type == SoundType.Audio
-                        => _bot.SendAudioAsync(_user.Id, media.Sound.Audio!.FileId, caption: media.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
+                        => _bot.SendAudioAsync(_user.Id, media.Sound.Audio!.FileId, caption: media?.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
 
                     MediaType.Sound when media.Sound!.Type == SoundType.Voice
-                    => _bot.SendVoiceAsync(_user.Id, media.Sound.Audio!.FileId, caption: media.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
+                    => _bot.SendVoiceAsync(_user.Id, media.Sound.Voice!.FileId, caption: media?.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
 
                     MediaType.Sticker => _bot.SendStickerAsync(_user.Id, media.Sticker!.FileId, disableNotification: true, replyMarkup: replyMarkup, cancellationToken: _ctn),
 
