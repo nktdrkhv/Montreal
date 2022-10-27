@@ -130,6 +130,13 @@ public class PersonBehaviour : IChatBehaviour
                         if (chooseStage is not null)
                             await _machine.FireAsync<ContentPointer>(_contentTrigger, new() { Type = ContentType.Stage, Stage = chooseStage });
                         break;
+                    case "spot":
+                        if (_allowedPlaces.Count == 0)
+                            await Chat.SendAsync("Конкретное место не указано 😅");
+                        else
+                            foreach (var place in _allowedPlaces)
+                                await Chat.SendAsync(place.coordinate);
+                        break;
                     default:
                         break;
                 }
@@ -179,7 +186,7 @@ public class PersonBehaviour : IChatBehaviour
     private long _unhandledNotificationHold = DateTimeOffset.Now.ToUnixTimeMilliseconds();
     private long _previousTime = long.MaxValue;
 
-    private List<(Coordinate coordinate, Stage stage)> _allowedPlaces = new();
+    private List<(Spot coordinate, Stage stage)> _allowedPlaces = new();
     private List<(string label, ContentPointer pointer)> _allowedLinks = new();
     private Queue<List<string>> _keyboardButtons = new();
     private List<(Fragment payload, int delay, bool hasInlineButton)> _preparedFragments = new();
@@ -384,10 +391,7 @@ public class PersonBehaviour : IChatBehaviour
                 {
                     if (indirect.Location is Spot spot)
                     {
-
-                        Coordinate coordinate = new(spot.Latitude, spot.Longitude);
-                        _allowedPlaces.Add((coordinate, stage));
-
+                        _allowedPlaces.Add((spot, stage));
                         string label;
 
                         if ((spot.Address ?? spot.Label) is string place)
@@ -546,11 +550,10 @@ public class PersonBehaviour : IChatBehaviour
     }
     public async Task SubmitAsync(Command command) => await _machine.FireAsync<Command>(_commandTrigger, command);
     public async Task SubmitAsync(Media media) => await _machine.FireAsync<Media>(_mediaTrigger, media);
-    public async Task SubmitAsync(Spot spot)
+    public async Task SubmitAsync(Spot submitted)
     {
-        var submittedPosition = new Coordinate(spot.Latitude, spot.Longitude);
         var results = from loc in _allowedPlaces
-                      let distanse = GeoCalculator.GetDistance(submittedPosition, loc.coordinate, distanceUnit: DistanceUnit.Meters)
+                      let distanse = GeoCalculator.GetDistance(submitted.Latitude, submitted.Longitude, loc.coordinate.Latitude, loc.coordinate.Longitude, distanceUnit: DistanceUnit.Meters)
                       where distanse <= 25 //todo: учесть погрешность 
                       orderby distanse
                       select loc.stage;

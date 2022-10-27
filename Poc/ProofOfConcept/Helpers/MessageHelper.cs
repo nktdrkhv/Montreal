@@ -20,6 +20,7 @@ public static class MessageHelper
                 "/start" => new Command() { Name = "start", Arguments = arguments },
                 "/back" => new Command() { Name = "back", Arguments = null },
                 "/choose" => new Command() { Name = "choose", Arguments = null },
+                "/spot" => new Command() { Name = "spot", Arguments = null },
                 _ => null
             };
         }

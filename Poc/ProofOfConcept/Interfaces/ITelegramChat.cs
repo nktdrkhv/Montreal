@@ -12,6 +12,7 @@ public interface ITelegramChat
 
     Task<Message> SendAsync(Fragment fragment, Queue<List<string>>? uniteKeyboard = null, bool clearReplyMarkup = false);
     Task<Message> SendAsync(string text);
+    Task SendAsync(Spot spot);
 
     Task SendAndDeleteAsync(string text, int delay);
     Task SendStatusAsync(ChatAction action = ChatAction.Typing);

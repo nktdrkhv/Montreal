@@ -51,7 +51,7 @@ public class UserRepositoryService : IUserRepository
 
         if (_cachedUsers.TryGetValue(id, out var cachedUser))
         {
-            _logger.LogInformation($"User [{id}] restored from cache");
+            _logger.LogInformation($"User [{id}] restored. Update [{update.Id}] is [{update.Type}]");
             if (update.Message?.Text?.StartsWith("/forget") is true)
             {
                 _cachedUsers.TryRemove(id, out var _);

@@ -176,6 +176,15 @@ public class TelegramChat : ITelegramChat
 
     public async Task<Message> SendAsync(string text) => await _bot.SendTextMessageAsync(_user.Id, text, parseMode: ParseMode.MarkdownV2, cancellationToken: _ctn);
 
+    public async Task SendAsync(Spot spot)
+    {
+        if (spot.Latitude is double latitude && spot.Longitude is double longtitude)
+            if (spot.Address is string address && spot.Label is string label)
+                await _bot.SendVenueAsync(_user.Id, latitude, longtitude, label, address);
+            else
+                await _bot.SendLocationAsync(_user.Id, latitude, longtitude);
+    }
+
     public async Task SendAndDeleteAsync(string text, int delay)
     {
         var message = await _bot.SendTextMessageAsync(_user.Id, text, cancellationToken: _ctn);

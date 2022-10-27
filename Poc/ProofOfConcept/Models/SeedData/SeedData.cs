@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Montreal.Bot.Poc.Infrastructure;
 
 namespace Montreal.Bot.Poc.Models;
@@ -188,7 +189,7 @@ public static class SeedData
             Fragments = new() { new() { Type = FragmentType.Media,
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIO02NXHgrwnSKERaxsyQeY1HdAAAEtTQAC1sMxG4Q5uErsOZhvu3Ya-gEAAwIAA3kAAyoE"}, Caption ="Двор здания ул. Усова, 4а / ул. Советская, 73 с1"}},
                 Buttons = new() {
-                    new() {Type = ButtonType.InlineTransition, Label ="Идём гулять", Target = new(){Name = "route=mru"}},
+                    new() {Type = ButtonType.InlineTransition, Label ="Идём гулять", Target = new(){Name = "route=mur"}},
                     new() {Type = ButtonType.InlineReplace, Label ="Назад", Target = new(){Name = "step=choose_0"}},
                 }}}
         };
@@ -213,7 +214,7 @@ public static class SeedData
             Fragments = new() { new() { Type = FragmentType.Media,
             Media = new() {new(){Type=MediaType.Sticker, Sticker = new(){FileId="CAACAgIAAxkBAAIPFWNXRTPXEnT6v7i9irqV52-JCuI6AAKMHwACndxhSsWJ5N_7-0cTKgQ"}}},
                 Buttons = new() {
-                    new() {Type = ButtonType.KeyboardTransition, Label ="Маршруты по томску", Target = new(){Name = "step=start_3"}},
+                    new() {Type = ButtonType.KeyboardTransition, Label ="Маршруты по Томску", Target = new(){Name = "step=start_3"}},
                     new() {Type = ButtonType.KeyboardTransition, Label ="О проекте", Target = new(){Name = "step=start_2"}},
                 }}}
         };
