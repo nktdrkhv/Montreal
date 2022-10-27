@@ -41,6 +41,8 @@ public class TelegramChat : ITelegramChat
             return null;
 
         var replyKeyboard = new List<List<KeyboardButton>>();
+        //todo: временное решение, переосмыслить для 
+        //if (uniteKeyboard.Count > 2)
         while (uniteKeyboard.TryDequeue(out var line))
         {
             var row = new List<KeyboardButton>();
@@ -78,6 +80,8 @@ public class TelegramChat : ITelegramChat
             {
                 switch (button.Type)
                 {
+                    case ButtonType.KeyboardTransition:
+                        break;
                     case ButtonType.InlineLink:
                         row.Add(InlineKeyboardButton.WithUrl(button.Label!, button.Link!));
                         break;
@@ -121,7 +125,7 @@ public class TelegramChat : ITelegramChat
         switch (fragment.Type)
         {
             case FragmentType.Text:
-                handler = _bot.SendTextMessageAsync(_user.Id, fragment.Text!, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html);
+                handler = _bot.SendTextMessageAsync(_user.Id, fragment.Text!, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html, disableWebPagePreview: true);
                 fragmentType = FragmentType.Text;
                 break;
             case FragmentType.Media:
@@ -205,6 +209,7 @@ public class TelegramChat : ITelegramChat
                         await handler;
                         break;
                     case FragmentType.Location:
+                        //? нужно ли удалять прошлое сообщение
                         await SendAsync(fragment);
                         break;
                     default:

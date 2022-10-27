@@ -87,45 +87,51 @@ public class PersonBehaviour : IChatBehaviour
             .PermitReentry(Trigger.Pointer)
             .OnEntryFromAsync<Command>(_commandTrigger, async (cmd) =>
             {
-
-                if (cmd.Name == "start" && cmd.Arguments is string startArgs)
-                    if (MatchStringData(startArgs) is ContentPointer pointer)
-                        await _machine.FireAsync(_contentTrigger, pointer);
-                    else if (cmd.Name == "start")
-                    {
-                        var startStage = _context.Stages.Where(s => s.Type == StageType.Welcome).SingleOrDefault();
-                        if (startStage is not null)
+                switch (cmd.Name)
+                {
+                    case "start":
+                        if (cmd.Arguments is string startArgs && MatchStringData(startArgs) is ContentPointer pointer)
+                            await _machine.FireAsync(_contentTrigger, pointer);
+                        else
+                        {
+                            var startStage = _context.Stages.Where(s => s.Type == StageType.Welcome).Single();
                             await _machine.FireAsync<ContentPointer>(_contentTrigger, new() { Type = ContentType.Stage, Stage = startStage });
-                    }
-                if (cmd.Name == "back")
-                {
-                    if (FindPreviousContent(_currentContent) is ContentPointer prevoiousContent && _currentContent is ContentPointer presentContent)
-                    {
+                        }
+                        break;
+                    case "back":
+                        if (FindPreviousContent(_currentContent) is ContentPointer prevoiousContent && _currentContent is ContentPointer presentContent)
+                        {
+                            //todo: вынести вовне
+                            _allowedLinks.Clear();
+                            _allowedPlaces.Clear();
+                            _preparedFragments.Clear();
+                            _replacementSteps.Clear();
+                            _keyboardButtons.Clear();
+
+                            await Chat.SendStatusAsync();
+                            _currentContent = prevoiousContent;
+                            HandleCurrent(presentContent);
+                            await DemonstrateFragments(_preparedFragments!);
+                        }
+                        break;
+                    case "replace":
+                        if (cmd.Arguments is string uniqueId && _replacementSteps.Find(rs => rs.uniqueId == uniqueId).replacement is Step replacementStep)
+                        {
+                            _currentContent = new() { Step = replacementStep, Type = ContentType.Step };
+                            HandleCurrent(_currentContent, true);
+
+                            if (_preparedFragments.First().payload is Fragment determinedFragment)
+                                await Chat.EditAsync(determinedFragment, uniqueId);
+                        }
+                        break;
+                    case "choose":
                         await Chat.SendStatusAsync();
-                        _currentContent = prevoiousContent;
-                        HandleCurrent(presentContent);
-                        await DemonstrateFragments(_preparedFragments!);
-                    }
-                }
-
-                if (cmd.Name == "replace" && cmd.Arguments is string uniqueId)
-                {
-                    var replacementStep = _replacementSteps.Find(rs => rs.uniqueId == uniqueId).replacement;
-                    if (replacementStep is null)
-                        return;
-
-                    _currentContent = new() { Step = replacementStep, Type = ContentType.Step };
-                    HandleCurrent(_currentContent);
-
-                    if (_preparedFragments.First().payload is Fragment determinedFragment)
-                        await Chat.EditAsync(determinedFragment, uniqueId);
-                }
-                if (cmd.Name == "choose")
-                {
-                    await Chat.SendStatusAsync();
-                    var chooseStage = _context.Stages.Where(s => s.Type == StageType.RouteList).SingleOrDefault();
-                    if (chooseStage is not null)
-                        await _machine.FireAsync<ContentPointer>(_contentTrigger, new() { Type = ContentType.Stage, Stage = chooseStage });
+                        var chooseStage = _context.Stages.Where(s => s.Type == StageType.RouteList).SingleOrDefault();
+                        if (chooseStage is not null)
+                            await _machine.FireAsync<ContentPointer>(_contentTrigger, new() { Type = ContentType.Stage, Stage = chooseStage });
+                        break;
+                    default:
+                        break;
                 }
             })
             .OnEntryFromAsync<ContentPointer>(_contentTrigger, async pointer =>
@@ -138,6 +144,7 @@ public class PersonBehaviour : IChatBehaviour
 
                 if (_currentContent is not null)
                 {
+                    //todo: поиск существующего поинтера, чтобы не плодить... и исключить из каскадого удаления
                     var activity = new Activity() { Performer = _person, Pointer = _currentContent! }; //todo: найти существующий аналогичный указатель
                     _context.Activities.Add(activity);
                     _previousTime = activity.CurrentTime;
@@ -149,6 +156,7 @@ public class PersonBehaviour : IChatBehaviour
 
         _machine.OnUnhandledTriggerAsync(async (_, _) =>
         {
+            // todo, показать существующие кнопки?
             var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             if (_unhandledNotificationHold < now)
             {
@@ -256,6 +264,7 @@ public class PersonBehaviour : IChatBehaviour
                 break;
             case ContentType.Route | ContentType.Stage:
             case ContentType.Stage:
+                //todo: при открытии паршрута по ссылке проблемы, если не было обработки ранее
                 if (_currentContent?.Route is not null && _currentContent?.Stage is not null)
                 {
                     var sequence = (from s in _context.Sequences
@@ -268,6 +277,8 @@ public class PersonBehaviour : IChatBehaviour
                     else
                         _currentContent = new() { Stage = pointer!.Stage, Type = ContentType.Stage };
                 }
+                else if (pointer?.Route is not null)
+                    _currentContent = new() { Route = pointer!.Route, Stage = pointer!.Stage, Type = ContentType.Stage | ContentType.Route };
                 else
                     _currentContent = new() { Stage = pointer!.Stage, Type = ContentType.Stage };
                 break;
@@ -289,6 +300,10 @@ public class PersonBehaviour : IChatBehaviour
                         _currentContent = pointers.Single();
                     else
                         _currentContent = new() { Step = pointer!.Step, Type = ContentType.Step };
+                }
+                else if (_currentContent?.Route is not null)
+                {
+
                 }
                 else
                     _currentContent = new() { Step = pointer!.Step, Type = ContentType.Step };
@@ -329,16 +344,27 @@ public class PersonBehaviour : IChatBehaviour
         }
     }
 
-    private void HandleCurrent(ContentPointer pointer)
+    private void HandleCurrent(ContentPointer pointer, bool isReplacementProcess = false)
     {
         //Chat.ClearMessageButtons();
-        _allowedLinks.Clear();
-        _allowedPlaces.Clear();
-        _preparedFragments.Clear();
-        _replacementSteps.Clear();
-        //_currentConditions = null;
+        if (isReplacementProcess)
+        {
+            _preparedFragments.Clear();
+            _replacementSteps.Clear();
+            _keyboardButtons.Clear();
+            //_currentConditions = null;
+        }
+        else
+        {
+            _allowedLinks.Clear();
+            _allowedPlaces.Clear();
+            _preparedFragments.Clear();
+            _replacementSteps.Clear();
+            _keyboardButtons.Clear();
+            //_currentConditions = null;
+        }
 
-        if (pointer.Type.HasFlag(ContentType.Stage) && _currentContent?.Stage is Stage stage)
+        if (pointer.Type.HasFlag(ContentType.Stage) && !isReplacementProcess && _currentContent?.Stage is Stage stage)
         {
             HandleStage(stage, _currentContent?.Step);
             if (pointer.Type.HasFlag(ContentType.Route) && _currentContent?.Route is Route route)
@@ -448,7 +474,7 @@ public class PersonBehaviour : IChatBehaviour
                     else if (button?.Type is ButtonType.InlineTransition)
                     {
                         button.UniqueId = Guid.NewGuid().ToString()[..7];
-                        _allowedLinks.Add((label, pointer));
+                        _allowedLinks.Add((button.UniqueId, pointer));
                     }
             }
             if (keyboardLine.Count > 0)

@@ -6,11 +6,17 @@ public class Button
 {
     public int Id { get; set; }
     public ButtonType Type { get; set; }
-    public Fragment Source { get; set; } = default!;
+    public Fragment AttachedTo { get; set; } = default!;
 
     public Target? Target { get; set; }
     public string? Link { get; set; }
     public string? UniqueId { get; set; }
+    //public string? Notification {get;set;}
+
+    //public string ButtonLabel (string text, int line, int number)
+
+    public int Number { get; set; }
+    public int Line { get; set; }
 
     private string? _label;
     public string? Label
@@ -36,7 +42,4 @@ public class Button
             _label = value;
         }
     }
-
-    public int Number { get; set; }
-    public int Line { get; set; }
 }

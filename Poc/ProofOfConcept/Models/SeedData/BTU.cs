@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+
 using Montreal.Bot.Poc.Infrastructure;
 
 namespace Montreal.Bot.Poc.Models;
@@ -7,9 +7,9 @@ public static class BTU
 {
     public static Route CreateRoute_BTU()
     {
-        var stage1 = BTU.CreateStage_BTU_1();
         var stage2 = BTU.CreateStage_BTU_2();
-        var stage3 = BTU.CreateStage_BTU_3();
+        var stage3_1 = BTU.CreateStage_BTU_3_1();
+        var stage3_2 = BTU.CreateStage_BTU_3_2();
         var stage4 = BTU.CreateStage_BTU_4();
         var stage5 = BTU.CreateStage_BTU_5();
         var stage6 = BTU.CreateStage_BTU_6();
@@ -24,6 +24,16 @@ public static class BTU
         var stage15 = BTU.CreateStage_BTU_15();
         var stage16 = BTU.CreateStage_BTU_16();
         var stage17 = BTU.CreateStage_BTU_17();
+        var stage18_1 = BTU.CreateStage_BTU_18_1();
+        var stage18_2 = BTU.CreateStage_BTU_18_2();
+        var stage18_a = BTU.CreateStage_BTU_18_a();
+        var stage19 = BTU.CreateStage_BTU_19();
+        var stage20 = BTU.CreateStage_BTU_20();
+        var stage21 = BTU.CreateStage_BTU_21();
+        var stage22 = BTU.CreateStage_BTU_22();
+        var stage23 = BTU.CreateStage_BTU_23();
+        var stage24 = BTU.CreateStage_BTU_24();
+
 
         var route = new Route()
         {
@@ -34,10 +44,10 @@ public static class BTU
         };
         var stages = new List<StageSequence>()
         {
-            new() {AttachedRoute = route, From = stage1, To = stage2},
-            new() {AttachedRoute = route, From = stage2, To = stage3},
-            new() {AttachedRoute = route, From = stage2, To = stage4},
-            new() {AttachedRoute = route, From = stage3, To = stage4},
+            new() {AttachedRoute = route, From = stage2, To = stage3_1},
+            new() {AttachedRoute = route, From = stage2, To = stage3_2},
+            new() {AttachedRoute = route, From = stage3_1, To = stage4},
+            new() {AttachedRoute = route, From = stage3_2, To = stage4},
             new() {AttachedRoute = route, From = stage4, To = stage5},
             new() {AttachedRoute = route, From = stage5, To = stage6},
             new() {AttachedRoute = route, From = stage6, To = stage7},
@@ -53,98 +63,50 @@ public static class BTU
             new() {AttachedRoute = route, From = stage14, To = stage15},
             new() {AttachedRoute = route, From = stage15, To = stage16},
             new() {AttachedRoute = route, From = stage16, To = stage17},
+            new() {AttachedRoute = route, From = stage17, To = stage18_1},
+            new() {AttachedRoute = route, From = stage17, To = stage18_2},
+            new() {AttachedRoute = route, From = stage18_1, To = stage18_a},
+            new() {AttachedRoute = route, From = stage18_2, To = stage18_a},
+            new() {AttachedRoute = route, From = stage18_a, To = stage19},
+            new() {AttachedRoute = route, From = stage19, To = stage20},
+            new() {AttachedRoute = route, From = stage20, To = stage21},
+            new() {AttachedRoute = route, From = stage21, To = stage22},
+            new() {AttachedRoute = route, From = stage22, To = stage23},
+            new() {AttachedRoute = route, From = stage23, To = stage24},
+            new() {AttachedRoute = route, From = stage24, To = SeedData.ChooseStage},
         };
         route.Stages = stages;
         return route;
     }
 
-    public static Stage CreateStage_BTU_1()
-    {
-        var fragment7_1 = new Fragment() { Type = FragmentType.Text, Text = "А ты знал, что официально Томск — студенческая столица России? Администрация города зарегистрировала соответствующий товарный знак в специальном государственном реестре. По количеству студентов Томск на третьем место после Москвы и Санкт-Петербурга, а еще он входит в международный рейтинг лучших городов для студентов. По сути, Томск – это город-университет. И в 2019 году все вузы и научно-исследовательские институты объединились в мегапроект «Большой университет Томска». Давай-ка прогуляемся по нашему городу-университету! Кстати, по дороге ты можешь встретить местных любимиц – белок. Не забудь взять с собой какие-нибудь лакомства – орехи или семечки, чтобы их порадовать." };
-        var step7 = new Step() { Name = "btu_1_7", Label = "Томск – город-университет", Fragments = new() { fragment7_1 } };
-
-        var fragment8_1 = new Fragment() { Type = FragmentType.Text, Text = "Давай будем гулять в светлое время суток! Выбери день с хорошей погодой. Возьми с собой наушники и бутылку воды. " };
-        var step8 = new Step() { Name = "btu_1_8", Label = "Давай гулять", Fragments = new() { fragment8_1 } };
-
-        var step9 = new Step()
-        {
-            Label = "Наш маршрут",
-            Name = "btu_1_9",
-            Fragments = new()
-            {
-                new Fragment()
-                {
-                    Type = FragmentType.Media,
-                    Media = new()
-                    {
-                         new Media()
-                        {
-                            Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIFWGNUkqW8RDeAgE-KGeIdAlhLR_UMAAJPvzEbL4aoSrJNKVYh7U6QAQADAgADeQADKgQ"},
-                            Caption = "Взгляни на карту – это наш маршрут. Ты можешь передвигаться пешком, а можешь часть маршрута проехать на общественном транспорте. Выбирай сам!",
-                        }
-                    }
-                }
-            }
-        };
-
-        var buttons10 = new List<Button>()
-        {
-            new(){ Type = ButtonType.KeyboardTransition, Label = "⚠️ Хочу другой маршрут", Target = new() { Name = "stage=start:step=start_6"}},
-            new(){ Type = ButtonType.KeyboardTransition, Label = "🎯 Давай", Target = new() { Name = "stage=btu_2"}}
-        };
-        var fragment10_1 = new Fragment() { Type = FragmentType.Text, Text = "Ну что? Идем?", Buttons = buttons10 };
-        var step10 = new Step() { Name = "btu_1_10", Fragments = new() { fragment10_1 } };
-
-        var stage1 = new Stage() { Name = "btu_1", Label = "Выбор Большого томского университета", Type = StageType.Regular };
-
-        var order7 = new StepInStage() { AttachedStage = stage1, Payload = step7, Order = 1, Delay = 0 };
-        var order8 = new StepInStage() { AttachedStage = stage1, Payload = step8, Order = 2, Delay = 0 };
-        var order9 = new StepInStage() { AttachedStage = stage1, Payload = step9, Order = 3, Delay = 0 };
-        var order10 = new StepInStage() { AttachedStage = stage1, Payload = step10, Order = 4, Delay = 0 };
-
-        stage1.Steps = new() { order7, order8, order9, order10 };
-
-        return stage1;
-    }
-
     public static Stage CreateStage_BTU_2()
     {
-        var fragment11_1 = new Fragment()
+        var step1 = new Step()
         {
-            Type = FragmentType.Media,
-            Media = new() {
-            new() { Photo = new() { FileId = "AgACAgIAAxkBAAIFXGNUk7zo6zkSXQABIZTtrYJs_IjoXwACUL8xGy-GqEpfSz5k-GafYgEAAwIAA3kAAyoE" }, Caption = "Главный корпус ТПУ" } }
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "А ты знал, что официально <b>Томск — студенческая столица России?</b> Администрация города зарегистрировала соответствующий товарный знак в специальном государственном реестре.\n\nПо количеству студентов Томск на третьем место после Москвы и Санкт-Петербурга, а еще он входит в международный рейтинг лучших городов для студентов.\n\nПо сути, <b>Томск – это город-университет</b>. И в 2019 году все вузы и научно-исследовательские институты объединились в мегапроект «Большой университет Томска».\n\nДавай-ка прогуляемся по нашему городу-университету!",
+           }}
         };
-        var step11 = new Step() { Name = "btu_2_11", Fragments = new() { fragment11_1 } };
-
-        var fragment12_1 = new Fragment()
+        var step2 = new Step()
         {
-            Type = FragmentType.Text,
-            Text = "Начинаем прогулку с места, где был открыт первый за Уралом технический вуз. Это Томский политехнический университет. Адрес Главного корпуса вуза: проспект Ленина, 30. Посмотри, сильно ли здание изменилось за более чем 120 лет? В начале ХХ века этот корпус носил название Лекционный, потому что был открыт первым в 1900 году, и именно здесь начались занятия у будущих инженеров."
+            Fragments = new() { new() { Type = FragmentType.Media,
+            Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIUHGNY0zDmHbSItuFGsXHPbcXxB50KAALivTEbeGzISqBTvRYSJDYqAQADAgADeQADKgQ"}, Caption ="Главный корпус ТПУ"}}}}
         };
-        var step12 = new Step() { Name = "btu_2_12", Fragments = new() { fragment12_1 } };
-
-        var fragment13_1 = new Fragment()
+        var step3 = new Step()
         {
-            Type = FragmentType.Media,
-            Media = new() {
-            new() { /*Id = 2,*/ Photo = new() { FileId = "AgACAgIAAxkBAAIFXmNUlA27HQs_yrgxuJ9zRcnHBsBLAAJRvzEbL4aoSm_wHBXC3z2LAQADAgADeQADKgQ" }, Caption = "Главный корпус ТПУ, начало XX в." } }
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Начинаем прогулку с места, где был открыт первый за Уралом технический вуз. <a href=\"https://tpu.ru/\">Это Томский политехнический университет.</a> Посмотри, сильно ли здание изменилось за более чем 120 лет?\n\nВ начале ХХ века этот корпус носил название Лекционный, потому что был открыт первым в 1900 году, и именно здесь начались занятия у будущих инженеров. ",
+           }}
         };
-        var step13 = new Step() { Name = "btu_2_13", Fragments = new() { fragment13_1 } };
-
-        var buttons14_1 = new List<Button>()
+        var step4 = new Step()
         {
-            new(){ Type = ButtonType.KeyboardTransition, Label = "💁‍♂️ Да, хочу узнать", Target = new() { Name = "stage=btu_3"}},
-            new(){ Type = ButtonType.KeyboardTransition, Label = "🙅‍♂️ Нет, не хочу", Target = new() { Name = "stage=btu_4"}}
+            Fragments = new() { new() { Type = FragmentType.Media,
+            Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIUMmNY8lct3xA6Lo2vUR4bqWcjfqigAAKPvjEbeGzISqzT5n8mqH_DAQADAgADeQADKgQ"}, Caption ="Главный корпус ТПУ, начало ХХ в."}}}}
         };
-        var fragment14_1 = new Fragment()
+        var step5 = new Step()
         {
-            Type = FragmentType.Text,
-            Buttons = buttons14_1,
-            Text = "Посмотри вокруг! Ты видишь первый университетский квартал в Томске. И это всё – Томский политех. Сейчас у вуза 32 учебных и лабораторных корпуса. Если хочешь узнать про Главный корпус ТПУ и университетский квартал больше, послушай историю строительства первого вузовского кампуса. "
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Посмотри вокруг! Ты видишь <b>первый университетский квартал в Томске.</b> <b>И это всё – Томский политех.</b>\n\nСейчас у вуза 32 учебных и лабораторных корпуса. Если хочешь узнать про Главный корпус ТПУ и университетский квартал больше, <b>послушай историю строительства первого вузовского кампуса.</b>", Buttons = new() {
+                new Button() { Type = ButtonType.KeyboardTransition, Label = "💁‍♂️ Да, хочу узнать", Target = new() { Name = "stage=btu_3_1" } },
+                new() { Type = ButtonType.KeyboardTransition, Label = "🙅‍♂️ Нет, не хочу", Target = new() { Name = "stage=btu_3_2" } } } } },
         };
-        var step14 = new Step() { Name = "btu_2_14", Fragments = new() { fragment14_1 } };
 
         var stage2 = new Stage()
         {
@@ -157,107 +119,81 @@ public static class BTU
                 Latitude = 56.465386,
                 Longitude = 84.950481,
                 Label = "Вход в ГК ТПУ",
-                Address = "Ленина, 30; Главный вход"
+                Address = "Ленина, 30, главный вход"
             }
         };
 
-        var order11 = new StepInStage() { AttachedStage = stage2, Payload = step11, Order = 1, Delay = 0 };
-        var order12 = new StepInStage() { AttachedStage = stage2, Payload = step12, Order = 2, Delay = 0 };
-        var order13 = new StepInStage() { AttachedStage = stage2, Payload = step13, Order = 3, Delay = 0 };
-        var order14 = new StepInStage() { AttachedStage = stage2, Payload = step14, Order = 4, Delay = 0 };
-
-        stage2.Steps = new() { order12, order13, order14, order11 };
-
+        var order1 = new StepInStage() { AttachedStage = stage2, Payload = step1, Order = 1, Delay = 0 };
+        var order2 = new StepInStage() { AttachedStage = stage2, Payload = step2, Order = 2, Delay = 0 };
+        var order3 = new StepInStage() { AttachedStage = stage2, Payload = step3, Order = 3, Delay = 0 };
+        var order4 = new StepInStage() { AttachedStage = stage2, Payload = step4, Order = 4, Delay = 0 };
+        var order5 = new StepInStage() { AttachedStage = stage2, Payload = step5, Order = 5, Delay = 0 };
+        stage2.Steps = new() { order1, order2, order3, order4, order5 };
         return stage2;
     }
 
-    public static Stage CreateStage_BTU_3()
+    public static Stage CreateStage_BTU_3_1()
     {
-        var step15 = new Step()
+        var step = new Step()
         {
-            Name = "btu_3_15",
-            Fragments = new()
-            {
-                new Fragment()
-                {
-                    Type = FragmentType.Media,
-                    Media = new()
-                    {
-                         new Media()
-                        {
-                            Type = MediaType.Sound,
-                            Sound = new Sound()
-                            {
-                                Type = SoundType.Audio,
-                                Audio = new(){ FileId = "CQACAgIAAxkBAAICRWNR5HEDLpmLOdNtkqShs6oJlg15AALjGwADhZFK1ChHroXBv7MqBA" }
-                            }
-                        }
-                    },
-                    Buttons = new()
-                    {
-                        new Button()
-                        {
-                            Type = ButtonType.InlineLink,
-                            Link = "https://telegra.ph/Istoriya-glavnogo-korpusa-TPU-10-23",
-                            Label = "Расшифровка"
-                        }
-                    }
-                }
-            }
+            Fragments = new() { new() { Type = FragmentType.Media, Media = new() { new() { Type = MediaType.Sound, Sound = new() { Type = SoundType.Audio, Audio = new() { FileId = "CQACAgIAAxkBAAIUIGNY3Pyo7Gt9YukQ02MgsxdVXtfUAAIvIQACeGzISlpV_WgfYgEaKgQ" } } } }, Buttons = new() { new Button() { Line = 1, Type = ButtonType.InlineLink, Link = "https://telegra.ph/Istoriya-glavnogo-korpusa-TPU-10-23", Label = "Расшифровка" }, new Button() { Line = 2, Type = ButtonType.InlineTransition, Label = "Послушал", Target = new() { Name = "stage=btu_4" } } } } }
         };
-        var step16 = new Step()
+        var stage = new Stage()
         {
-            Name = "btu_3_16",
-            Fragments = new()
-            {
-                new Fragment()
-                {
-                    Type = FragmentType.Text,
-                    Text = "Если тебе интересно, как же жили томские профессора в начале XX века, то предлагаю посетить очень интересный музей. Это настоящая профессорская квартира, где можно увидеть подлинную мебель, предметы быта, фотографии, картины и другие уникальные свидетельства эпохи. И все это – без всяких заграждений – можно рассмотреть и потрогать. И музей этот совсем рядом с нашим маршрутом, можешь зайти и туда. Вот ссылка на сайт:\nhttps://museum.tomsk.ru/",
-                }
-            }
-        };
-        var step17 = new Step()
-        {
-            Name = "btu_3_17",
-            Fragments = new()
-            {
-                new Fragment()
-                {
-                    Type = FragmentType.Media,
-                    Media = new()
-                    {
-                         new Media()
-                        {
-                            /*Id = 4,*/
-                            Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIFYGNUlS2Ri-mzPbdA7Iy9yqPhF7teAAJSvzEbL4aoSpw_1R4-3VQJAQADAgADeQADKgQ"}
-                        }
-                    }
-                }
-            }
-        };
-
-        var stage3 = new Stage()
-        {
-            Name = "btu_3",
-            Label = "Про главный корпус ТПУ",
+            Name = "btu_3_1",
             Type = StageType.Regular,
         };
         var order3 = new List<StepInStage>()
         {
-            new() {AttachedStage =  stage3, Payload = step15, Order = 1, Delay = 0 },
-            new() {AttachedStage =  stage3, Payload = step16, Order = 2, Delay = 0 },
-            new() {AttachedStage =  stage3, Payload = step17, Order = 3, Delay = 0 },
+            new() {AttachedStage =  stage, Payload = step, Order = 1, Delay = 0 },
         };
-        stage3.Steps = order3;
+        stage.Steps = order3;
 
-        return stage3;
+        return stage;
+    }
+
+    public static Stage CreateStage_BTU_3_2()
+    {
+        var step17 = new Step()
+        {
+            Name = "btu_3_17",
+            Fragments = new() { new Fragment() { Type = FragmentType.Media, Media = new() { new Media() { Type = MediaType.Photo, Photo = new() { FileId = "AgACAgIAAxkBAAIUImNY4KGRk40LrpySBtiLn7MBjfRFAAIQvjEbeGzISocp_WlcAgUpAQADAgADeQADKgQ" }, Caption = "Если тебе интересно, как же жили томские профессора в начале XX века, то предлагаю посетить очень интересный <b><a href=\"https://museum.tomsk.ru/\"> частный музей «Профессорская квартира»</a></b>.\n\nЗдесь можно увидеть подлинную мебель, предметы быта, фотографии, картины и другие уникальные свидетельства эпохи.\n\nИ все это – без всяких заграждений – можно рассмотреть и потрогать. И музей этот совсем рядом с нашим маршрутом, можешь зайти и туда." } } } }
+        };
+
+        var stage = new Stage()
+        {
+            Name = "btu_3_2",
+            Label = "Профессорская квартира",
+            Type = StageType.Regular,
+        };
+        var order = new List<StepInStage>()
+        {
+            new() {AttachedStage =  stage, Payload = step17, Order = 1, Delay = 0 },
+        };
+        stage.Steps = order;
+
+        return stage;
     }
 
     public static Stage CreateStage_BTU_4()
     {
-        var step19 = new Step()
+        var step1 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media,
+            Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIUJGNY77fVOsuE324x_BwcvZyBaYmaAAJsvjEbeGzISp-lefXF8HQKAQADAgADeQADKgQ"}, Caption ="Ну а мы идем с тобой дальше.Поворачивай направо и иди в сторону университетской лестницы."}}}}
+        };
+
+        var step2 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Спускайся вниз по лестнице к самому первому университету на территории русской Азии. Но при этом не забывай смотреть по сторонам!\n\nВидишь на другой стороне проспекта Ленина памятник?\nПосвящен он Сергею Мироновичу Кирову. Он когда-то тоже хотел быть студентом, посещал подготовительные курсы Томского технологического института, но не сложилось – увлекся революцией и впоследствии стал крупным советским государственным и политическим деятелем." } }
+        };
+
+        var step3 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media,
+            Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIULmNY8Jgfin4cC6F-cw_bmqhnPv04AAJ1vjEbeGzISuR4Y9maatYqAQADAgADeQADKgQ"}, Caption ="<i>Но Кирова в Томске не забыли.</i>\n\nУ студентов ТПУ есть давняя традиция: перекрашивать в яркие цвета сапоги у памятника в дни экзаменов, выпускных или перед защитой диплома.\n\nНо долго «обновками» Киров не хвастается – обычно служба кампуса ТПУ моментально перекрашивает сапоги обратно в белый цвет, только вот студенты не сдаются, поэтому история повторяется регулярно."}}}}
+        };
+        var step4 = new Step()
         {
             Fragments = new()
             {
@@ -269,63 +205,14 @@ public static class BTU
                          new Media()
                         {
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIFYmNUlc_KLSoAAbAQ9BQs4APXq2C8UQACVL8xGy-GqEpdD8bwHis69gEAAwIAA3kAAyoE"},
-                            Caption = "Ну, а мы идем с тобой дальше. Поворачивай направо и иди в сторону университетской лестницы.",
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUMGNY8fhj1F5Nbq1ZJ0SeXy7nS0atAAKNvjEbeGzISp6rhIJeLJvCAQADAgADeQADKgQ"},
+                            Caption = "А буквально рядом с тобой, за забором, расположилась <b>уникальная Университетская роща</b>.\n\nНе каждый город может похвастаться таким старинным парком. Рощу заложили в 1885 году во время строительства Императорского университета. И сейчас это одна из главных достопримечательностей города."
                         }
                     }
                 }
             }
         };
-        var step21 = new Step()
-        {
-            Fragments = new()
-            {
-                new Fragment()
-                {
-                    Type = FragmentType.Media,
-                    Media = new()
-                    {
-                         new Media()
-                        {
-                            Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIFZGNUlqGfZsQakWx6FfeQz4kpNcGqAAJVvzEbL4aoSiP8lipHm8dcAQADAgADeQADKgQ"},
-                            Caption = "Спускайся вниз по лестнице к самому первому университету на территории русской Азии. Но при этом не забывай смотреть по сторонам! Видишь на другой стороне проспекта Ленина памятник? Посвящен он Сергею Мироновичу Кирову. Он когда-то тоже хотел быть студентом, посещал подготовительные курсы Томского технологического института, но не сложилось – увлекся революцией и впоследствии стал крупным советским государственным и политическим деятелем."
-                        }
-                    }
-                }
-            }
-        };
-        var step22 = new Step()
-        {
-            Fragments = new()
-            {
-                new Fragment()
-                {
-                    Type = FragmentType.Text,
-                    Text = "Но Кирова в Томске не забыли. У студентов ТПУ есть давняя традиция: перекрашивать в яркие цвета сапоги у памятника в дни экзаменов, выпускных или перед защитой диплома. Но долго «обновками» Киров не хвастается – обычно служба кампуса ТПУ моментально перекрашивает сапоги обратно в белый цвет. Но студенты не сдаются, поэтому история повторяется регулярно.",
-                }
-            }
-        };
-        var step23 = new Step()
-        {
-            Fragments = new()
-            {
-                new Fragment()
-                {
-                    Type = FragmentType.Media,
-                    Media = new()
-                    {
-                         new Media()
-                        {
-                            Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIFZmNUl35BznqUH7NTcwxhdyth1xcMAAJWvzEbL4aoSuFgsLgS2Y9wAQADAgADeQADKgQ"},
-                            Caption = "А буквально рядом с тобой, за забором, расположилась уникальная Университетская роща. Не каждый город может похвастаться таким старинным парком. Рощу заложили в 1885 году во время строительства Императорского университета. И сейчас это одна из главных достопримечательностей города."
-                        }
-                    }
-                }
-            }
-        };
-        var step25 = new Step()
+        var step5 = new Step()
         {
             Name = "btu_4_25",
             Fragments = new()
@@ -337,38 +224,38 @@ public static class BTU
                     {
                          new Media()
                         {
-                            Caption = "Мы почти дошли до здания первого университетского общежития! Посмотри, как оно выглядело в начале ХХ века.",
+                            Caption = "Мы почти дошли до здания <b>первого университетского общежития!</b> Посмотри, как оно выглядело в начале ХХ века.",
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIFaGNUmAH54X8_nHBqwfaz6ppwWt6gAAJXvzEbL4aoSgzqWT2A598tAQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUNGNY8mbufgABipm5CpUoeROikZQpAQAC7L0xG3hsyEqI6jGQf9nWjgEAAwIAA3kAAyoE"}
                         }
                     }
                 }
             }
         };
 
-        var stage4 = new Stage()
+        var stage3 = new Stage()
         {
             Name = "btu_4",
-            Label = "Дорога до университетских общежитий",
             Type = StageType.Regular,
         };
-        var order4 = new List<StepInStage>()
+        var order3 = new List<StepInStage>()
         {
-            new() {AttachedStage =  stage4, Payload = step19, Order = 1, Delay = 0 },
-            new() {AttachedStage =  stage4, Payload = step21, Order = 2, Delay = 0 },
-            new() {AttachedStage =  stage4, Payload = step22, Order = 3, Delay = 0 },
-            new() {AttachedStage =  stage4, Payload = step23, Order = 4, Delay = 0 },
-            new() {AttachedStage =  stage4, Payload = step25, Order = 5, Delay = 0 },
+            new() {AttachedStage =  stage3, Payload = step1, Order = 1, Delay = 0 },
+            new() {AttachedStage =  stage3, Payload = step2, Order = 2, Delay = 0 },
+            new() {AttachedStage =  stage3, Payload = step3, Order = 3, Delay = 0 },
+            new() {AttachedStage =  stage3, Payload = step4, Order = 4, Delay = 0 },
+            new() {AttachedStage =  stage3, Payload = step5, Order = 5, Delay = 0 },
         };
-        stage4.Steps = order4;
-        return stage4;
+        stage3.Steps = order3;
+
+        return stage3;
     }
 
     public static Stage CreateStage_BTU_5()
     {
-        var step26 = new Step()
+        var step27 = new Step()
         {
-            Name = "btu_5_26",
+            Name = "btu_5_27",
             Fragments = new()
             {
                 new Fragment()
@@ -379,21 +266,10 @@ public static class BTU
                          new Media()
                         {
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIFamNUmJd9NfP2hw34_SmAd0PClohsAAJYvzEbL4aoShUMbZQ9KYXIAQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUNmNY9oRewgN7X7tX-QABx-Q0Y0P95gACn74xG3hsyEqIIBiBzV2srQEAAwIAA3kAAyoE"},
+                            Caption = "«Приют для учащихся» или Дом общежития студентов – так называлось первое студенческое общежитие Императорского Томского университета. Общежитие вмещало чуть более 75 студентов. Раньше считали, что, сколько в комнате окон, столько и студентов должно там жить. Да, шикарные условия, скажу вам!\n\nНу а сейчас, это <b>третий корпус ТГУ</b>, где проходят занятия у современных студентов. Загляни за угол! Ты увидишь <a href=\"https://www.lib.tsu.ru/ru\"><b>здания Научной библиотеки Томского государственного университета.</b></a>"
                         }
-                    }
-                }
-            }
-        };
-        var step27 = new Step()
-        {
-            Name = "btu_5_27",
-            Fragments = new()
-            {
-                new Fragment()
-                {
-                    Type = FragmentType.Text,
-                    Text = "«Приют для учащихся» или Дом общежития студентов –так называлось первое студенческое общежитие Императорского Томского университета. Общежитие вмещало чуть более 75 студентов. Раньше считали, что, сколько в комнате окон, столько и студентов должно там жить. Да, шикарные условия, скажу вам! Ну а сейчас, это третий корпус ТГУ, где проходят занятия у современных студентов. Загляни за угол! Ты увидишь здания Научной библиотеки Томского государственного университета.",
+                    },
                 }
             }
         };
@@ -414,8 +290,7 @@ public static class BTU
         };
         var order5 = new List<StepInStage>()
         {
-            new() {AttachedStage =  stage5, Payload = step26, Order = 1, Delay = 0 },
-            new() {AttachedStage =  stage5, Payload = step27, Order = 2, Delay = 0 },
+            new() {AttachedStage =  stage5, Payload = step27, Order = 1, Delay = 0 },
         };
         stage5.Steps = order5;
         return stage5;
@@ -436,7 +311,7 @@ public static class BTU
                          new Media()
                         {
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIFbGNUmOi1hEyb_DEV6gmFQHHUgdndAAJZvzEbL4aoStF4YwWmS_IJAQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUOGNY-HIPlT_Kx8O2UzUNV_DEE0MZAAKqvjEbeGzISkQNc1DPQZA0AQADAgADeQADKgQ"}
                         }
                     }
                 }
@@ -458,7 +333,7 @@ public static class BTU
                             Sound = new Sound()
                             {
                                 Type = SoundType.Audio,
-                                Audio = new(){ FileId = "CQACAgIAAxkBAAICR2NR5LIIAAEvLYc1ArTu9Tp_7fbRRwAC5BsAA4WRSmRfH9nJhI6LKgQ" }
+                                Audio = new(){ FileId = "CQACAgIAAxkBAAIUOmNY-LuqMXHRDYI74vdNhZ9OU0UTAALsIQACeGzIShBZ_qD8C8yYKgQ" }
                             }
                         }
                     },
@@ -474,7 +349,7 @@ public static class BTU
                 }
             }
         };
-        var step31 = new Step()
+        var step30 = new Step()
         {
             Name = "btu_6_31",
             Fragments = new()
@@ -488,12 +363,9 @@ public static class BTU
                         {
                             Type = MediaType.Photo,
                             Photo = new() {FileId = "AgACAgIAAxkBAAIFbmNUmasmPHG7lTBlSPTWQA8IRLmcAAJavzEbL4aoSt_RgTA8kPx3AQADAgADeQADKgQ"},
-                            Caption = "Надеюсь, тебе понравилась история «Научки»! А теперь давай прогуляемся с тобой по Университетской роще до главного корпуса Томского государственного университета. Если нам повезет, то в роще мы сможем встретить белок. Ты приготовил для них угощения? Пройди под переходом между зданиями библиотеки и поворачивай направо за старым корпусом.",
+                            Caption = "Надеюсь, тебе понравилась история «Научки»!\n\nА теперь давай прогуляемся с тобой по Университетской роще до главного корпуса Томского государственного университета.\n\nЕсли нам повезет, то в роще мы сможем встретить белок. Ты приготовил для них угощения?\n\n<b>Пройди под переходом между зданиями библиотеки и поворачивай направо за старым корпусом.</b>",
                         }
                     },
-                    // Buttons = new(){
-                    //     new(){Type = ButtonType.RemoveKayboard}
-                    // }
                 }
             }
         };
@@ -516,7 +388,7 @@ public static class BTU
         {
             new() {AttachedStage =  stage6, Payload = step28, Order = 1, Delay = 0 },
             new() {AttachedStage =  stage6, Payload = step29, Order = 2, Delay = 0 },
-            new() {AttachedStage =  stage6, Payload = step31, Order = 3, Delay = 0 },
+            new() {AttachedStage =  stage6, Payload = step30, Order = 3, Delay = 0 },
         };
         stage6.Steps = order6;
         return stage6;
@@ -524,6 +396,7 @@ public static class BTU
 
     public static Stage CreateStage_BTU_7()
     {
+        // ты в университетской роще
         var step32 = new Step()
         {
             Fragments = new()
@@ -531,7 +404,7 @@ public static class BTU
                 new Fragment()
                 {
                     Type = FragmentType.Text,
-                    Text = "Ты в Университетской роще! Можешь наслаждаться природой, но не забывай внимательно смотреть по сторонам – Университетская роща полна интересных деталей. Хочешь, расскажу?",
+                    Text = "Ты в <b>Университетской роще!</b>\n\nМожешь наслаждаться природой, но не забывай внимательно смотреть по сторонам – Университетская роща полна интересных деталей.\n\nХочешь, расскажу?",
                     Buttons = new()
                     {
                         new Button()
@@ -587,7 +460,7 @@ public static class BTU
                         {
                             //photo10
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIF3mNUqYkP_WgMUrjCycDTP4k3YWHkAAJevzEbL4aoSvrLOJixN-UXAQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUPGNY-VSSYoR2iOe1jnW0mzAAAbE4QwACrb4xG3hsyEp7yJMJhYSHfAEAAwIAA3kAAyoE"}
                         }
                     }
                 }
@@ -608,7 +481,7 @@ public static class BTU
                             Sound = new Sound()
                             {
                                 Type = SoundType.Audio,
-                                Audio = new(){ FileId = "CQACAgIAAxkBAAICSWNR5Ls6XX_AzExkFBnRcYHwphfhAALlGwADhZFKHvdPoFz2c5gqBA" }
+                                Audio = new(){ FileId = "CQACAgIAAxkBAAIUPmNY-X0FDrCv19IBw9bSBnXeM_yIAAL0IQACeGzISus29iyxODHEKgQ" }
                             }
                         }
                     },
@@ -637,7 +510,7 @@ public static class BTU
                         {
                             //photo11
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIF4mNUqnu50ZPCnf4fpR0mnJjpECUAA1-_MRsvhqhK3z84cPjj3OMBAAMCAAN5AAMqBA"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUQGNY-gGFHW3BrdEC7QX8bDKFaAwEAAK5vjEbeGzIStEVZopZhdUvAQADAgADeQADKgQ"}
                         }
                     }
                 }
@@ -658,7 +531,7 @@ public static class BTU
                             Sound = new Sound()
                             {
                                 Type = SoundType.Audio,
-                                Audio = new(){ FileId = "CQACAgIAAxkBAAICS2NR5MQfJcagPHx7L0tIk4-Dh9bdAALmGwADhZFKktdS_ve15iEqBA" }
+                                Audio = new(){ FileId = "CQACAgIAAxkBAAIUQmNY-o4beKd6OpVuBay8mqOR-x82AAL3IQACeGzISvlJFdRaatW_KgQ" }
                             }
                         }
                     },
@@ -687,7 +560,7 @@ public static class BTU
                         {
                             //photo12
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIF5GNUqzYJsafWsB8dDSBVzeGcqMOeAAJgvzEbL4aoSqUYR1znF6XUAQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIURGNY-rVnuWBAwhm0aZs2CIQl2Ym6AAK8vjEbeGzISugAAZk_rIzYvQEAAwIAA3kAAyoE"}
                         }
                     }
                 }
@@ -708,7 +581,7 @@ public static class BTU
                             Sound = new Sound()
                             {
                                 Type = SoundType.Audio,
-                                Audio = new(){ FileId = "CQACAgIAAxkBAAICTWNR5NFrFLFJVtydZVLwGYAv9XvwAALnGwADhZFKHxGXSo4HjkgqBA" }
+                                Audio = new(){ FileId = "CQACAgIAAxkBAAIURmNY-txN3jnwatDm3tkWxX8Oje8_AAL5IQACeGzISoYZKMUdfr1VKgQ" }
                             }
                         }
                     },
@@ -737,7 +610,7 @@ public static class BTU
                         {
                             //photo13
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIF5mNUq-3KiQVC55DwyYZ-ULYv4JbDAAJhvzEbL4aoSlN3_wJsC5UMAQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUSGNY-wMbLbOC_bqKjX7fV_K7emb6AALAvjEbeGzISsITbOgciHMnAQADAgADeQADKgQ"}
                         }
                     }
                 }
@@ -758,7 +631,7 @@ public static class BTU
                             Sound = new Sound()
                             {
                                 Type = SoundType.Audio,
-                                Audio = new(){ FileId = "CQACAgIAAxkBAAICT2NR5NqDYBQrdwIn6r0fDlIgtRPfAALoGwADhZFKKjQbS3SljYwqBA" }
+                                Audio = new(){ FileId = "CQACAgIAAxkBAAIUSmNY-1Y5Yx3uwyN3Pnnd59G-JnvyAAL6IQACeGzISt8d-kTVfsnhKgQ" }
                             }
                         }
                     },
@@ -774,6 +647,7 @@ public static class BTU
                 }
             }
         };
+        // раз уж мы рядом с ёлками
         var step41 = new Step()
         {
             Fragments = new()
@@ -781,7 +655,7 @@ public static class BTU
                 new Fragment()
                 {
                     Type = FragmentType.Text,
-                    Text = "Раз уж мы с тобой рядом с ёлками, то предлагаю найти каменные скульптуры — они где-то рядом. Называют их каменными бабами — скорее всего, из-за созвучного названия – балбал.\nНашёл?",
+                    Text = "Раз уж мы с тобой рядом с ёлками, то предлагаю найти каменные скульптуры — они где-то рядом. Называют их каменными бабами — скорее всего, из-за созвучного названия – балбал.\n\nНашёл?",
                     Buttons = new()
                     {
                         new Button()
@@ -823,6 +697,7 @@ public static class BTU
 
     public static Stage CreateStage_BTU_9()
     {
+        // каменные извояния
         var step42 = new Step()
         {
             Fragments = new()
@@ -830,7 +705,7 @@ public static class BTU
                 new Fragment()
                 {
                     Type = FragmentType.Text,
-                    Text = "Такие каменные изваяния воздвигали на просторах Евразии в VI-IX веках во времена тюркских каганатов. Эти скульптуры посвящали воинам-героям и знатным людям. В ТГУ средневековые изваяния попали из Семиречья и Алтая в 1886 – 1900 годах. Со дня установки и до нашего времени каменные бабы успели обрасти легендами и стали неотъемлемой частью Университетской рощи.",
+                    Text = "Такие каменные изваяния воздвигали на просторах Евразии в VI-IX веках во времена тюркских каганатов. Эти скульптуры посвящали воинам-героям и знатным людям.\n\nВ ТГУ средневековые изваяния попали из Семиречья и Алтая в 1886 – 1900 годах. Со дня установки и до нашего времени каменные бабы успели обрасти легендами и стали неотъемлемой частью Университетской рощи.",
                 }
             }
         };
@@ -864,12 +739,13 @@ public static class BTU
                             //photo14
                             Caption = "Посмотри внимательнее! Ну, вот же они!",
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIGRmNUxtvdoEZdGm4sgMnElTdkPCymAAJqvzEbL4aoSuYOQpaclo8BAQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUTGNY_At7J2UMXXYvHS7ueH0AAa9jDAACxL4xG3hsyEpepcgf0m4V0AEAAwIAA3kAAyoE"}
                         }
                     }
                 }
             }
         };
+        //их воздвигали
         var step44 = new Step()
         {
             Fragments = new()
@@ -877,7 +753,7 @@ public static class BTU
                 new Fragment()
                 {
                     Type = FragmentType.Text,
-                    Text = "Такие каменные изваяния воздвигали на просторах Евразии в VI-IX веках во времена тюркских каганатов. Эти скульптуры посвящали воинам-героям и знатным людям. В ТГУ средневековые изваяния попали из Семиречья и Алтая в 1886 – 1900 годах. Со дня установки и до нашего времени каменные бабы успели обрасти легендами и стали неотъемлемой частью Университетской рощи.",
+                    Text = "Такие каменные изваяния воздвигали на просторах Евразии в VI-IX веках во времена тюркских каганатов. Эти скульптуры посвящали воинам-героям и знатным людям.\n\nВ ТГУ средневековые изваяния попали из Семиречья и Алтая в 1886 – 1900 годах. Со дня установки и до нашего времени каменные бабы успели обрасти легендами и стали неотъемлемой частью Университетской рощи.",
                 }
             }
         };
@@ -893,22 +769,11 @@ public static class BTU
                          new Media()
                         {
                             //photo15
-                            Caption = "Есть в роще и еще один, более молодой памятник. Посвящен он покровителям и устроителям Императорского томского университета – Дмитрию Ивановичу Менделееву и Василию Марковичу Флоринскому. Средства на установку собирали благодарные сибиряки – выпускники университета и меценаты. Скульптура украсила рощу в 2018 году. У этого памятника есть название – профессора Флоринский и Менделеев обсуждают проект Первого Сибирского университета. ",
+                            Caption = "Есть в роще и еще один, более молодой памятник. Посвящен он покровителям и устроителям Императорского томского университета – Дмитрию Ивановичу Менделееву и Василию Марковичу Флоринскому.\n\nСредства на установку собирали благодарные сибиряки – выпускники университета и меценаты. Скульптура украсила рощу в 2018 году. У этого памятника есть название – <b>профессора Флоринский и Менделеев обсуждают проект Первого Сибирского университета.</b>",
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIGSGNUx7naXk1kyp3Jefhv0nZG2OcpAAJsvzEbL4aoStWdhYCR1TQiAQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUTmNZAAHxV7Jc6CzRhmpZbEjhR5I8JwAC1L4xG3hsyEqTfwABDNR6MsEBAAMCAAN5AAMqBA"}
                         }
                     }
-                }
-            }
-        };
-        var step46 = new Step()
-        {
-            Fragments = new()
-            {
-                new Fragment()
-                {
-                    Type = FragmentType.Text,
-                    Text = "А вот и он – первый университет Сибири!",
                 }
             }
         };
@@ -922,8 +787,6 @@ public static class BTU
             new() {AttachedStage = stage10, Payload = step43, Order = 1, Delay = 0 },
             new() {AttachedStage = stage10, Payload = step44, Order = 2, Delay = 0 },
             new() {AttachedStage = stage10, Payload = step45, Order = 3, Delay = 0 },
-            new() {AttachedStage = stage10, Payload = step46, Order = 4, Delay = 0 },
-
         };
         stage10.Steps = order10;
         return stage10;
@@ -931,6 +794,7 @@ public static class BTU
 
     public static Stage CreateStage_BTU_11()
     {
+        // прогуляйся по университетской роще
         var step47 = new Step()
         {
             Fragments = new()
@@ -938,7 +802,7 @@ public static class BTU
                 new Fragment()
                 {
                     Type = FragmentType.Text,
-                    Text = "Прогуляйся по университетской роще, подыши чистым воздухом, послушай пение птиц. Как дойдешь до главного корпуса Томского государственного университета, скажи. ",
+                    Text = "Прогуляйся по университетской роще, подыши чистым воздухом, послушай пение птиц.\n\nКак дойдешь до главного корпуса Томского государственного университета, скажи.",
                 }
             }
         };
@@ -958,6 +822,18 @@ public static class BTU
 
     public static Stage CreateStage_BTU_12()
     {
+        // первый универ сибири
+        var step46 = new Step()
+        {
+            Fragments = new()
+            {
+                new Fragment()
+                {
+                    Type = FragmentType.Text,
+                    Text = "А вот и он – первый университет Сибири!",
+                }
+            }
+        };
         var step48 = new Step()
         {
             Fragments = new()
@@ -970,9 +846,9 @@ public static class BTU
                          new Media()
                         {
                             //photo16
-                            Caption = "Предлагаю походить возле или вокруг корпуса. А пока ходишь-бродишь, я расскажу тебе немного про историю вуза.",
+                            Caption = "Предлагаю походить возле или вокруг корпуса.\nА пока ходишь-бродишь, я расскажу тебе немного про историю вуза.",
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIG0WNU1FaWIwTP2BteeUGb0ByGPtstAAJ8vzEbL4aoSiBl0dnBiVhqAQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUUGNZATciAlWknbw6ktgSoYUTmctbAALVvjEbeGzISg9D_vwuXzGTAQADAgADeQADKgQ"}
                         }
                     }
                 }
@@ -993,7 +869,7 @@ public static class BTU
                             Sound = new Sound()
                             {
                                 Type = SoundType.Audio,
-                                Audio = new(){ FileId = "CQACAgIAAxkBAAICUWNR5OMb3h0AAVaEhNjoXqpEw5oVNwAC6RsAA4WRSoyO9hMwh3WVKgQ" }
+                                Audio = new(){ FileId = "CQACAgIAAxkBAAIUUmNZAXcrGjOJ3FN5F-nXPLsRz6K_AAIiIgACeGzISizoKc1mcyuSKgQ" }
                             }
                         }
                     },
@@ -1009,6 +885,7 @@ public static class BTU
                 }
             }
         };
+        //дай знать как закончишь
         var step50 = new Step()
         {
             Fragments = new()
@@ -1036,9 +913,10 @@ public static class BTU
         };
         var order12 = new List<StepInStage>()
         {
-            new() {AttachedStage = stage12, Payload = step48, Order = 1, Delay = 0 },
-            new() {AttachedStage = stage12, Payload = step49, Order = 2, Delay = 0 },
-            new() {AttachedStage = stage12, Payload = step50, Order = 3, Delay = 0 },
+                        new() {AttachedStage = stage12, Payload = step46, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage12, Payload = step48, Order = 2, Delay = 0 },
+            new() {AttachedStage = stage12, Payload = step49, Order = 3, Delay = 0 },
+            new() {AttachedStage = stage12, Payload = step50, Order = 4, Delay = 0 },
         };
         stage12.Steps = order12;
         return stage12;
@@ -1047,6 +925,7 @@ public static class BTU
 
     public static Stage CreateStage_BTU_13()
     {
+        // сейчасмы с тобой выйдем
         var step51 = new Step()
         {
             Fragments = new()
@@ -1054,7 +933,7 @@ public static class BTU
                 new Fragment()
                 {
                     Type = FragmentType.Text,
-                    Text = "Сейчас мы с тобой выйдем на проспект Ленина и двинемся в сторону еще одного университета, который появился благодаря ТГУ. Но об этом я расскажу чуть позже.",
+                    Text = "Сейчас мы с тобой выйдем на проспект Ленина и двинемся в сторону еще одного университета, который появился благодаря ТГУ.\n\nНо об этом я расскажу чуть позже.",
                 }
             }
         };
@@ -1070,14 +949,15 @@ public static class BTU
                          new Media()
                         {
                             //photo17
-                            Caption = "А пока выходи через главные ворота ТГУ, поворачивай налево и иди вдоль ограды. Но только выходи через боковые калитки! Студенты говорят, что выходить через центральные ворота – плохая примета!",
+                            Caption = "А пока выходи через главные ворота ТГУ, поворачивай налево и иди вдоль ограды.\n\n<b>Но только выходи через боковые калитки!</b>\n\nСтуденты говорят, что выходить через центральные ворота – плохая примета!",
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIG02NU1xIthKc96G10cXuItQkhd8CEAAJ-vzEbL4aoSiy28nHkSCw0AQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUVGNZAbqULbxvTO1sHP-2DmG9Pw1xAALYvjEbeGzISqNNaBBpPgivAQADAgADeQADKgQ"}
                         }
                     }
                 }
             }
         };
+        // мало кто знает
         var step53 = new Step()
         {
             Fragments = new()
@@ -1085,7 +965,7 @@ public static class BTU
                 new Fragment()
                 {
                     Type = FragmentType.Text,
-                    Text = "Мало кто знает, что эта пешеходная часть проспекта Ленина неофициально называется Александровским бульваром. Так аллею назвали в память о трех императорах: Александре I, Александре II и Александре III. Именно благодаря им и появился первый в Сибири университет.",
+                    Text = "Мало кто знает, что эта пешеходная часть проспекта Ленина <b>неофициально называется Александровским бульваром</b>.\n\nТак аллею назвали в память о трех императорах: Александре I, Александре II и Александре III.Именно благодаря им и появился первый в Сибири университет.",
                 }
             }
         };
@@ -1101,9 +981,9 @@ public static class BTU
                          new Media()
                         {
                             //photo18
-                            Caption = "Идем дальше? Сейчас тебе нужно дойти до конца Александровского бульвара. Там ты увидишь корпус третьего на нашем маршруте университета.\nКак дойдешь, отпишись!",
+                            Caption = "Идем дальше? Сейчас тебе нужно дойти до конца Александровского бульвара. Там ты увидишь корпус третьего на нашем маршруте университета.\n\nКак дойдешь, отпишись!",
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIG62NU2cW7xdeJR_CwObTgB2Xx5DclAAKPvzEbL4aoSmth2Kpc8X8IAQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUVmNZAmIF_MzjBQUyGyScZnMvZxlBAALavjEbeGzISv1CrbLmPYdlAQADAgADeQADKgQ"}
                         }
                     }
                 }
@@ -1139,9 +1019,9 @@ public static class BTU
                          new Media()
                         {
                             //photo19
-                            Caption = "В этом здании, построенном в 1892 году, располагаются факультетские клиники Сибирского государственного медицинского университета. Это настоящий многопрофильный специализированный клинический комплекс, где лечат больных. Предлагаю послушать историю факультетских клиник и прогуляться вдоль корпуса до перекрестка.",
+                            Caption = "В этом здании, построенном в 1892 году, располагаются факультетские клиники <a href=\"https://ssmu.ru/ru/\"><b>Сибирского государственного медицинского университета</b></a>. Это настоящий многопрофильный специализированный клинический комплекс, где лечат больных.\n\nПредлагаю послушать историю факультетских клиник и прогуляться вдоль корпуса до перекрестка.",
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIHBmNU2zlhu1ARZG3DEnHVImH9fsF2AAKUvzEbL4aoSj3YzpA9AQlLAQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUWGNZAn5IG31Cmbt15QjT3i49UV5EAALbvjEbeGzISvS8YSq9y8EtAQADAgADeQADKgQ"}
                         }
                     }
                 }
@@ -1162,7 +1042,7 @@ public static class BTU
                             Sound = new Sound()
                             {
                                 Type = SoundType.Audio,
-                                Audio = new(){ FileId = "CQACAgIAAxkBAAICU2NR5O5kgVuli_DZPljpD_Uncz9RAALqGwADhZFKoKkgUvAvGaIqBA" }
+                                Audio = new(){ FileId = "CQACAgIAAxkBAAIUWmNZAy-4ORbaq33RqVxM0RarnP51AAI6IgACeGzISvy4gwR9ah01KgQ" }
                             }
                         }
                     },
@@ -1190,9 +1070,9 @@ public static class BTU
                          new Media()
                         {
                             //photo20
-                            Caption = "Идем дальше? Поворачивай налево на перекрестке и дойди до главного корпуса  Сибирского государственного медицинского университета.",
+                            Caption = "Идем дальше?\n\nПоворачивай налево на перекрестке и дойди до <b>главного корпуса  Сибирского государственного медицинского университета.</b>",
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIHCGNU3ATyXWns3qHE2oPxiD1pSvWcAAKVvzEbL4aoSvYFxi6gkRmaAQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUXGNZA3y0XnR9VeMGIqZypyuxVmtpAALdvjEbeGzISuLsfGaywe6zAQADAgADeQADKgQ"}
                         }
                     }
                 }
@@ -1208,7 +1088,7 @@ public static class BTU
                 Latitude = 56.472977,
                 Longitude = 84.950107,
                 Label = "Факультетские клиники СибГМУ",
-                Address = "пр. Ленина, 38; Факультетские клиники СибГМУ"
+                Address = "пр. Ленина, 38, Факультетские клиники СибГМУ"
             },
         };
         var order14 = new List<StepInStage>()
@@ -1235,9 +1115,9 @@ public static class BTU
                          new Media()
                         {
                             //photo21
-                            Caption = "Перед тобой главный корпус одного из старейших и наиболее авторитетных российских медицинских вузов – СибГМУ.",
+                            Caption = "Перед тобой <b>главный корпус</b> одного из старейших и наиболее авторитетных российских медицинских вузов – <b>СибГМУ.</b>",
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIHCmNU3dz2U0LSUeIs07mZAxaU6yZUAAKevzEbL4aoSnMzDv_rmqwfAQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUXmNZA9O8O5-cockE61hE8l315ywiAALkvjEbeGzISkRg_MVREtWYAQADAgADeQADKgQ"}
                         }
                     }
                 }
@@ -1258,7 +1138,7 @@ public static class BTU
                             Sound = new Sound()
                             {
                                 Type = SoundType.Audio,
-                                Audio = new(){ FileId = "CQACAgIAAxkBAAICVWNR5PbZLEvWn6Uy2OKOrctngtg9AALrGwADhZFKWyQKoU2qfgYqBA" }
+                                Audio = new(){ FileId = "CQACAgIAAxkBAAIUYGNZA_5n-HORzKEXD46BNWJssD3HAAJAIgACeGzISpzhSieGZeCfKgQ" }
                             }
                         }
                     },
@@ -1274,6 +1154,7 @@ public static class BTU
                 }
             }
         };
+        // тебе нужно вернуться
         var step60 = new Step()
         {
             Fragments = new()
@@ -1281,7 +1162,7 @@ public static class BTU
                 new Fragment()
                 {
                     Type = FragmentType.Text,
-                    Text = "Тебе нужно вернуться на проспект Ленина и перейти по пешеходному переходу со светофором на другую сторону. Мы — на площади Ново-Соборной. Обрати внимание на здание на углу площади и проспекта Ленина.",
+                    Text = "Тебе нужно вернуться на проспект Ленина и перейти по пешеходному переходу со светофором на другую сторону.\n\nМы — <b>на площади Ново-Соборной.</b> Обрати внимание на здание на углу площади и проспекта Ленина.",
                 }
             }
         };
@@ -1297,14 +1178,15 @@ public static class BTU
                          new Media()
                         {
                             //photo22
-                            Caption = "Это, между прочим, одно из старейших зданий города! Построено двухэтажное кирпичное здание в стиле классицизма в 1842 году. До 1919 года в нем располагалось губернское управление, затем – органы советской власти. А в 1928 году его передали Сибирскому физико-техническому институту, основанному, кстати, на базе Института прикладной физики Томского технологического института (ныне ТПУ).",
+                            Caption = "Это, между прочим, одно из старейших зданий города!\n\nПостроено двухэтажное кирпичное здание в стиле классицизма в 1842 году. До 1919 года в нем располагалось губернское управление, затем – органы советской власти. А в 1928 году его передали Сибирскому физико-техническому институту, основанному, кстати, на базе Института прикладной физики Томского технологического института (ныне ТПУ).",
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIHDGNU35sRMEDT4jfBNmXvpeAbl83QAAKjvzEbL4aoSu3LdRxrHlt6AQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUYmNZBDwGn4D-B735GWtdKUPMQ-KPAALovjEbeGzISt-uyjHqtTYaAQADAgADeQADKgQ"}
                         }
                     }
                 }
             }
         };
+        //а сейчас поворачивай налево
         var step62 = new Step()
         {
             Fragments = new()
@@ -1358,12 +1240,13 @@ public static class BTU
                             //photo23
                             Caption = "Поздоровайся с Татьяной!",
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIHDmNU5mz5TA0AAXSHWiLv17_QKGJuuAACsb8xGy-GqEqWVQ-RpgmaRAEAAwIAA3kAAyoE"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUZGNZBH2y-3S7cAABEdTmXP-Kbd1yXAAC6b4xG3hsyEqeLU2E0x2okwEAAwIAA3kAAyoE"}
                         }
                     }
                 }
             }
         };
+        // есть в томске ещё одно место
         var step64 = new Step()
         {
             Fragments = new()
@@ -1371,10 +1254,11 @@ public static class BTU
                 new Fragment()
                 {
                     Type = FragmentType.Text,
-                    Text = "Есть в Томске еще одно место, куда студенты приходят перед важными учебными делами и просят помощи и удачи. Это памятник Святой Татьяне. По поверью, Святая Татьяна была покровительницей всех учащихся и студентов. Она помогала «грызть гранит науки», хорошо учиться и сдавать экзамены. Студенты Томска не забывают свою покровительницу: зимой, в самые морозы, они «утепляют» Татьяну, одевая ее в шарф и шапку. Обязательно сделай с Татьяной фото на память!",
+                    Text = "Есть в Томске еще одно место, куда студенты приходят перед важными учебными делами и просят помощи и удачи.\n<b>Это памятник Святой Татьяне.</b>\n\nПо поверью, Святая Татьяна была покровительницей всех учащихся и студентов. Она помогала «грызть гранит науки», хорошо учиться и сдавать экзамены.\n\nСтуденты Томска не забывают свою покровительницу: зимой, в самые морозы, они «утепляют» Татьяну, одевая ее в шарф и шапку. <b>Обязательно сделай с Татьяной фото на память!</b>",
                 }
             }
         };
+        // ну а сейчас я тебе покажу
         var step65 = new Step()
         {
             Fragments = new()
@@ -1382,7 +1266,7 @@ public static class BTU
                 new Fragment()
                 {
                     Type = FragmentType.Text,
-                    Text = "Ну а сейчас я покажу тебе самый молодой университет Томска. Возвращайся к фонтану и посмотри на противоположную сторону проспекта Ленина. ",
+                    Text = "Ну а сейчас я покажу тебе самый молодой университет Томска.\nВозвращайся к фонтану и посмотри на противоположную сторону проспекта Ленина. ",
                 }
             }
         };
@@ -1424,9 +1308,9 @@ public static class BTU
                          new Media()
                         {
                             //photo24
-                            Caption = "Ты видишь перед собой главный корпус Томского государственного университета систем управления и радиоэлектроники (ТУСУР). Это здание с монументальными колоннами известно многим, так как находится напротив главной площади Томска. Но не все знают, что изначально оно было в два раза меньше, никаких колонн вообще не было! Да и вообще у этого здания очень длинная и богатая история, в которой нашлось место и железной дороге, и погрому, и электронике.",
+                            Caption = "Ты видишь перед собой <a href=\"https://tusur.ru/\"><b>главный корпус Томского государственного университета систем управления и радиоэлектроники</b></a> (ТУСУР).\n\nЭто здание с монументальными колоннами известно многим, так как находится напротив главной площади Томска. Но не все знают, что изначально оно было в два раза меньше, никаких колонн вообще не было!\n\nДа и вообще у этого здания очень длинная и богатая история, в которой нашлось место и железной дороге, и погрому, и электронике.",
                             Type = MediaType.Photo,
-                            Photo = new() {FileId = "AgACAgIAAxkBAAIHEGNU5_CM-19moMKvU8g-UQ5fInBUAAK3vzEbL4aoSim_UXh3ZV3_AQADAgADeQADKgQ"}
+                            Photo = new() {FileId = "AgACAgIAAxkBAAIUamNZBZqYnVql50KWAeg11EWIfwQGAALyvjEbeGzISrXNZe9vTDcvAQADAgADeQADKgQ"}
                         }
                     }
                 }
@@ -1447,7 +1331,7 @@ public static class BTU
                             Sound = new Sound()
                             {
                                 Type = SoundType.Audio,
-                                Audio = new(){ FileId = "CQACAgIAAxkBAAICV2NR5QIo_rwedKxuFff9LiCCT_XRAALsGwADhZFKsHUhie1c3xgqBA" }
+                                Audio = new(){ FileId = "CQACAgIAAxkBAAIUZmNZBXAC6R3skgj2f7ejlkaAyIp6AAJMIgACeGzISqCbuA0KnJuLKgQ" }
                             }
                         }
                     },
@@ -1463,6 +1347,7 @@ public static class BTU
                 }
             }
         };
+        // у студентов тусура
         var step68 = new Step()
         {
             Fragments = new()
@@ -1470,10 +1355,11 @@ public static class BTU
                 new Fragment()
                 {
                     Type = FragmentType.Text,
-                    Text = "У студентов ТУСУРа есть необычная традиция. Каждый год в День радио, 7 мая, они выкидывают из окон общежития радиотехнического факультета старые телевизоры и другую неработающую технику. Это очень эффектное зрелище! Традиция зародилась в 1988 году – с тех пор студенты разбивают старые телевизоры в ознаменование победы технического прогресса. Технический мусор после выбрасывания университет передает на переработку.",
+                    Text = "У студентов ТУСУРа есть <i>необычная традиция</i>.\n\nКаждый год в День радио, 7 мая, они выкидывают из окон общежития радиотехнического факультета старые телевизоры и другую неработающую технику. Это очень эффектное зрелище!\n\nТрадиция зародилась в 1988 году – с тех пор студенты разбивают старые телевизоры в ознаменование победы технического прогресса. Технический мусор после выбрасывания университет передает на переработку.",
                 }
             }
         };
+        // мы с тобой можем двигаться дальше
         var step69 = new Step()
         {
             Fragments = new()
@@ -1481,7 +1367,8 @@ public static class BTU
                 new Fragment()
                 {
                     Type = FragmentType.Text,
-                    Text = "Мы с тобой можем двигаться дальше. Предлагаю тебе подойти на остановку и ждать маршрутку. Тебе подойдет любой автобус, который идет в сторону Белого озера: 23, 33, 26, 130, 1, 3 троллейбусы и другие. Выйти нужно на остановке ТГАСУ.",
+                    Text = "Мы с тобой можем двигаться дальше.\n\nПредлагаю тебе подойти на остановку и ждать маршрутку. Тебе подойдет любой автобус, который идет в сторону Белого озера: <b>23, 33, 26, 130, 1, 3 троллейбусы</b> и другие.\n\n<i>Выйти нужно на остановке ТГАСУ.</i>",
+                    Buttons = new(){new(){Type=ButtonType.KeyboardTransition, Label="🚌 Поеду", Target = new(){Name="stage=btu_18_1"}},new() { Type = ButtonType.KeyboardTransition, Label = "🚶‍♂️ Пойду", Target = new() { Name = "stage=btu_18_2" } } }
                 }
             }
         };
@@ -1510,5 +1397,329 @@ public static class BTU
         return stage17;
     }
 
-    // public static Stage CreateStage_BTU_18()
+    //кратное оформление**
+    // да поеду
+    public static Stage CreateStage_BTU_18_1()
+    {
+        var step1 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media,
+            Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIXfmNZyHEo9NWzbDjLdpaaxTr7Yu1WAAI2wzEb6jTRSooNO1WDipMCAQADAgADeQADKgQ"}, Caption ="Лови транспорт, устраивайся поудобнее и слушай историю создания томского центра подготовки инженеров-строителей и архитекторов."}},
+            }}
+        };
+        var step2 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media, Media = new() { new() { Type = MediaType.Sound, Sound = new() { Type = SoundType.Audio, Audio = new() { FileId = "CQACAgIAAxkBAAIXfGNZx7jFl9bzFRQbYYwq6S8hL0zQAAJXJgAC6jTRStuJoc4aw8w9KgQ" } } } }, Buttons = new() { new Button() { Type = ButtonType.InlineLink, Link = "https://telegra.ph/Istoriya-TGASU-10-26", Label = "Расшифровка" } } } }
+        };
+
+        var stage = new Stage()
+        {
+            Name = "btu_18_1",
+            Type = StageType.Regular,
+        };
+        var order = new List<StepInStage>()
+        {
+            new() {AttachedStage = stage, Payload = step1, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 0 },
+        };
+        stage.Steps = order;
+        return stage;
+    }
+    //нет
+    public static Stage CreateStage_BTU_18_2()
+    {
+        var step1 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media,
+            Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIXgGNZyukbJ7c1LkTVKBbqScC9AAEQ1wACOMMxG-o00Ur37WaEbCUEeAEAAwIAA3kAAyoE"}, Caption ="А вот такая дорога у нас пешком."}},
+            }}
+        };
+        var step2 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media, Media = new() { new() { Type = MediaType.Sound, Caption = "Можешь послушать историю создания томского центра подготовки инженеров-строителей и архитекторов.", Sound = new() { Type = SoundType.Audio, Audio = new() { FileId = "CQACAgIAAxkBAAIXgmNZywkoeJof6H-nffb5wCWQNMmlAAJaJgAC6jTRSjfiv1fEiM1HKgQ" } } } }, Buttons = new() { new Button() { Type = ButtonType.InlineLink, Link = "https://telegra.ph/Istoriya-TGASU-10-26", Label = "Расшифровка" } } } }
+        };
+
+        var stage = new Stage()
+        {
+            Name = "btu_18_2",
+            Type = StageType.Regular,
+        };
+        var order = new List<StepInStage>()
+        {
+            new() {AttachedStage = stage, Payload = step1, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 0 },
+        };
+        stage.Steps = order;
+        return stage;
+    }
+    //реклама
+    public static Stage CreateStage_BTU_18_a()
+    {
+        var step1 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media,
+            Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIXhmNZy6AYt1tDORF-51QHjKKR4u11AAI5wzEb6jTRSpub_QIsZa1gAQADAgADeQADKgQ"}, Caption ="А чтобы не устать от новых знаний, предлагаю зайти перекусить по пути!\n\nЕсли любишь пиццу — загляни в <a href=\"https://makelovepizza.ru/tomsk\"><b>“Make Love Pizza”</b></a>. на ​пр. Ленина, 85а. Это кайфовая доставка пиццы и уютные кафешки. Они живут под лозунгом: Кайф! Драйв! Рок - н - ролл! Забегай туда на любимую пиццку или просто послушать винильчик под чашку фильтра.\n\nРебята называют проспект Ленина проспектом Леннона и в своем подвальчике на Леннона проводят вечеринки, тусы, концерты и другие сборища. Шепни, что ты <i>«от Ефима»</i>, и хозяева угостят тебя чашечкой фильтра при любом заказе."}}}}
+        };
+        var step2 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media,
+            Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIXiGNZzGyCK64g1nX6TzFpG31L4YXsAAI9wzEb6jTRStPiLFI1JN0LAQADAgADeQADKgQ"}, Caption ="А второе место – для сладкоежек и любителей кофе.\n\nЭто кондитерская <a href=\"https://torta-torta.ru/\"><b>TORTA</b></a> на Набережной реки Ушайки, 16. Всего в городе 4 таких заведения, но это знаменито своим акцентом на историю Томска. Здесь и карта города, и эксклюзивные открытки и главное — фирменный торт «Томск»! Интересно, почему до сих пор не придумали торт «Студенческий»?\n\nКроме десертов, у Торты есть завтраки в кондитерской по адресу Фрунзе, 98. Пышные панкейки, сендвичи и многое другое:) А специально для тебя Торта <b>дарит скидку 30%</b> на все кофейные напитки. Просто скажи на баре, что ты <i>«от Ефима»</i>. Заходи и пробуй :)"}}}}
+        };
+
+        var step3 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Ещё ты можешь заглянуть в интересное место – <a href=\"https://slav-museum.ru/\"><b>Первый музей славянской мифологии</b></a> на <i>улице Загорной, 12</i>.\n\nИнтересные выставки расскажут об истории, культуре, традициях и обычаях нашей страны. А в большом магазине сувениров чего только нет! ",
+            }}
+        };
+
+
+        var stage = new Stage()
+        {
+            Name = "btu_18_a",
+            Type = StageType.Regular,
+        };
+        var order = new List<StepInStage>()
+        {
+            new() {AttachedStage = stage, Payload = step1, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 0 },
+            new() {AttachedStage = stage, Payload = step3, Order = 3, Delay = 0 },
+        };
+        stage.Steps = order;
+        return stage;
+    }
+
+    // на площади соляной
+    public static Stage CreateStage_BTU_19()
+    {
+        var step = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Мы добрались!\n\nИсторию строительного университета ты уже знаешь. Предлагаю познакомиться с корпусами вуза. Они, кстати, тоже исторические и являются памятниками архитектуры.\n\n<i>Переходи на противоположную сторону улицы и двигайся в сторону второго корпуса ТГАСУ (пл. Соляная, 2, кор. 2)</i>",
+            }}
+        };
+
+        var stage = new Stage()
+        {
+            Name = "btu_19",
+            Type = StageType.Regular,
+            Location = new Spot()
+            {
+                Latitude = 56.496154,
+                Longitude = 84.960206,
+            },
+        };
+        var order = new List<StepInStage>()
+        {
+            new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+        };
+        stage.Steps = order;
+        return stage;
+    }
+    public static Stage CreateStage_BTU_20()
+    {
+        var step1 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media,
+            Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIXimNZ15pKKO6I-WFjGl_v5TcyBgABhQACPsMxG-o00UpdMgdnJyPDtQEAAwIAA3kAAyoE"}, Caption ="<a href=\"https://tsuab.ru/\"><b>Второй корпус ТГАСУ</b></a>, или, как еще его называют, <b>«красный корпус»</b> – памятник истории и архитектуры Томска.\n\nЗданию почти 120 лет. Построил корпус из красного кирпича талантливый архитектор Константин Лыгин для первого в Сибири коммерческого училища."}},
+            }}
+        };
+
+        var step2 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media,
+            Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIXjGNZ2Lvz-moIGIcygVB5nQzzp3q9AAI_wzEb6jTRSm7bx--tiRVIAQADAgADeQADKgQ"}, Caption ="Во внутреннем дворике между корпусами вуза есть интересная локация – <i>Место силы креативных индустрий</i>.\n\nЭто локация в большей степени для творческих людей, где они могут встречаться, обмениваться идеями, проводить презентации, выставки и другие мероприятия. Но площадка используется пока только в теплое время года."}},
+            }}
+        };
+
+        var stage = new Stage()
+        {
+            Name = "btu_20",
+            Type = StageType.Regular,
+            Location = new Spot()
+            {
+                Number = 10,
+                Latitude = 56.496946,
+                Longitude = 84.957289,
+                Label = "2-й корпус ТГАСУ",
+                Address = "пл. Соляная, 2, к. 2"
+            },
+        };
+        var order = new List<StepInStage>()
+        {
+            new() {AttachedStage = stage, Payload = step1, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 0 },
+        };
+        stage.Steps = order;
+        return stage;
+    }
+    public static Stage CreateStage_BTU_21()
+    {
+        var step1 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media,
+            Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIXjmNZ2hEmmhNei3pQu8FOaf22BYULAAJAwzEb6jTRSkPjzwbniDdrAQADAgADeQADKgQ"}, Caption ="Рядом с краснокирпичным творением Лыгина обрати внимание на еще один корпус ТГАСУ. Здание, достроенное в 1937 году, выполнено <i>в абсолютно другом стиле – постконструктивизма</i>"}},
+            }}
+        };
+        var step2 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Строили его для общежития мукомольно-элеваторного института.\n\nПо проекту здание состояло из общежития, 16-квартирного жилого корпуса для преподавателей и столовой. По городской легенде считается, что на стройке использовали кирпич, оставшийся после сноса в 1934 году крупнейшего храма Томска, – Троицкого кафедрального собора. Он стоял на знакомой тебе Ново-Соборной площади.\n\nВ 1952 году общежитие передали строительному институту.",
+            }}
+        };
+
+        var stage = new Stage()
+        {
+            Name = "btu_21",
+            Type = StageType.Regular,
+            Location = new Spot()
+            {
+                Number = 12,
+                Latitude = 56.49595,
+                Longitude = 84.958591,
+                Label = "3-й корпус ТГАСУ",
+                Address = "пл. Соляная, 3"
+            },
+        };
+        var order = new List<StepInStage>()
+        {
+            new() {AttachedStage = stage, Payload = step1, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 0 },
+        };
+        stage.Steps = order;
+        return stage;
+    }
+    public static Stage CreateStage_BTU_22()
+    {
+
+        var step1 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Итак, со строителями разобрались. У нас с тобой остался последний вуз, о котором я хочу рассказать. Придется еще немного покататься на автобусах.",
+            }}
+        };
+        var step2 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media,
+            Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIXkmNZ3FYeJb-5krfqRvwqqLnGRBwUAAJCwzEb6jTRSsy_sdKRqxqVAQADAgADeQADKgQ"}, Caption ="Дойди до остановки «ТГАСУ» у «красного корпуса» и дождись <b>автобус № 8</b>. <i>Тебе нужно доехать до остановки «Киевская».</i>"}},
+            }}
+        };
+        var step3 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media, Media = new() { new() { Caption = "А пока ты едешь, я расскажу тебе историю создания <b>первого педагогического вуза за Уралом</b>.", Type = MediaType.Sound, Sound = new() { Type = SoundType.Audio, Audio = new() { FileId = "CQACAgIAAxkBAAIXkGNZ2-txCbvceEzQY3lIZjbj_2yAAAJdJgAC6jTRSiEgzfOlTirMKgQ" } } } }, Buttons = new() { new Button() { Type = ButtonType.InlineLink, Link = "https://telegra.ph/Istoriya-TGPU-10-27", Label = "Расшифровка" } } } }
+        };
+
+        var stage = new Stage()
+        {
+            Name = "btu_22",
+            Type = StageType.Regular,
+        };
+        var order = new List<StepInStage>()
+        {
+            new() {AttachedStage = stage, Payload = step1, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 0 },
+            new() {AttachedStage = stage, Payload = step3, Order = 3, Delay = 0 },
+        };
+        stage.Steps = order;
+        return stage;
+    }
+    public static Stage CreateStage_BTU_23()
+    {
+        var step = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media,
+            Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIXlGNZ3XRlVgABlXdaeWKpOuCKOzmKdwACQ8MxG-o00UoQG3uU3m7czgEAAwIAA3kAAyoE"}, Caption ="На остановке поверни налево и двигайся в сторону улицы Киевской. Пройди по ней до улицы Герцена и сверни направо."}},
+            }}
+        };
+
+        var stage = new Stage()
+        {
+            Name = "btu_23",
+            Type = StageType.Regular,
+            Location = new Spot()
+            {
+                Latitude = 56.476098,
+                Longitude = 84.97608,
+                Label = "Остановка Киевская",
+                Address = "пересечении ул. Киевской и пр. Фрунзе"
+            },
+        };
+        var order = new List<StepInStage>()
+        {
+            new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+        };
+        stage.Steps = order;
+        return stage;
+    }
+    public static Stage CreateStage_BTU_24()
+    {
+        var step1 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media,
+            Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIXlmNZ3iNFage8yVf6wG9Qm3BE16arAAJEwzEb6jTRSnwXYkdjEVQvAQADAgADeQADKgQ"}, Caption ="Вот и он – <a href=\"https://www.tspu.edu.ru/\"><b>главный корпуса «педа»</b></a>!"}},
+            }}
+        };
+        var step2 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Ну, вот и все!\n\nТы узнал чуть больше об истории возникновения всех высших учебных заведений Томска и зданиях-памятниках, с ними связанных. Ты – герой!\n\nНадеюсь, было интересно и предлагаю посмотреть другие маршруты :)",
+            }}
+        };
+
+        var stage = new Stage()
+        {
+            Name = "btu_24",
+            Type = StageType.Regular,
+            Location = new Spot()
+            {
+                Number = 0,
+                Latitude = 56.475011,
+                Longitude = 84.975884,
+                Label = "Главный корпус ТГПУ",
+                Address = "ул.  Киевская, 60а"
+            },
+        };
+        var order = new List<StepInStage>()
+        {
+            new() {AttachedStage = stage, Payload = step1, Order = 1, Delay = 0 },
+            new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 0 },
+        };
+        stage.Steps = order;
+        return stage;
+    }
+
 }
+
+// public static Stage CreateStage_BTU_18()
+// {
+//     var step = new Step()
+//     {
+//         Fragments = new() { new() { Type = FragmentType.Media,
+//             Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption =""}},
+//             }}
+//     };
+//     var step = new Step()
+//     {
+//         Fragments = new() { new() { Type = FragmentType.Text, Text = "",
+//             }}
+//     };
+//     var step = new Step()
+//     {
+//         Fragments = new() { new() { Type = FragmentType.Media, Media = new() { new() { Type = MediaType.Sound, Sound = new() { Type = SoundType.Audio, Audio = new() { FileId = "" } } } }, Buttons = new() { new Button() { Type = ButtonType.InlineLink, Link = "", Label = "Расшифровка" } } } }
+//     };
+
+//     var stage = new Stage()
+//     {
+//         Name = "btu_",
+//         Type = StageType.Regular,
+//         Location = new Spot()
+//         {
+//             Number = 0,
+//             Latitude = 56.,
+//             Longitude = 84.,
+//             Label = "П",
+//             Address = ""
+//         },
+//     };
+//     var order = new List<StepInStage>()
+//         {
+//             new() {AttachedStage = stage, Payload = step, Order = 1, Delay = 0 },
+//         };
+//     stage.Steps = order;
+//     return stage;
+// }

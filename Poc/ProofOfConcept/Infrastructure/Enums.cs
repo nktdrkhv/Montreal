@@ -24,7 +24,7 @@ public enum MediaType { Photo, Video, VideoNote, Sound, Sticker }
 public enum SoundType { Audio, Voice }
 
 public enum ButtonType { InlineRecommend, InlineLink, InlineReplace, InlineTransition, KeyboardTransition }
-
+//inlineNotification
 
 //------------------------------------
 
