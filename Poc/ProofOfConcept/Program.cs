@@ -6,6 +6,7 @@ using Montreal.Bot.Poc.Models;
 using Montreal.Bot.Poc.Interfaces;
 
 IHost host = Host.CreateDefaultBuilder(args)
+    .UseSystemd()
     .ConfigureServices((context, services) =>
     {
         services.AddHttpClient("telegram_bot_client")

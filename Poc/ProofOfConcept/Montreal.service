@@ -1,0 +1,14 @@
+[Unit]
+Description=Yefim Bot
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/dotnet /srv/HelloWorld/HelloWorld.dll
+SyslogIdentifier=Montreal
+User=root
+Restart=always                    
+RestartSec=3 
+Environment=DOTNET_ROOT=/usr/lib64/dotnet
+
+[Install]
+WantedBy=multi-user.target
