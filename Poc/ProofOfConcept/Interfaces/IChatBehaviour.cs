@@ -4,7 +4,7 @@ using Montreal.Bot.Poc.Models;
 
 namespace Montreal.Bot.Poc.Interfaces;
 
-public interface IChatBehaviour
+public interface IChatBehaviour : IDisposable
 {
     ITelegramChat Chat { get; set; }
     Task SubmitAsync(string text);

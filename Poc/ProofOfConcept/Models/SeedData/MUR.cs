@@ -667,7 +667,7 @@ public static class MUR
                 Latitude = 56.478462,
                 Longitude = 84.951279,
                 Label = "Окна моего детства",
-                Address = "ул. Советская, 19, рядом",
+                Address = "ул. Советская, 19 (рядом)",
             }
         };
         var order = new List<StepInStage>()
@@ -712,7 +712,7 @@ public static class MUR
                 Latitude = 54.479947,
                 Longitude = 84.952790,
                 Label = "Пошел по наклонной",
-                Address = "ул. Советская, 19, рядом",
+                Address = "ул. Советская, 19 (рядом)",
             }
         };
         var order = new List<StepInStage>()
@@ -754,7 +754,7 @@ public static class MUR
                 Latitude = 56.480465,
                 Longitude = 84.953359,
                 Label = "Тэги",
-                Address = "ул. Советская, 16а, рядом",
+                Address = "ул. Советская, 16а (рядом)",
             }
         };
         var order = new List<StepInStage>()
@@ -795,7 +795,7 @@ public static class MUR
                 Latitude = 56.482738,
                 Longitude = 84.953478,
                 Label = "Вера. Надежда. Любовь",
-                Address = "ул. Нахановича, рядом",
+                Address = "ул. Нахановича (рядом)",
             }
         };
         var order = new List<StepInStage>()
@@ -880,7 +880,7 @@ public static class MUR
                 Latitude = 56.482842,
                 Longitude = 84.949886,
                 Label = "«Это не кино»",
-                Address = "ул. Нахановича, 7, рядом",
+                Address = "ул. Нахановича, 7 (рядом)",
             }
         };
         var order = new List<StepInStage>()
@@ -924,7 +924,7 @@ public static class MUR
                 Latitude = 56.482728,
                 Longitude = 84.949341,
                 Label = "Серия работ «Good Bad»",
-                Address = "пр. Ленина, 101, рядом",
+                Address = "пр. Ленина, 101 (рядом)",
             }
         };
         var order = new List<StepInStage>()
@@ -1242,7 +1242,7 @@ public static class MUR
                 Latitude = 56.486376,
                 Longitude = 84.952050,
                 Label = "Птицы знают",
-                Address = "Пионерский переулок, 3а, рядом",
+                Address = "Пионерский переулок, 3а (рядом)",
             }
         };
         var order = new List<StepInStage>()
@@ -1353,7 +1353,7 @@ public static class MUR
                 Latitude = 56.488564,
                 Longitude = 84.951475,
                 Label = "Томские мотивы",
-                Address = "ул. Бакунина, 2а, рядом",
+                Address = "ул. Бакунина, 2а (рядом)",
             }
         };
         var order = new List<StepInStage>()

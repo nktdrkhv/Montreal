@@ -9,4 +9,5 @@ public class FileIdentity
     public Guid Id { get; set; } = Guid.NewGuid();
     public string LocalPath { get; set; } = default!;
     public string TelegramFileId { get; set; } = default!;
+    public string TelegramBot { get; set; } = default!;
 }

@@ -10,6 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="Geolocation" Version="1.2.1" />
+    <PackageReference Include="Hangfire" Version="1.7.31" />
+    <PackageReference Include="Hangfire.Storage.SQLite" Version="0.3.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SQLite" Version="6.0.9" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="6.0.0" />

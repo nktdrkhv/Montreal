@@ -1,3 +1,9 @@
+
+14. Кони, бани и аномалии (56.465976, 84.949264) (рядом Ленина 30с3)
+
+15. Инженерный дворик (56.465991, 84.949908) (рядом Ленина 30с3)
+
+
 граффити муралы     AgACAgIAAxkBAAICXmNSahsMpUnhgGKwT7f2nZbGfrnQAAKOxDEbxMCYSnUQMqL8aoLYAQADAgADeQADKgQ
 на автобусе         AgACAgIAAxkBAAICYGNSajUFOle24fA2supaWsmPBJBHAAKPxDEbxMCYShys8og0ToOzAQADAgADeQADKgQ
 от н до тгасу       AgACAgIAAxkBAAICYmNSakXcqY7i-duQwGR1qMzesAZ8AAKRxDEbxMCYSkDekr_tu5trAQADAgADeQADKgQ
@@ -6,7 +12,6 @@
 по ту сторону       AgACAgIAAxkBAAICaGNSanMJAaxJlST73nKB9-VRbBBlAAKUxDEbxMCYStZE8fDAUIb-AQADAgADeQADKgQ
 
 inline маршруты
-
 
 
 По большому томскому университету

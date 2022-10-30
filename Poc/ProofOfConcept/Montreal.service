@@ -3,7 +3,7 @@ Description=Yefim Bot
 
 [Service]
 Type=notify
-ExecStart=/usr/bin/dotnet /srv/HelloWorld/HelloWorld.dll
+ExecStart=/usr/bin/dotnet /srv/Montreal/Montreal.Bot.Poc.dll
 SyslogIdentifier=Montreal
 User=root
 Restart=always                    

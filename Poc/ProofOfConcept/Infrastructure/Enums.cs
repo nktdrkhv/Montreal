@@ -17,13 +17,15 @@ public enum ContentType { None = 0, Step = 1, Stage = 2, Route = 4, All = 7 }
 
 public enum StageType { Regular, Welcome, RouteList, Final }
 
+public enum SpotType { None, Label, Address, Number }
+
 public enum FragmentType { Text, Media, Location, Timer, Poll }
 
 public enum MediaType { Photo, Video, VideoNote, Sound, Sticker }
 
 public enum SoundType { Audio, Voice }
 
-public enum ButtonType { InlineRecommend, InlineLink, InlineReplace, InlineTransition, KeyboardTransition }
+public enum ButtonType { InlinePause, InlineShare, InlineNotification, InlineLink, InlineReplace, InlineTransition, KeyboardTransition }
 //inlineNotification
 
 //------------------------------------

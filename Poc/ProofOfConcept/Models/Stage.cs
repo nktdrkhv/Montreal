@@ -10,6 +10,4 @@ public class Stage : ContentBase
     public StageType Type { get; set; }
     public List<StepInStage> Steps { get; set; } = default!;
     public Spot? Location { get; set; }
-
-    //public List<ContentPointer> Pointers { get; set; }
 }

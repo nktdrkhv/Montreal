@@ -23,7 +23,7 @@ public class Button
     {
         get
         {
-            if (Type is ButtonType.InlineLink or ButtonType.InlineRecommend)
+            if (Type is ButtonType.InlineLink or ButtonType.InlineNotification)
                 return _label;
             else
             {

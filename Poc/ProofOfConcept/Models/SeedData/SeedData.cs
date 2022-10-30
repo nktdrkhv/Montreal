@@ -29,6 +29,7 @@ public static class SeedData
         {
             context.Routes.Add(BTU.CreateRoute_BTU());
             context.Routes.Add(MUR.CreateRoute_MMUR());
+            context.Routes.Add(EUR.CreateRoute_EUR());
             wasAction = true;
         }
 
@@ -162,7 +163,7 @@ public static class SeedData
                     Label ="экспресс-кофейня «Территория Кофе»",
                 },
                 Buttons = new() {
-                    //new() {Type = ButtonType.InlineReplace, Label ="Идём гулять", Target = new(){Name = "step=choose_0"}},
+                    new() {Type = ButtonType.InlineTransition, Label ="Идём гулять", Target = new(){Name = "route=eur"}},
                     new() {Type = ButtonType.InlineReplace, Label ="Назад", Target = new(){Name = "step=choose_0"}},
                 }}}
         };
@@ -246,7 +247,7 @@ public static class SeedData
             Fragments = new() { new() { Type = FragmentType.Text,
                 Text = "<b>О проекте</b>\nВ процессе заполнения",
                 Buttons = new() {
-                    new() {Type = ButtonType.KeyboardTransition, Label ="Маршруты по томску", Target = new(){Name = "step=start_3"}},
+                    new() {Type = ButtonType.KeyboardTransition, Label ="Маршруты по Томску", Target = new(){Name = "step=start_3"}},
                 }}}
         };
 
@@ -307,7 +308,7 @@ public static class SeedData
                     Label ="экспресс-кофейня «Территория Кофе»",
                 },
                 Buttons = new() {
-                    new() {Type = ButtonType.KeyboardTransition, Label ="Идём гулять", Target = new(){Name = "step=start_3"}},
+                    new() {Type = ButtonType.InlineTransition, Label ="Идём гулять", Target = new(){Name = "route=eur"}},
                     new() {Type = ButtonType.KeyboardTransition, Label ="Назад", Target = new(){Name = "step=start_3"}},
                 }}}
         };

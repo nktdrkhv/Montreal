@@ -61,4 +61,6 @@ public class MakerBehaviour : IChatBehaviour
         await handler;
     }
     public async Task SubmitAsync(Spot spot) => await Chat.SendAsync($"_Неподдерживаемый тип_");
+
+    public void Dispose() { }
 }

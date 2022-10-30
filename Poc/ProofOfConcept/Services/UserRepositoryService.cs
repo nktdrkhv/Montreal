@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Hangfire;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Montreal.Bot.Poc.Interfaces;
@@ -13,8 +14,26 @@ namespace Montreal.Bot.Poc.Services;
 
 public class UserRepositoryService : IUserRepository
 {
+    private class CachedUser
+    {
+        public long LastActivityInUnixTime { get; set; }
+        public IChatBehaviour ChatBehaviour { get; set; } = default!;
+        //slim semaphore
+    }
+
     private static string _secret = "add"; //Guid.NewGuid().ToString()[0..7];
-    private static ConcurrentDictionary<long, IChatBehaviour> _cachedUsers = new();
+    private static ConcurrentDictionary<long, CachedUser> _cachedUsers = new();
+
+    //static UserRepositoryService() => BackgroundJob.Schedule(() => ForgetOfflineUsers(), TimeSpan.FromMinutes(30));
+
+    private static void ForgetOfflineUsers()
+    {
+        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        foreach (var elem in _cachedUsers)
+            if (elem.Value.LastActivityInUnixTime - now > 2700)
+                if (_cachedUsers.TryRemove(elem.Key, out var cachedUser))
+                    cachedUser.ChatBehaviour.Dispose();
+    }
 
     private ILogger<UserRepositoryService> _logger;
     private IServiceProvider _provider;
@@ -52,14 +71,17 @@ public class UserRepositoryService : IUserRepository
         if (_cachedUsers.TryGetValue(id, out var cachedUser))
         {
             _logger.LogInformation($"User [{id}] restored. Update [{update.Id}] is [{update.Type}]");
-            if (update.Message?.Text?.StartsWith("/forget") is true)
+            if (update.Message?.Text?.StartsWith("/forget") is true && _cachedUsers.TryRemove(id, out var removedUser))
             {
-                _cachedUsers.TryRemove(id, out var _);
+                removedUser.ChatBehaviour.Dispose();
                 _logger.LogInformation($"User [{id}] is forgotten");
                 return null;
             }
             else
-                return cachedUser;
+            {
+                cachedUser.LastActivityInUnixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                return cachedUser.ChatBehaviour;
+            }
         }
         else
         {
@@ -87,7 +109,7 @@ public class UserRepositoryService : IUserRepository
 
             _logger.LogInformation($"User [{id} = {user.Username ?? "without nickname"}] 's behaviour is created");
 
-            if (_cachedUsers.TryAdd(id, behaviour))
+            if (_cachedUsers.TryAdd(id, new() { ChatBehaviour = behaviour, LastActivityInUnixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds() }))
                 return behaviour;
             else
                 return null;

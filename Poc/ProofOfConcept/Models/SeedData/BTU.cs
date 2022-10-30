@@ -46,7 +46,7 @@ public static class BTU
         {
             new() {AttachedRoute = route, From = stage2, To = stage3_1},
             new() {AttachedRoute = route, From = stage2, To = stage3_2},
-            new() {AttachedRoute = route, From = stage3_1, To = stage4},
+            new() {AttachedRoute = route, From = stage3_1, To = stage3_2},
             new() {AttachedRoute = route, From = stage3_2, To = stage4},
             new() {AttachedRoute = route, From = stage4, To = stage5},
             new() {AttachedRoute = route, From = stage5, To = stage6},
@@ -136,7 +136,7 @@ public static class BTU
     {
         var step = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media, Media = new() { new() { Type = MediaType.Sound, Sound = new() { Type = SoundType.Audio, Audio = new() { FileId = "CQACAgIAAxkBAAIUIGNY3Pyo7Gt9YukQ02MgsxdVXtfUAAIvIQACeGzISlpV_WgfYgEaKgQ" } } } }, Buttons = new() { new Button() { Line = 1, Type = ButtonType.InlineLink, Link = "https://telegra.ph/Istoriya-glavnogo-korpusa-TPU-10-23", Label = "Расшифровка" }, new Button() { Line = 2, Type = ButtonType.InlineTransition, Label = "Послушал", Target = new() { Name = "stage=btu_4" } } } } }
+            Fragments = new() { new() { Type = FragmentType.Media, Media = new() { new() { Type = MediaType.Sound, Sound = new() { Type = SoundType.Audio, Audio = new() { FileId = "CQACAgIAAxkBAAIUIGNY3Pyo7Gt9YukQ02MgsxdVXtfUAAIvIQACeGzISlpV_WgfYgEaKgQ" } } } }, Buttons = new() { new Button() { Line = 1, Type = ButtonType.InlineLink, Link = "https://telegra.ph/Istoriya-glavnogo-korpusa-TPU-10-23", Label = "Расшифровка" }, new Button() { Line = 2, Type = ButtonType.InlineTransition, Label = "Послушал", Target = new() { Name = "stage=btu_3_2" } } } } }
         };
         var stage = new Stage()
         {

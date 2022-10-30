@@ -26,13 +26,9 @@ public class BotDbContext : DbContext
     public DbSet<FileBase> Files => Set<FileBase>();
 
 
-    public BotDbContext()
-    {
-        //Database.EnsureDeleted();
-        Database.EnsureCreated();
-    }
+    public BotDbContext() => Database.EnsureCreated();
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlite("Data Source=Montreal.db");
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlite($"Data Source={Path.Combine("Files", "DataBases", "Montreal.db")}")/*.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)*/;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

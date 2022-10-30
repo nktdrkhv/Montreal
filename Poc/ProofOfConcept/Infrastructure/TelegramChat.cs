@@ -35,7 +35,7 @@ public class TelegramChat : ITelegramChat
 
     /*-----------------------------------------------------------------------*/
 
-    private IReplyMarkup? CreateConcreteButtons(Queue<List<string>>? uniteKeyboard)
+    private IReplyMarkup? CreateNativeButtons(Queue<List<string>>? uniteKeyboard)
     {
         if (uniteKeyboard is null)
             return null;
@@ -62,9 +62,9 @@ public class TelegramChat : ITelegramChat
         }
     }
 
-    private IReplyMarkup? CreateConcreteButtons(Fragment fragment, out List<string>? uniqueId)
+    private IReplyMarkup? CreateNativeButtons(Fragment fragment, out List<string>? uniqueId)
     {
-        var inlineButtons = fragment?.Buttons?.Where(b => b.Type is ButtonType.InlineLink or ButtonType.InlineTransition or ButtonType.InlineReplace or ButtonType.InlineRecommend).GroupBy(b => b.Line);
+        var inlineButtons = fragment?.Buttons?.Where(b => b.Type is ButtonType.InlineLink or ButtonType.InlineTransition or ButtonType.InlineReplace or ButtonType.InlineNotification).GroupBy(b => b.Line);
         if (inlineButtons?.Count() == 0)
         {
             uniqueId = null;
@@ -92,7 +92,7 @@ public class TelegramChat : ITelegramChat
                         row.Add(InlineKeyboardButton.WithCallbackData(button.Label!, $"replace {button.UniqueId!}"));
                         uniqueId.Add(button.UniqueId!);
                         break;
-                    case ButtonType.InlineRecommend:
+                    case ButtonType.InlineNotification:
                         row.Add(InlineKeyboardButton.WithSwitchInlineQuery(button.Label!));
                         break;
                     default:
@@ -109,6 +109,7 @@ public class TelegramChat : ITelegramChat
 
     /*-----------------------------------------------------------------------*/
 
+    // public async Task<Message> SendAsync(PreparedFragment fragment);
     public async Task<Message> SendAsync(Fragment fragment, Queue<List<string>>? uniteKeyboard = null, bool clearReplyMarkup = false)
     {
         IReplyMarkup? replyMarkup = null;
@@ -118,7 +119,7 @@ public class TelegramChat : ITelegramChat
         MediaType? mediaType = null;
 
         if (!clearReplyMarkup)
-            replyMarkup = CreateConcreteButtons(fragment, out uniqueId) ?? CreateConcreteButtons(uniteKeyboard);
+            replyMarkup = CreateNativeButtons(fragment, out uniqueId) ?? CreateNativeButtons(uniteKeyboard);
         else
             replyMarkup = new ReplyKeyboardRemove();
 
@@ -200,7 +201,7 @@ public class TelegramChat : ITelegramChat
     {
         if (_namedSentMessages.TryGetValue(uniqueId, out var sentMessage))
         {
-            IReplyMarkup? newMarkup = CreateConcreteButtons(fragment, out var newUniqueId);
+            IReplyMarkup? newMarkup = CreateNativeButtons(fragment, out var newUniqueId);
 
             if (sentMessage.fragmentType == fragment.Type)
             {

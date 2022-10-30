@@ -152,7 +152,7 @@ public class PersonBehaviour : IChatBehaviour
                 if (_currentContent is not null)
                 {
                     //todo: поиск существующего поинтера, чтобы не плодить... и исключить из каскадого удаления
-                    var activity = new Activity() { Performer = _person, Pointer = _currentContent! }; //todo: найти существующий аналогичный указатель
+                    var activity = new Activity() { Performer = _person, Pointer = _currentContent! };
                     _context.Activities.Add(activity);
                     _previousTime = activity.CurrentTime;
                     await _context.SaveChangesAsync();
@@ -521,12 +521,14 @@ public class PersonBehaviour : IChatBehaviour
                         await Chat.SendAsync(fragment.payload);
                     break;
                 case FragmentType.Timer:
-                    if (fragment.payload.Timer!.Target.IsBinded)
+                    if (fragment.payload.Timer?.Target is Target target && target.IsBinded)
                     {
                         await Task.Delay(TimeSpan.FromSeconds(fragment.payload.Timer!.Delay));
                         await _machine.FireAsync<ContentPointer>(_contentTrigger, fragment.payload.Timer.Target.Pointer!);
                         return;
                     }
+                    else if (fragment.payload.Timer?.Delay is int delay)
+                        await Task.Delay(TimeSpan.FromSeconds(delay));
                     break;
                 default:
                     break;
@@ -560,6 +562,8 @@ public class PersonBehaviour : IChatBehaviour
         if (results.Count() > 0)
             await _machine.FireAsync<ContentPointer>(_contentTrigger, new() { Stage = results.First(), Type = ContentType.Stage });
     }
+
+    public void Dispose() { _context.Dispose(); }
 
     #endregion IChatBehaviour
 }

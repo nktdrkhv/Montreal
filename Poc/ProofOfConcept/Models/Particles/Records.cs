@@ -19,25 +19,5 @@ public record Timer
     /// In seconds
     /// </summary>
     public int Delay { get; set; }
-    public Target Target { get; set; } = default!;
+    public Target? Target { get; set; }
 }
-
-// [Owned]
-// public record ContentPointer
-// {
-//     public ContentType Type { get; set; } = ContentType.None;
-//     public Step? Step { get; set; }
-//     public Stage? Stage { get; set; }
-//     public Route? Route { get; set; }
-// }
-
-// [Owned]
-// public record Spot
-// {
-//     public double? Accuracy { get; set; }
-//     public double Latitude { get; set; }
-//     public double Longitude { get; set; }
-//     public string? Label { get; set; }
-//     public string? Address { get; set; }
-//     public int? Number { get; set; }
-// }
