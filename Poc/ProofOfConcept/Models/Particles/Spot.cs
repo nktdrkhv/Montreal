@@ -11,5 +11,5 @@ public class Spot
     public string? Label { get; set; }
     public string? Address { get; set; }
     public int? Number { get; set; }
-    public SpotType Prefered { get; set; } = SpotType.Label;
+    public SpotType Prefered { get; set; } = SpotType.Address;
 }

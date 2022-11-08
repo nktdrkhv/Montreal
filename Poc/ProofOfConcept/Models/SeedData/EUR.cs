@@ -34,6 +34,7 @@ public static class EUR
 
         var stages = new List<StageSequence>()
         {
+            new() {AttachedRoute = route, From = stage1_ad, To = stage1},
             new() {AttachedRoute = route, From = stage1, To = stage2},
             new() {AttachedRoute = route, From = stage2, To = stage3},
             new() {AttachedRoute = route, From = stage3, To = stage4},
@@ -64,24 +65,29 @@ public static class EUR
         var step1 = new Step()
         {
             Name = "eur_1_coffee_ad",
-            Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIea2NbcmMtW9Cs7jongyTS_ppxsHFkAAKFvzEb3rPhSopkfeAqf72PAQADAgADeQADKgQ"}, Caption ="В такую погоду неплохо в путешествие взять стаканчик кофе... Поэтому, если ты не против, я забегу <b>в «Территорию кофе» на Усова 9Б</b>, возьму себе латте.\n\nЗаодно поздороваюсь с моим другом Михаилом Щеголевым, он открыл эту кофейню, и благодаря ему отсюда начинается день многих студентов. Михаил, кстати, тоже выпускник Томского политеха.\n\nЕсли хочешь, можешь тоже взять с собой горячий напиток в дорогу?"}}, Buttons = new(){new Button(){Type = ButtonType.InlineReplace, Label = "Да, очень хочу", Line =1, Target=new(){Name = "route=eur:step=eur_1_coffee_yes"}}, new Button() { Type = ButtonType.InlineReplace, Label = "Нет, спасибо", Line = 2, Target = new() { Name = "route=eur:step=eur_1_coffee_no" } } }}}
+            Fragments = new() { new() { Type = FragmentType.Text,
+                Text ="В такую погоду неплохо в путешествие взять стаканчик кофе... Поэтому, если ты не против, я забегу <b>в «Территорию кофе» на Усова 9Б</b>, возьму себе латте.\n\nЗаодно поздороваюсь с моим другом Михаилом Щеголевым, он открыл эту кофейню, и благодаря ему отсюда начинается день многих студентов. Михаил, кстати, тоже выпускник Томского политеха.\n\nЕсли хочешь, можешь тоже взять с собой горячий напиток в дорогу?", Buttons = new(){new Button(){Type = ButtonType.InlineReplace, Label = "Да, очень хочу", Line =1, Target=new(){Name = "step=eur_1_coffee_yes"}}, new Button() { Type = ButtonType.InlineReplace, Label = "Нет, спасибо", Line = 2, Target = new() { Name = "step=eur_1_coffee_no" } } }}}
         };
+
         var step2 = new Step()
         {
             Name = "eur_1_coffee_yes",
-            Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIea2NbcmMtW9Cs7jongyTS_ppxsHFkAAKFvzEb3rPhSopkfeAqf72PAQADAgADeQADKgQ"}, Caption ="Отлично, только тебе по секрету: <b>скажи, что ты от Ефима, и тебе сделают скидку…</b>"}}, Buttons = new(){new Button(){Type = ButtonType.InlineReplace, Label = "А что дальше?", Line =1, Target=new(){Name = "route=eur:step=eur_2"}}}}}
+            Fragments = new() { new() { Type = FragmentType.Text,
+                Text ="Отлично, только тебе по секрету: <b>скажи, что ты от Ефима, и тебе сделают скидку…</b>", Buttons = new(){new Button(){Type = ButtonType.InlineTransition, Label = "А что дальше?", Line =1, Target=new(){Name = "route=eur:stage=eur_1"}}}}}
         };
         var step3 = new Step()
         {
             Name = "eur_1_coffee_no",
-            Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIea2NbcmMtW9Cs7jongyTS_ppxsHFkAAKFvzEb3rPhSopkfeAqf72PAQADAgADeQADKgQ"}, Caption ="Дай мне пару секунд, я заберу свой латте, и мы отправимся в путь"}}, Buttons = new(){new Button(){Type = ButtonType.InlineReplace, Label = "А что дальше?", Line = 1, Target = new() { Name = "route=eur:step=eur_2" } }}}}
+            Fragments = new() { new() { Type = FragmentType.Text,
+                Text ="Дай мне пару секунд, я заберу свой латте, и мы отправимся в путь", Buttons = new(){new Button(){Type = ButtonType.InlineTransition, Label = "А что дальше?", Line = 1, Target = new() { Name = "route=eur:stage=eur_1" } }}}}
         };
+        using var db = new BotDbContext();
+        db.Steps.AddRange(step2, step3);
+        db.SaveChanges();
 
         var stage = new Stage()
         {
+            IgnoreAutoButtons = true,
             Name = "eur_1_ad",
             Type = StageType.Regular,
             Location = new Spot()
@@ -129,7 +135,7 @@ public static class EUR
         var step5 = new Step()
         {
             Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIfemNdBjsNkMCoJmwAAYnedEAZzkIN5gACz74xGyM36UojwQu6YPBK8gEAAwIAA3kAAyoE"}, Caption ="Идем, пока слева от нас не появится шлагбаум. Нам к нему 👆"}}, Buttons = new() {new Button(){Type=ButtonType.InlinePause}}}}
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIfemNdBjsNkMCoJmwAAYnedEAZzkIN5gACz74xGyM36UojwQu6YPBK8gEAAwIAA3kAAyoE"}, Caption ="Идем, пока слева от нас не появится шлагбаум. Нам к нему 👆"}}}}
         };
 
         var stage = new Stage()
@@ -141,9 +147,9 @@ public static class EUR
             {
                 new() {AttachedStage = stage, Payload = step1, Order = 1, Delay = 0 },
                 new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step2, Order = 3, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step2, Order = 4, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step2, Order = 5, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step3, Order = 3, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step4, Order = 4, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step5, Order = 5, Delay = 0 },
             };
         stage.Steps = order;
         return stage;
@@ -157,12 +163,12 @@ public static class EUR
         };
         var step2 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIffGNdGteFX3cySLrNDnmS4ttuuofvAAIEvzEbIzfpSsnEYrKLnb89AQADAgADeQADKgQ"}, Caption ="Здания не удалось вписать в общую картину Европейского квартала. Так, ближе к пешеходному переходу, откуда ты пришел, должен был находиться административный флигель, наверное, там бы сейчас работал, не покладая рук, наш ректор.\n\nА еще ближе к тебе хотели построить одноэтажный дом служб с прачечной. Почему эти здания так и не появились, остается только гадать. Возможно, просто не хватило средств. Зато сейчас у нас есть не менее необходимое здание 19-го корпуса, где учатся студенты. "}}}}
         };
         var step3 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media,Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIffmNdGybcJiP5m528InWrtTncSuGRAAIGvzEbIzfpSkXsRctCEDdOAQADAgADeQADKgQ"}, Caption ="Итак, мы входим <i>по ту сторону Европейского квартала</i>. По правой стороне от тебя должна быть лестница, видишь? Спускайся вниз, и идем дальше до следующей точки!"}}}}
         };
         var step4 = new Step()
@@ -199,28 +205,23 @@ public static class EUR
     {
         var step1 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIfgmNdJmOdccAN_aACWZ0rn1rPZFzlAAJLvzEbIzfpShcDFyGMazwQAQADAgADeQADKgQ"}, Caption ="Мы во внутреннем дворе горного корпуса. Тут сохранился <i>небольшой участок деревьев, высаженных самим <b>Василием Афанасьевичем Обручевым!</b></i>"}}}}
         };
         var step2 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIfhGNdJ7Y0Hs5IuyKvq2v2uVe3bAxAAAJSvzEbIzfpSl5J_WC-JMsJAQADAgADeQADKgQ"}, Caption ="Профессор, академик, геолог, географ, писатель-фантаст (хотя бы про «Землю Санникова» ты точно слышал), выдающийся и разносторонний ученый придерживался интересной философии.\n\nЗабирая у природы ресурс, инженер обязан не уничтожить ее целостность полностью, а по возможности, даже приумножить ее богатство. Например, Обручев был инициатором высадки трав, кустарников и деревьев рядом с Закаспийской железной дорогой. Такая система защиты до сих пор является общепризнанной и часто используется.\n\nТак и деревья вокруг старинных корпусов ТПУ помогают зданиям оставаться неподвижными, ведь они находятся на склоне. И сибирские лиственницы, высаженные Обручевым, которые ты видишь перед собой, это еще одно напоминание об инженерной философии."}}}}
         };
         var step3 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIfhmNdJ-En44hf5QJl5i-WLGqNKYKmAAJUvzEbIzfpSqKguY6QUTmRAQADAgADeQADKgQ"}, Caption ="Не отставай! Я убежал немного вперед, двигайся мне навстречу до следующей точки. Догоняй!"}}}}
         };
         var step4 = new Step()
         {
             Fragments = new() { new() { Type = FragmentType.Media,
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIfiGNdJ_KVLjrw9vUF_Fjw9BiKbIBsAAJVvzEbIzfpSjkLpDn-ctofAQADAgADeQADKgQ"}}}}}
-        };
-        var step5 = new Step()
-        {
-            Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIfimNdKApD-UbeKmz1_dfPoe5RW-N-AAJVvzEbIzfpSjkLpDn-ctofAQADAgADeQADKgQ"}}}}}
         };
 
         var stage = new Stage()
@@ -243,7 +244,6 @@ public static class EUR
                 new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 0 },
                 new() {AttachedStage = stage, Payload = step3, Order = 3, Delay = 0 },
                 new() {AttachedStage = stage, Payload = step4, Order = 4, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step5, Order = 5, Delay = 0 },
             };
         stage.Steps = order;
         return stage;
@@ -262,7 +262,7 @@ public static class EUR
         };
         var step3 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIf8GNeAAE6EEQxkr70z4-xDs-NvzGDUgACrsAxGzfK8Uqo2uPhuD2-WAEAAwIAA3kAAyoE"}, Caption ="<b>Надпись The Wall появляется здесь уже около 40 лет.</b> Но ты ничего не пиши, все равно краской замажут, поверь мне! "}}}}
         };
         var step4 = new Step()
@@ -299,12 +299,12 @@ public static class EUR
     {
         var step1 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIf9GNeENEnQtRmaC8j9MmYH_JzjamjAAK-wDEbN8rxSiyOA-1fecFUAQADAgADeQADKgQ"}, Caption ="Химический корпус (пр. Ленина, 43-а) ТПУ многие считают самым мистическим из всех исторических построек.\n\nЧего только стоят истории о подземных ходах, соединявших его с другими корпусами, таинственные маскароны на фасаде – тайна их происхождения и назначения, эксперименты с лекарствами против химического оружия в годы Великой Отечественной войны… И это только часть!\n\nВот ты, например, сейчас стоишь в месте, где в 40-е годы XX века проход был закрыт. Горожане это место старались обходить, а некоторые и вовсе боялись поднять глаза на окна жилой части корпуса. Видишь их?"}}}}
         };
         var step2 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIf9mNeEUo-EO34u1sl_kYPKz3mBViNAAK_wDEbN8rxSq9WAiUOZ0AQAQADAgADeQADKgQ"}, Caption ="Когда-то <b>в этой квартире жил сын самого Лаврентия Берии</b> – великого и ужасного начальника НКВД. Серго Берия и его мать приехали в Томск в эвакуацию в 1942 году.\n\nИзвестно о «Спецобъекте НКВД» тогда было только нескольким приближенным. Поэтому документов, подтверждающих его существование, нет и не могло быть. Откуда тогда слухи?\n\nСтрожайшую секретность портили неоднозначные личности, постоянно крутившиеся возле здания, машины, привозившие продукты, недоступные в те годы в Томске никому, даже высшим чинам института. Сохранились и байки невольных соседей Серго о черноволосом парне, одетом с иголочки, и его улыбке, вызывавшей разве что страх и желание поскорее уйти.\n\nДва года томичи шепотом передавали слухи о сыне Берии. А в 1944 году он уехал из Томска, не оставив о себе почти никакого следа. И лишь изредка старожилы вспоминают о «черноволосом парне», который то ли был, то ли не был в Томске."}}}}
         };
         var step3 = new Step()
@@ -350,11 +350,11 @@ public static class EUR
         };
         var step3 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Text = "Теперь, когда мы пойдем дальше по этой тропе, ты будешь понимать, что она протоптана простыми людьми, которые помогали тем, кто творил историю.", } }
+            Fragments = new() { new() { Type = FragmentType.Text, Buttons = new() { new Button() { Type = ButtonType.InlinePause } }, Text = "Теперь, когда мы пойдем дальше по этой тропе, ты будешь понимать, что она протоптана простыми людьми, которые помогали тем, кто творил историю.", } }
         };
         var step4 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIf_GNeF4hJYYd-GyDXrfMYwPy4K10uAALIwDEbN8rxSkf4jaef45tyAQADAgADeQADKgQ"}, Caption ="Идем прямо и затем поворачиваем налево, а дальше вверх по лестнице. Перед тобой должен открыться вот такой вид."}}}}
         };
         var step5 = new Step()
@@ -392,7 +392,7 @@ public static class EUR
     {
         var step1 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Text = "Поверишь ли ты в то, что там, где ты сейчас стоишь, был огород служителей политеха? А он был. Жители корпусов любили побаловать себя свежими овощами, выращенными буквально под окнами квартир. А когда приходила зима, и снег покрывал профессорские грядки, студенты устраивали здесь нешуточные снежные баталии! А кое-кто поумнее, вроде профессора Бориса Петровича Вейнберга, заливал ледовые башни для экспериментов. Между прочим, в результате был создан термобур и в придачу устройство для консервирования града! Время шло, все менялось – так и бывшие огороды превратились в обычный двор. Но открою тебе секрет: здесь некоторые жильцы из профессорских квартир до сих пор держат небольшие грядки – выращивают клубнику. Но где, не покажу. Пусть это останется небольшой тайной.", } }
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Поверишь ли ты в то, что там, где ты сейчас стоишь, был огород служителей политеха?\n\nА он был. Жители корпусов любили побаловать себя свежими овощами, выращенными буквально под окнами квартир. А когда приходила зима, и снег покрывал профессорские грядки, студенты устраивали здесь нешуточные снежные баталии!\n\nА кое-кто поумнее, вроде профессора Бориса Петровича Вейнберга, заливал ледовые башни для экспериментов. Между прочим, в результате был создан термобур и в придачу устройство для консервирования града! Время шло, все менялось – так и бывшие огороды превратились в обычный двор.\n\nНо открою тебе секрет: здесь некоторые жильцы из профессорских квартир до сих пор держат небольшие грядки – выращивают клубнику. Но где, не покажу. Пусть это останется небольшой тайной.", } }
         };
         var step3 = new Step()
         {
@@ -401,7 +401,7 @@ public static class EUR
         };
         var step2 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgAAFjXhmyaMe1aXgUx6fuP44SL4M_rQACy8AxGzfK8UrMAyiACQb8bwEAAwIAA3kAAyoE"}, Caption ="Как же здесь тихо и спокойно, как будто время остановилось, правда? Насладишься этой атмосферой, можем следовать дальше по маршруту до следующей точки."}}}}
         };
 
@@ -433,23 +433,31 @@ public static class EUR
     {
         var step1 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new(){new(){Type = ButtonType.InlineReplace, Label = "Поближе 🔎", Target = new(){Name = "eur_8_1_zoom"}}} ,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new(){new(){Type = ButtonType.InlineReplace, Label = "Поближе 🔎", Target = new(){Name = "route=eur:step=eur_8_1_zoom"}}} ,
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgBGNeGnFz3yBvKSpDB9Ti2KwaLO0TAALNwDEbN8rxSh4Q34nx2-tAAQADAgADeQADKgQ"}, Caption ="Наш следующий объект восхищения – это парадная дверь. Выглядеть она должна вот так. Видишь?"}}}}
         };
         var step1_1 = new Step()
         {
             Name = "eur_8_1_zoom",
             Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgBmNeGo_aMju1n7kbxaOUYbvObcgBAALOwDEbN8rxSsf1_hE5jBgGAQADAgADeQADKgQ"}, Caption ="Наш следующий объект восхищения – это парадная дверь. Выглядеть она должна вот так. Видишь?"}}}}
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgBmNeGo_aMju1n7kbxaOUYbvObcgBAALOwDEbN8rxSsf1_hE5jBgGAQADAgADeQADKgQ"}, Caption ="Наш следующий объект восхищения – это парадная дверь. Выглядеть она должна вот так.\n\nВидишь?"}}}}
+        };
+        using var db = new BotDbContext();
+        db.Steps.Add(step1_1);
+        db.SaveChanges();
+
+        var step2_1 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Перед тобой забытый парадный ход. Древнегреческий бог Портун, хранитель ключей и входных дверей, давно покинул его. А когда-то многие ученые и профессора именно здесь переступали порог корпуса, приходя к первому директору Томского Технологического института Ефиму Зубашеву. Удивишься, но они могли днями не выходить из здания. А, собственно, зачем?", } }
         };
         var step2 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Text = "Перед тобой забытый парадный ход. Древнегреческий бог Портун, хранитель ключей и входных дверей, давно покинул его. А когда-то многие ученые и профессора именно здесь переступали порог корпуса, приходя к первому директору Томского Технологического института Ефиму Зубашеву. Удивишься, но они могли днями не выходить из здания. А, собственно, зачем?\n\nЕсли из своей квартиры профессор мог напрямую попасть в корпус, а дальше в аудиторию или лабораторию. Конечно, я утрирую! Великим умам необходима прогулка, свежий воздух, но, согласись, если дорога в мир науки ведет через такой красивый порог, то глупо отказываться от возможности его переступить!\n\nУкрашающие вход колонны с лепниной так и зазывают зайти и посмотреть, что же находится по ту сторону. Но, как я и сказал, Портун давно покинул это место…", } }
+            Fragments = new() { new() { Type = FragmentType.Text, /*Buttons = new() { new Button() { Type = ButtonType.InlinePause } },*/ Text = "Если из своей квартиры профессор мог напрямую попасть в корпус, а дальше в аудиторию или лабораторию. Конечно, я утрирую! Великим умам необходима прогулка, свежий воздух, но, согласись, если дорога в мир науки ведет через такой красивый порог, то глупо отказываться от возможности его переступить!\n\nУкрашающие вход колонны с лепниной так и зазывают зайти и посмотреть, что же находится по ту сторону. Но, как я и сказал, Портун давно покинул это место…", } }
         };
         var step3 = new Step()
         {
             Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgCGNeHAABlyJEXY6HwsVMBR4mbHq6GQAC0cAxGzfK8Uq78zw7AhBP1wEAAwIAA3kAAyoE"}, Caption ="И мы его тоже покидаем! Вот тебе маршрут до следующей точки.\n\n"}}}}
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgCGNeHAABlyJEXY6HwsVMBR4mbHq6GQAC0cAxGzfK8Uq78zw7AhBP1wEAAwIAA3kAAyoE"}, Caption ="И мы его тоже покидаем! Вот тебе маршрут до следующей точки."}}}}
         };
 
         var stage = new Stage()
@@ -469,8 +477,9 @@ public static class EUR
         var order = new List<StepInStage>()
             {
                 new() {AttachedStage = stage, Payload = step1, Order = 1, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step3, Order = 3, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step2_1, Order = 2, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step2, Order = 3, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step3, Order = 4, Delay = 0 },
             };
         stage.Steps = order;
         return stage;
@@ -479,17 +488,22 @@ public static class EUR
     {
         var step1 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgCmNeTgb1jAtSj6GDhPbitpl4x4nTAAJUwTEbN8rxSvk6vHZ2hNHGAQADAgADeQADKgQ"}, Caption ="Иногда самое интересное можно пропустить, просто не подняв вовремя голову. Мы с тобой прошли половину маршрута, поэтому давайте разомнем шею и рассмотрим вон ту крышу. Видишь?"}}}}
         };
         var step2 = new Step()
         {
             Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgDGNeTo0PuoLiD6nYzpCvFMDMkI9bAAJVwTEbN8rxSjBksCVBnzHXAQADAgADeQADKgQ"}, Caption ="Когда-то в нашем славном городе жил и работал выдающийся профессор-геофизик Борис Петрович Вейнберг.\n\nДа, да, тот, который строил во дворе корпуса ледяные башни. Он заглядывал в прошлое, изучая льды Арктики, и смотрел в будущее – по его проекту в вузе была собрана первая в мире модель безрельсовой дороги на магнитной подушке. Может быть, слышали про такого Илона Маска? Вот он планирует развить идею Вейнберга.\n\nКроме того, Борис Петрович любил посещать крыши. Зачем? Чтобы наблюдать за звездами, конечно же. И лучше всего ему наблюдалось на самой высокой на тот момент точке города – на крыше физического корпуса ТПУ (пр. Ленина, 43). Оттуда ученый организовал наблюдение за кометой Галлея – в мае 1910 года наша с вами планета пролетела сквозь ее хвост!\n\nВейнберг все это, конечно, видел и все тщательно записал в своем отчете. Так началась история астрономических наблюдений в Томске. Но на этом вполне удивительная история крыши не закончилась – в 1952 году тут установили оборудование для первого публичного сеанса телевещания в городе."}}}}
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgDGNeTo0PuoLiD6nYzpCvFMDMkI9bAAJVwTEbN8rxSjBksCVBnzHXAQADAgADeQADKgQ"}, Caption ="Когда-то в нашем славном городе жил и работал выдающийся профессор-геофизик Борис Петрович Вейнберг.\n\nДа, да, тот, который строил во дворе корпуса ледяные башни. Он заглядывал в прошлое, изучая льды Арктики, и смотрел в будущее – по его проекту в вузе была собрана первая в мире модель безрельсовой дороги на магнитной подушке. Может быть, слышали про такого Илона Маска? Вот он планирует развить идею Вейнберга."}}}}
+        };
+        var step2_1 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Text, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
+                Text ="Кроме того, Борис Петрович любил посещать крыши. Зачем? Чтобы наблюдать за звездами, конечно же. И лучше всего ему наблюдалось на самой высокой на тот момент точке города – на крыше физического корпуса ТПУ (пр. Ленина, 43). Оттуда ученый организовал наблюдение за кометой Галлея – в мае 1910 года наша с вами планета пролетела сквозь ее хвост!\n\nВейнберг все это, конечно, видел и все тщательно записал в своем отчете. Так началась история астрономических наблюдений в Томске. Но на этом вполне удивительная история крыши не закончилась – в 1952 году тут установили оборудование для первого публичного сеанса телевещания в городе."}}
         };
         var step3 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgDmNeTr0iZI8Sr8O158gB5yu0CfKFAAJWwTEbN8rxSrme2EMiIetrAQADAgADeQADKgQ"}, Caption =" Я тебе не случайно предложил размять шею, потому что впереди нас ждет небольшой квест! Тебе придется найти несколько объектов, которые я загадал. Следуй дальше по маршруту и да начнется <i>Квестовый поход</i>!"}}}}
         };
         var step4 = new Step()
@@ -499,7 +513,7 @@ public static class EUR
         };
         var step5 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgEmNeTzX34U5i8eTHossnEsS2_M71AAJYwTEbN8rxSgbdujSbgUjNAQADAgADeQADKgQ"}, Caption ="Дальше нам во внутренний двор. Иди прямо, а затем налево, как на фотографии."}}}}
         };
         var step6 = new Step()
@@ -526,118 +540,136 @@ public static class EUR
             {
                 new() {AttachedStage = stage, Payload = step1, Order = 1, Delay = 0 },
                 new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step3, Order = 3, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step4, Order = 4, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step5, Order = 5, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step6, Order = 6, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step2_1, Order = 3, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step3, Order = 4, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step4, Order = 5, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step5, Order = 6, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step6, Order = 7, Delay = 0 },
             };
         stage.Steps = order;
         return stage;
     }
     public static Stage CreateStage_EUR_10()
     {
+        using var db = new BotDbContext();
+
         var step1 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Text = "Можно подумать, что двор за инженерным корпусом (пр. Ленина, 30-а) не такой уж впечатляющий. Но это пока ты не начнешь его изучать. Итак, как и обещал, я загадываю объект, а ты его находишь:",
-                }}
+            Fragments = new() { new() { Type = FragmentType.Text, Buttons = new() { new Button() { Type = ButtonType.InlinePause } }, Text = "Можно подумать, что двор за инженерным корпусом (пр. Ленина, 30-а) не такой уж впечатляющий. Но это пока ты не начнешь его изучать. Итак, как и обещал, я загадываю объект, а ты его находишь:" } }
         };
 
+        //---
         var step2 = new Step()
         {
             Fragments = new() { new() { Type = FragmentType.Media,
+            Buttons = new(){new(){Type=ButtonType.InlineReplace, Label = "Да", Target = new() {Name = "step=eur_10_2_y"}}, new() { Type = ButtonType.InlineReplace, Label = "Нет", Target = new() { Name = "step=eur_10_2_n" } }, },
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgFmNeVqfj1CENbZn0g1HS4DueRqSPAAJ2wTEbN8rxSoQJNJQUgEFjAQADAgADeQADKgQ"}, Caption ="Это сооружение появилось чуть раньше, чем все имперские корпуса ТПУ, в 1894 году. На некоторых картах ты даже не найдешь его адреса. Нашел?"}}}}
         };
         var step2_y = new Step()
         {
+            Name = "eur_10_2_y",
             Fragments = new() { new() { Type = FragmentType.Media,
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgGGNeVrMbdPuEQIlpBcK6Y5H4X1MiAAJ3wTEbN8rxShhnDmPzWoyRAQADAgADeQADKgQ"}, Caption ="Такой старый, но еще держится!"}}}}
         };
         var step2_n = new Step()
         {
+            Name = "eur_10_2_n",
             Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgGGNeVrMbdPuEQIlpBcK6Y5H4X1MiAAJ3wTEbN8rxShhnDmPzWoyRAQADAgADeQADKgQ"}, Caption ="Вот он, старичок!"}}}}
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIg4mNfMTI-3FfFI97FjjnmjqiGzktLAAKVwTEby3YBS7v3sozltDsIAQADAgADeQADKgQ"}, Caption ="Вот он, старичок!"}}}}
         };
+        db.Steps.AddRange(step2_n, step2_y);
+        //--
 
         var step3 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media,Buttons = new(){new(){Type=ButtonType.InlineReplace, Label = "Да", Target = new() {Name = "step=eur_10_3_y"}}, new() { Type = ButtonType.InlineReplace, Label = "Нет", Target = new() { Name = "step=eur_10_3_n" } }, },
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgGmNeVv06gwWJdD8RGs6NcMbWlRmDAAJ4wTEbN8rxSulJaRa967O1AQADAgADeQADKgQ"}, Caption ="Это не единственное жилое помещение поблизости. Следуй тропой прислуги, и ты найдешь его. Нашел?"}}}}
         };
         var step3_y = new Step()
         {
+            Name = "eur_10_3_y",
             Fragments = new() { new() { Type = FragmentType.Media,
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgHGNeVw29-gABkSnnR5IK8e3qHID4qwACecExGzfK8Uq4GfNBeWlaKwEAAwIAA3kAAyoE"}, Caption ="Вот бы жить тут! Вышел из дома и сразу на учебу!"}}}}
         };
         var step3_n = new Step()
         {
+            Name = "eur_10_3_n",
             Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgHGNeVw29-gABkSnnR5IK8e3qHID4qwACecExGzfK8Uq4GfNBeWlaKwEAAwIAA3kAAyoE"}, Caption ="А, вот он где спрятался! Вот бы жить тут! Вышел из дома и сразу на учебу!"}}}}
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIg5GNfMVxN6FNVlsr-N5lHB-Nj4MjSAAKXwTEby3YBS56ICgPTg_PxAQADAgADeQADKgQ"}, Caption ="А, вот он где спрятался! Вот бы жить тут! Вышел из дома и сразу на учебу!"}}}}
         };
+        db.Steps.AddRange(step3_n, step3_y);
 
         var step4 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media,Buttons = new(){new(){Type=ButtonType.InlineReplace, Label = "Да", Target = new() {Name = "step=eur_10_4_y"}}, new() { Type = ButtonType.InlineReplace, Label = "Нет", Target = new() { Name = "step=eur_10_4_n" } }, },
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgHmNeV0uURHbGW8PRLoNL0RYurPV_AAJ6wTEbN8rxSrXe50lfP456AQADAgADeQADKgQ"}, Caption ="Когда холод, нужно тепло. Котельная нам в помощь. Вода, испаряясь, превращается пар. А куда дым выходит? Нашел?"}}}}
         };
         var step4_y = new Step()
         {
+            Name = "eur_10_4_y",
             Fragments = new() { new() { Type = FragmentType.Media,
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgIGNeV5ynajDXgEKDSpS-6m3zzLlzAAJ7wTEbN8rxSlaSVFHb3saJAQADAgADeQADKgQ"}, Caption ="Красивый вид, наверное, сверху!"}}}}
         };
         var step4_n = new Step()
         {
+            Name = "eur_10_4_n",
             Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgIGNeV5ynajDXgEKDSpS-6m3zzLlzAAJ7wTEbN8rxSlaSVFHb3saJAQADAgADeQADKgQ"}, Caption ="А эта труба вовсе и не прячется. Наверное, красивый вид оттуда на наш университет!"}}}}
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIg3GNfMHkIjYiFi4ySex5SWstsS3eRAAKUwTEby3YBSyqDEpkd-RvnAQADAgADeQADKgQ"}, Caption ="А эта труба вовсе и не прячется. Наверное, красивый вид оттуда на наш университет!"}}}}
         };
+        db.Steps.AddRange(step4_n, step4_y);
 
         var step5 = new Step()
         {
             Fragments = new() { new() { Type = FragmentType.Media,
+            Buttons = new(){new(){Type=ButtonType.InlineReplace, Label = "Да", Target = new() {Name = "step=eur_10_5_y"}}, new() { Type = ButtonType.InlineReplace, Label = "Нет", Target = new() { Name = "step=eur_10_5_n" } }, },
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgImNeV7kgGjPCrMkEaenfOpF4xrxWAAJ8wTEbN8rxSpD9KVfPAaEPAQADAgADeQADKgQ"}, Caption ="Найдешь корпус механический (пр. Ленина, 30, стр.1), найдешь и забытый исторический механизм, который мог доставить груз в открытое окно. Нашел?"}}}}
         };
         var step5_y = new Step()
         {
+            Name = "eur_10_5_y",
             Fragments = new() { new() { Type = FragmentType.Media,
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgJGNeV8hQdeNpGb69KFTHJgmopN9AAAJ-wTEbN8rxSkKlxKR1svqaAQADAgADeQADKgQ"}, Caption ="Интересно, что же с помощью него в окно доставляли… Будет у меня дом, такой же себе сделаю!"}}}}
         };
         var step5_n = new Step()
         {
+            Name = "eur_10_5_n",
             Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgJGNeV8hQdeNpGb69KFTHJgmopN9AAAJ-wTEbN8rxSkKlxKR1svqaAQADAgADeQADKgQ"}, Caption ="А вон где он спрятался! Будет у меня дом, такой же себе сделаю!"}}}}
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIg5mNfMYTpOGaOIb-ugTCIhKh7SYw9AAKYwTEby3YBS8ggr4BAgScCAQADAgADeQADKgQ"}, Caption ="А вон где он спрятался! Будет у меня дом, такой же себе сделаю!"}}}}
         };
+        db.Steps.AddRange(step5_n, step5_y);
 
         var step6 = new Step()
         {
             Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgJmNeV-_YYScg-qkXQjDZx8jWW0t0AAJ_wTEbN8rxSlVZLkGrrE2CAQADAgADeQADKgQ"}, Caption =""}}}}
+            Buttons = new(){new(){Type=ButtonType.InlineReplace, Label = "Да", Target = new() {Name = "step=eur_10_6_y"}}, new() { Type = ButtonType.InlineReplace, Label = "Нет", Target = new() { Name = "step=eur_10_6_n" } }, },
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgJmNeV-_YYScg-qkXQjDZx8jWW0t0AAJ_wTEbN8rxSlVZLkGrrE2CAQADAgADeQADKgQ"}, Caption ="Вот тебе фотография, где множество кирпичей. Это не издевательство. Найди кирпич с фамилией неизвестного купца на ней. Нашел?"}}}}
         };
         var step6_y = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId=""}, Caption ="Вот тебе фотография, где множество кирпичей. Это не издевательство. Найди кирпич с фамилией неизвестного купца на ней. Нашел?"}}}}
-        };
-        var step6_n = new Step()
-        {
+            Name = "eur_10_6_y",
             Fragments = new() { new() { Type = FragmentType.Media,
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgKGNeWBlKFoVObeeHE2OSlsz42AtbAAKAwTEbN8rxSg2EWcvGcX6HAQADAgADeQADKgQ"}, Caption ="Какой же ты глазастый! Будь у меня такое зрение, я бы микроскопом, наверное, и не пользовался никогда!"}}}}
         };
+        var step6_n = new Step()
+        {
+            Name = "eur_10_6_n",
+            Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIg4GNfMMUMD_oJ6MhU2rgH2amjtzNeAAKWwTEby3YBSzX9YHG5VEgMAQADAgADeQADKgQ"}, Caption ="Вот он, красавец! Узнать бы теперь, кто этот человек…"}}}}
+        };
+        db.Steps.AddRange(step6_n, step6_y);
+        db.SaveChanges();
 
         var step7 = new Step()
         {
             Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgKGNeWBlKFoVObeeHE2OSlsz42AtbAAKAwTEbN8rxSg2EWcvGcX6HAQADAgADeQADKgQ"}, Caption ="Вот он, красавец! Узнать бы теперь, кто этот человек…"}}}}
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgKmNeWPXwpSZINsf6IWZOH3naEVtmAAKBwTEbN8rxStXaIWVJmBM-AQADAgADeQADKgQ"}, Caption ="На этом с Квестовым походом все. Надеюсь, тебе понравилось!\n\nИсследовать старинные здания интересно, никогда не знаешь, что еще в них найдешь. Наша прогулка на этом не закончилась, давай двигаться дальше к следующей точке."}}}}
         };
-
         var step8 = new Step()
-        {
-            Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgKmNeWPXwpSZINsf6IWZOH3naEVtmAAKBwTEbN8rxStXaIWVJmBM-AQADAgADeQADKgQ"}, Caption ="На этом с Квестовым походом все. Надеюсь, тебе понравилось! Исследовать старинные здания интересно, никогда не знаешь, что еще в них найдешь. Наша прогулка на этом не закончилась, давай двигаться дальше к следующей точке."}}}}
-        };
-        var step9 = new Step()
         {
             Fragments = new() { new() { Type = FragmentType.Media,
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgLGNeWTAQEK6AHy48Cgg9wWZtahhMAAKCwTEbN8rxSjQIW5Dzn-InAQADAgADeQADKgQ"}}}}}
         };
+
 
         var stage = new Stage()
         {
@@ -661,9 +693,8 @@ public static class EUR
                 new() {AttachedStage = stage, Payload = step4, Order = 4, Delay = 0 },
                 new() {AttachedStage = stage, Payload = step5, Order = 5, Delay = 0 },
                 new() {AttachedStage = stage, Payload = step6, Order = 6, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step7, Order = 7, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step8, Order = 8, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step9, Order = 9, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step7, Order = 8, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step8, Order = 9, Delay = 0 },
             };
         stage.Steps = order;
         return stage;
@@ -682,12 +713,12 @@ public static class EUR
         };
         var step3 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgMmNeWpwaZjJaUGR63AABoBeTyJ_RJQACiMExGzfK8UrWCuTmw4EY5wEAAwIAA3kAAyoE"}, Caption ="А теперь идем в одно из самых моих любимых мест в политехе – внутренний двор за Главным корпусом! Держи маршрут – проходим вперед, а затем сразу направо."}}}}
         };
         var step4 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgNGNeWreiMZtZsBdDTdUU6z5WWUrMAAKJwTEbN8rxSvPQpQLDlQQ6AQADAgADeQADKgQ"}, Caption ="И дальше идем вон до того входа."}}}}
         };
         var step5 = new Step()
@@ -725,19 +756,19 @@ public static class EUR
     {
         var step1 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Text = "Надеюсь, тебе нравится внутренний двор – сейчас это идеальное место для неспешных прогулок. Но таким его никто не задумывал. Появилось это место только тогда, когда стало необходимым. С 1897 по 1900 годы никаких клумб тут не было – шла большая стройка, так что на заднем дворе хранили стройматериалы, да и вообще мало думали о его красоте. Еще здесь был постоялый двор для призванных в армию и место для подготовки техники к сельскохозяйственным работам – к концу XX века чего здесь только не было! Но сейчас я тебе хочу показать настоящий черный ход. Исторически так сложилось, что его всегда располагали зеркально парадному входу с другой стороны здания. Правда, особо его никогда не украшали. Да и зачем? Ведь нужен был черный, он же служебный, ход для вывоза мусора, доставки припасов и прохода прислуги, а никак не для красоты. Сейчас, как вы видите, этот ход облагорожен, а курьеров, доставляющих почту и заказы в университет, можно увидеть не здесь, а у главных дверей.", } }
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Надеюсь, тебе нравится внутренний двор – сейчас это идеальное место для неспешных прогулок. Но таким его никто не задумывал. Появилось это место только тогда, когда стало необходимым.\n\nС 1897 по 1900 годы никаких клумб тут не было – шла большая стройка, так что на заднем дворе хранили стройматериалы, да и вообще мало думали о его красоте. Еще здесь был постоялый двор для призванных в армию и место для подготовки техники к сельскохозяйственным работам – к концу XX века чего здесь только не было!\n\nНо сейчас я тебе хочу показать настоящий черный ход. Исторически так сложилось, что его всегда располагали зеркально парадному входу с другой стороны здания. Правда, особо его никогда не украшали. Да и зачем? Ведь нужен был черный, он же служебный, ход для вывоза мусора, доставки припасов и прохода прислуги, а никак не для красоты.\n\nСейчас, как вы видите, этот ход облагорожен, а курьеров, доставляющих почту и заказы в университет, можно увидеть не здесь, а у главных дверей.", } }
         };
         var step2 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Text = "Иногда через эти двери заходит ректор. Может, и сейчас его получится застать.", Timer = new() { Delay = 3 } } }
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Иногда через эти двери заходит ректор. Может, и сейчас его получится застать."/*, Timer = new() { Delay = 3 } */} }
         };
         var step3 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Text = "Подождем его немного.", Timer = new() { Delay = 3 } } }
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Подождем его немного."/*, Timer = new() { Delay = 3 } */} }
         };
         var step4 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Text = "Еще чуть-чуть подождем. Ты же никуда не торопишься?", Timer = new() { Delay = 4 } } }
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Еще чуть-чуть подождем. Ты же никуда не торопишься?"/*, Timer = new() { Delay = 4 } */} }
         };
         var step5 = new Step()
         {
@@ -762,9 +793,9 @@ public static class EUR
         var order = new List<StepInStage>()
             {
                 new() {AttachedStage = stage, Payload = step1, Order = 1, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step3, Order = 3, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step4, Order = 4, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 3 },
+                new() {AttachedStage = stage, Payload = step3, Order = 3, Delay = 3 },
+                new() {AttachedStage = stage, Payload = step4, Order = 4, Delay = 4 },
                 new() {AttachedStage = stage, Payload = step5, Order = 5, Delay = 0 },
             };
         stage.Steps = order;
@@ -774,15 +805,15 @@ public static class EUR
     {
         var step1 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Text = "Мы сейчас стоим перед проходом через северное крыло Главного корпуса. Пройдем через него мы чуть позже. А пока я хочу, чтобы ты нашел вот этот балкон. <b>ФОТОГРАФИЯ БАЛКОНА?</b> Видишь его?", } }
+            Fragments = new() { new() { Type = FragmentType.Text, Buttons = new() { new Button() { Type = ButtonType.InlinePause } }, Text = "Мы сейчас стоим перед проходом через северное крыло Главного корпуса. Пройдем через него мы чуть позже. А пока я хочу, чтобы ты нашел вот этот балкон. <b>ФОТОГРАФИЯ БАЛКОНА?</b> Видишь его?", } }
         };
         var step2 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Text = "Это еще одна малозаметная архитектурная особенность этого корпуса — балконы. И их сразу два! Признайся, не заметил их? Оба находятся в северном крыле корпуса. Один – с видом на Университетскую рощу, другой – во внутреннем дворе.\n\nИнтересно, что изначально в проекте никаких балконов не было. Лишь со временем, когда в проект внесли две геодезические лаборатории, в Главном корпусе появились «смотровые площадки» для геодезической съемки. Случилось это в 1908 году.\n\nСейчас, правда, балконы по назначению не используют." } }
+            Fragments = new() { new() { Type = FragmentType.Text, Buttons = new() { new Button() { Type = ButtonType.InlinePause } }, Text = "Это еще одна малозаметная архитектурная особенность этого корпуса — балконы. И их сразу два! Признайся, не заметил их? Оба находятся в северном крыле корпуса. Один – с видом на Университетскую рощу, другой – во внутреннем дворе.\n\nИнтересно, что изначально в проекте никаких балконов не было. Лишь со временем, когда в проект внесли две геодезические лаборатории, в Главном корпусе появились «смотровые площадки» для геодезической съемки. Случилось это в 1908 году.\n\nСейчас, правда, балконы по назначению не используют." } }
         };
         var step3 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgOmNeaKIi5fa8eqf3RVd5SJnCVaNfAAKlwTEbN8rxStRCSMAF9T2FAQADAgADeQADKgQ"}, Caption ="Мы движемся к концу нашего маршрута, ныряй в проход под северным крылом…"}}}}
         };
         var step4 = new Step()
@@ -820,7 +851,7 @@ public static class EUR
     {
         var step1 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Text = "Слышал ли ты что-нибудь про 12-й корпус ТПУ (пр. Ленина, 30, стр. 3)?\n\nУверен, что нет, а если и обращал внимание, то наверняка думал, что это просто хозяйственная пристройка. И это, в принципе, правильно. Это здание мы на общем плане первых корпусов и построек ТПУ не найдем, но в начале XX века солдаты использовали его в качестве общей бани.\n\nА еще раньше, если верить предположениям, часть постройки использовали под конюшню. Но самое интересное было позднее – в конце второй половины XX века там находился Сибирский научно-исследовательский центр по исследованию аномальных явлений.\n\n<i>Представляешь, была когда-то и такая государственная организация при вузе.</i>", } }
+            Fragments = new() { new() { Type = FragmentType.Text, Buttons = new() { new Button() { Type = ButtonType.InlinePause } }, Text = "Слышал ли ты что-нибудь про 12-й корпус ТПУ (пр. Ленина, 30, стр. 3)?\n\nУверен, что нет, а если и обращал внимание, то наверняка думал, что это просто хозяйственная пристройка. И это, в принципе, правильно. Это здание мы на общем плане первых корпусов и построек ТПУ не найдем, но в начале XX века солдаты использовали его в качестве общей бани.\n\nА еще раньше, если верить предположениям, часть постройки использовали под конюшню. Но самое интересное было позднее – в конце второй половины XX века там находился Сибирский научно-исследовательский центр по исследованию аномальных явлений.\n\n<i>Представляешь, была когда-то и такая государственная организация при вузе.</i>", } }
         };
         var step2 = new Step()
         {
@@ -854,8 +885,8 @@ public static class EUR
     {
         var step1 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgPmNeaUeqB1CrCpW0Vk7hSK1A0bnYAAKqwTEbN8rxSuIDSVk34bUHAQADAgADeQADKgQ"}, Caption ="<b>Инженерный дворик</b> — новая городская локация. Открылся он к 126-летию со дня основания вуза. И за первые пять месяцев его посетили более 9 000 человек!\n\nЧего там только не было: лекции блогеров и экспертов, выставки современного искусства, концерты, DJ-сеты, мастер-классы… Все сразу и не перечислишь.\n\nЛокацию украшают 139-метровый красочный мурал, инсталляции от молодых художников, фотографии сотрудников ТПУ — снимки топлив будущего и материалов под микроскопом, интерьеров корпусов вуза, исследовательского ядерного реактора, научного оборудования.\n\nИ локация обязательно будет обновляться, так что встретимся с тобой в Инженерном дворике!"}}}}
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
+                Media = new() {new(){Type=MediaType.Photo,  Photo = new(){FileId="AgACAgIAAxkBAAIgPmNeaUeqB1CrCpW0Vk7hSK1A0bnYAAKqwTEbN8rxSuIDSVk34bUHAQADAgADeQADKgQ"}, Caption ="<b>Инженерный дворик</b> — новая городская локация. Открылся он к 126-летию со дня основания вуза. И за первые пять месяцев его посетили более 9 000 человек!\n\nЧего там только не было: лекции блогеров и экспертов, выставки современного искусства, концерты, DJ-сеты, мастер-классы… Все сразу и не перечислишь.\n\nЛокацию украшают 139-метровый красочный мурал, инсталляции от молодых художников, фотографии сотрудников ТПУ — снимки топлив будущего и материалов под микроскопом, интерьеров корпусов вуза, исследовательского ядерного реактора, научного оборудования.\n\nИ локация обязательно будет обновляться, так что встретимся с тобой в Инженерном дворике!"}}}}
         };
         var step2 = new Step()
         {

@@ -1,3 +1,4 @@
+using System.Configuration;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,12 +22,10 @@ public class UserRepositoryService : IUserRepository
         //slim semaphore
     }
 
-    private static string _secret = "add"; //Guid.NewGuid().ToString()[0..7];
     private static ConcurrentDictionary<long, CachedUser> _cachedUsers = new();
 
-    //static UserRepositoryService() => BackgroundJob.Schedule(() => ForgetOfflineUsers(), TimeSpan.FromMinutes(30));
-
-    private static void ForgetOfflineUsers()
+    public static string Secret = default!;
+    public static void ForgetOfflineUsers()
     {
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         foreach (var elem in _cachedUsers)
@@ -42,7 +41,7 @@ public class UserRepositoryService : IUserRepository
     {
         _provider = serviceProvider;
         _logger = logger;
-        _logger.LogInformation($"Maker secret is [{_secret}]");
+        _logger.LogInformation($"Maker secret is [{Secret}]");
     }
 
     public Person GetPerson(long telegramId)
@@ -94,7 +93,7 @@ public class UserRepositoryService : IUserRepository
                 _provider.GetRequiredService<ITelegramBotClient>(),
                 user!, ctn);
 
-            IChatBehaviour behaviour = update.Message?.Text?.StartsWith($"/start {_secret}") switch
+            IChatBehaviour behaviour = update.Message?.Text?.StartsWith($"/start {Secret}") switch
             {
                 true => new MakerBehaviour(
                     telegramChat,

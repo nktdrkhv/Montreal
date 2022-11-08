@@ -20,9 +20,10 @@ public class TelegramChat : ITelegramChat
         _ctn = ctn;
     }
 
+    private int _lastNextMessageId;
     private Queue<Message> _recievedMessages = new();
     private Queue<CallbackQuery> _recievedCallbacks = new();
-    private Queue<Message> _messagesWithReplyMarkup = new(); //todo: убрать или заменить на _namedSentMessages. Заменяет ли его?
+    // private Queue<Message> _messagesWithReplyMarkup = new(); //todo: убрать или заменить на _namedSentMessages. Заменяет ли его?
     /// <summary>
     /// UniqueId for step in PersonBehaviour and
     /// </summary>
@@ -41,15 +42,24 @@ public class TelegramChat : ITelegramChat
             return null;
 
         var replyKeyboard = new List<List<KeyboardButton>>();
-        //todo: временное решение, переосмыслить для 
-        //if (uniteKeyboard.Count > 2)
-        while (uniteKeyboard.TryDequeue(out var line))
+        //todo: временное решение, переосмыслить
+        //---//
+        if (uniteKeyboard.TryPeek(out var first) && first.Count > 2)
         {
-            var row = new List<KeyboardButton>();
-            foreach (var element in line)
-                row.Add(new KeyboardButton(element));
-            replyKeyboard.Add(row);
+            foreach (var label in first)
+                replyKeyboard.Add(new() { label });
         }
+        else
+        {
+            while (uniteKeyboard.TryDequeue(out var line))
+            {
+                var row = new List<KeyboardButton>();
+                foreach (var element in line)
+                    row.Add(new KeyboardButton(element));
+                replyKeyboard.Add(row);
+            }
+        }
+        //---//
 
         if (replyKeyboard.Count == 0)
             return null;
@@ -64,7 +74,7 @@ public class TelegramChat : ITelegramChat
 
     private IReplyMarkup? CreateNativeButtons(Fragment fragment, out List<string>? uniqueId)
     {
-        var inlineButtons = fragment?.Buttons?.Where(b => b.Type is ButtonType.InlineLink or ButtonType.InlineTransition or ButtonType.InlineReplace or ButtonType.InlineNotification).GroupBy(b => b.Line);
+        var inlineButtons = fragment?.Buttons?.Where(b => b.Type is ButtonType.InlineLink or ButtonType.InlineTransition or ButtonType.InlineReplace or ButtonType.InlineNotification or ButtonType.InlinePause).GroupBy(b => b.Line);
         if (inlineButtons?.Count() == 0)
         {
             uniqueId = null;
@@ -81,6 +91,10 @@ public class TelegramChat : ITelegramChat
                 switch (button.Type)
                 {
                     case ButtonType.KeyboardTransition:
+                        break;
+                    case ButtonType.InlinePause:
+                        row.Add(InlineKeyboardButton.WithCallbackData("Далее", "next"));
+                        uniqueId.Add(button.UniqueId!);
                         break;
                     case ButtonType.InlineLink:
                         row.Add(InlineKeyboardButton.WithUrl(button.Label!, button.Link!));
@@ -211,12 +225,16 @@ public class TelegramChat : ITelegramChat
                         await _bot.EditMessageTextAsync(_user.Id, sentMessage.message, fragment.Text!, ParseMode.Html, replyMarkup: newMarkup as InlineKeyboardMarkup, cancellationToken: _ctn);
                         break;
                     case FragmentType.Media:
-                        var handler = sentMessage.mediaType! switch
+                        var media = fragment.Media!.First();
+                        switch (sentMessage.mediaType!)
                         {
-                            MediaType.Photo => _bot.EditMessageMediaAsync(_user.Id, sentMessage.message, new InputMediaPhoto(fragment.Media!.First().Photo!.FileId), newMarkup as InlineKeyboardMarkup, _ctn),
-                            _ => throw new ArgumentException()
-                        };
-                        await handler;
+                            case MediaType.Photo:
+                                await _bot.EditMessageMediaAsync(_user.Id, sentMessage.message, new InputMediaPhoto(media.Photo!.FileId), newMarkup as InlineKeyboardMarkup, _ctn);
+                                await _bot.EditMessageCaptionAsync(_user.Id, sentMessage.message, media.Caption, ParseMode.Html, replyMarkup: newMarkup as InlineKeyboardMarkup);
+                                break;
+                            default:
+                                throw new ArgumentException();
+                        }
                         break;
                     case FragmentType.Location:
                         //? нужно ли удалять прошлое сообщение
@@ -249,8 +267,17 @@ public class TelegramChat : ITelegramChat
 
     public async Task ClearMessageButtons()
     {
-        while (_messagesWithReplyMarkup.TryDequeue(out var message))
+        /*while (_messagesWithReplyMarkup.TryDequeue(out var message))
             await _bot.EditMessageReplyMarkupAsync(_user.Id, message.MessageId, replyMarkup: null, _ctn);
-        _messagesWithReplyMarkup.Clear();
+        _messagesWithReplyMarkup.Clear();*/
+        foreach (var namedMessage in _namedSentMessages.Values.DistinctBy(sm => sm.message))
+        {
+            try
+            {
+                await _bot.EditMessageReplyMarkupAsync(_user!.Id, namedMessage.message, null, _ctn);
+            }
+            catch { }
+        }
+        _namedSentMessages.Clear();
     }
 }

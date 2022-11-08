@@ -308,7 +308,7 @@ public static class SeedData
                     Label ="экспресс-кофейня «Территория Кофе»",
                 },
                 Buttons = new() {
-                    new() {Type = ButtonType.InlineTransition, Label ="Идём гулять", Target = new(){Name = "route=eur"}},
+                    new() {Type = ButtonType.KeyboardTransition, Label ="Идём гулять", Target = new(){Name = "route=eur"}},
                     new() {Type = ButtonType.KeyboardTransition, Label ="Назад", Target = new(){Name = "step=start_3"}},
                 }}}
         };

@@ -5,7 +5,6 @@ using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using Montreal.Bot.Poc.Interfaces;
 using Montreal.Bot.Poc.Helpers;
@@ -84,8 +83,8 @@ public class UpdateHandlerService : IUpdateHandler
             handler = user.SubmitAsync(text);
         else
             handler = Task.CompletedTask;
-        await handler;
         await botClient.AnswerCallbackQueryAsync(callbackQuery.Id);
+        await handler;
     }
 
     public async Task HandleInlineQueryAsync(ITelegramBotClient bot, InlineQuery inlineQuery, CancellationToken ctn)

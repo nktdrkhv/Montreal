@@ -89,6 +89,10 @@ public class PersonBehaviour : IChatBehaviour
             {
                 switch (cmd.Name)
                 {
+                    case "next":
+                        await Chat.ClearMessageButtons();
+                        await DemonstrateReadyFragments();
+                        break;
                     case "start":
                         if (cmd.Arguments is string startArgs && MatchStringData(startArgs) is ContentPointer pointer)
                             await _machine.FireAsync(_contentTrigger, pointer);
@@ -105,19 +109,23 @@ public class PersonBehaviour : IChatBehaviour
                             _allowedLinks.Clear();
                             _allowedPlaces.Clear();
                             _preparedFragments.Clear();
+                            _readyFragments.Clear(); ////
                             _replacementSteps.Clear();
                             _keyboardButtons.Clear();
 
                             await Chat.SendStatusAsync();
                             _currentContent = prevoiousContent;
                             HandleCurrent(presentContent);
-                            await DemonstrateFragments(_preparedFragments!);
+                            //await DemonstrateFragments(_preparedFragments!);
+                            await SetReadyFragments(_preparedFragments);
                         }
                         break;
                     case "replace":
                         if (cmd.Arguments is string uniqueId && _replacementSteps.Find(rs => rs.uniqueId == uniqueId).replacement is Step replacementStep)
                         {
-                            _currentContent = new() { Step = replacementStep, Type = ContentType.Step };
+                            //_currentContent = new() { Step = replacementStep, Type = ContentType.Step };
+                            _currentContent!.Step = replacementStep;
+                            _currentContent!.Type |= ContentType.Step;
                             HandleCurrent(_currentContent, true);
 
                             if (_preparedFragments.First().payload is Fragment determinedFragment)
@@ -147,7 +155,8 @@ public class PersonBehaviour : IChatBehaviour
                 await Chat.SendStatusAsync();
                 NewCurrentDefine(pointer);
                 HandleCurrent(_currentContent!);
-                await DemonstrateFragments(_preparedFragments!);
+                //await DemonstrateFragments(_preparedFragments!);
+                await SetReadyFragments(_preparedFragments);
 
                 if (_currentContent is not null)
                 {
@@ -189,7 +198,8 @@ public class PersonBehaviour : IChatBehaviour
     private List<(Spot coordinate, Stage stage)> _allowedPlaces = new();
     private List<(string label, ContentPointer pointer)> _allowedLinks = new();
     private Queue<List<string>> _keyboardButtons = new();
-    private List<(Fragment payload, int delay, bool hasInlineButton)> _preparedFragments = new();
+    private List<(Fragment payload, int delay, bool hasInlineButton, bool shouldStop)> _preparedFragments = new();
+
     private List<(string uniqueId, Step replacement)> _replacementSteps = new();
 
     #endregion Business logic variables
@@ -354,11 +364,13 @@ public class PersonBehaviour : IChatBehaviour
     private void HandleCurrent(ContentPointer pointer, bool isReplacementProcess = false)
     {
         //Chat.ClearMessageButtons();
+
         if (isReplacementProcess)
         {
-            _preparedFragments.Clear();
-            _replacementSteps.Clear();
+            _preparedFragments.Clear(); //todo: не нужно при ДАЛЕЕ, т.е. портит далее
+            _readyFragments.Clear(); ////
             _keyboardButtons.Clear();
+            //_replacementSteps.Clear();
             //_currentConditions = null;
         }
         else
@@ -366,15 +378,16 @@ public class PersonBehaviour : IChatBehaviour
             _allowedLinks.Clear();
             _allowedPlaces.Clear();
             _preparedFragments.Clear();
+            _readyFragments.Clear(); ////
             _replacementSteps.Clear();
             _keyboardButtons.Clear();
             //_currentConditions = null;
         }
 
-        if (pointer.Type.HasFlag(ContentType.Stage) && !isReplacementProcess && _currentContent?.Stage is Stage stage)
+        if (!isReplacementProcess && pointer.Type.HasFlag(ContentType.Stage) && _currentContent?.Stage is Stage stage)
         {
             HandleStage(stage, _currentContent?.Step);
-            if (pointer.Type.HasFlag(ContentType.Route) && _currentContent?.Route is Route route)
+            if (!stage.IgnoreAutoButtons && pointer.Type.HasFlag(ContentType.Route) && _currentContent?.Route is Route route)
             {
                 var availableStages = (from s in _context.Sequences
                                        where s.AttachedRoute.Id == route.Id && s.From.Id == stage.Id
@@ -385,26 +398,21 @@ public class PersonBehaviour : IChatBehaviour
                     if (_allowedLinks.Find(l => l.pointer?.Stage?.Id == available!.Id).pointer is null) //todo:check
                         notPresent.Add(available);
 
-                bool isLabelessSpot = false;
                 bool isLabelessStage = false;
                 foreach (var indirect in notPresent) //todo: внешний источник текста для 📍 Я на месте
                 {
                     if (indirect.Location is Spot spot)
                     {
                         _allowedPlaces.Add((spot, stage));
-                        string label;
 
-                        if ((spot.Address ?? spot.Label) is string place)
-                            label = $"📍 Я на {place}";
-                        else if (spot.Number is int number)
-                            label = $"📍 Я на месте №{number}";
-                        else if (isLabelessSpot is false)
+                        string label = spot.Prefered switch
                         {
-                            label = $"📍 Я на месте";
-                            isLabelessSpot = true;
-                        }
-                        else
-                            continue;
+                            SpotType.Address => $"📍 Я на {spot?.Address ?? "месте"}",
+                            SpotType.Label => $"📍 Я здесь: {spot?.Label ?? "в нужном месте"}",
+                            SpotType.Number => $"📍 Я на месте №{spot?.Number?.ToString() ?? "месте"}",
+                            SpotType.None => $"📍 Я на {spot?.Address ?? "месте"}",
+                            _ => throw new ArgumentException(),
+                        };
 
                         _allowedLinks.Add((label, new() { Stage = indirect, Type = ContentType.Stage }));
                         _keyboardButtons.Enqueue(new() { label });
@@ -458,7 +466,8 @@ public class PersonBehaviour : IChatBehaviour
             var isLinked = fragment.Buttons is null ? false :
                     fragment.Buttons.Count() == 0 || fragment.Buttons.First().Type == ButtonType.KeyboardTransition ? false : true;
             //var isLinked = fragment.Buttons?.Count() == 0; //todo: некорректное срабатывание
-            _preparedFragments.Add((fragment, delay, isLinked));
+
+            bool shouldStop = false;
             foreach (var button in fragment?.Buttons ?? Enumerable.Empty<Button>())
             {
                 //todo : проверка на наличие лейбла 
@@ -467,6 +476,12 @@ public class PersonBehaviour : IChatBehaviour
                 {
                     button.UniqueId = Guid.NewGuid().ToString()[..7];
                     _replacementSteps.Add((button.UniqueId, replacement));
+                }
+
+                if (button?.Type is ButtonType.InlinePause)
+                {
+                    button.UniqueId = Guid.NewGuid().ToString()[..7];
+                    shouldStop = true;
                 }
 
                 if (button?.Label is string label && button?.Target?.Pointer is ContentPointer pointer)
@@ -481,6 +496,9 @@ public class PersonBehaviour : IChatBehaviour
                         _allowedLinks.Add((button.UniqueId, pointer));
                     }
             }
+
+            _preparedFragments.Add((fragment!, delay, isLinked, shouldStop));
+
             if (keyboardLine.Count > 0)
                 _keyboardButtons.Enqueue(keyboardLine);
         }
@@ -488,20 +506,93 @@ public class PersonBehaviour : IChatBehaviour
 
     private Fragment? FragmentDetermine(Step step) => step.Fragments.Where(f => f.Conditions == null).First(); //todo: compare with current conditions
 
-    private async Task DemonstrateFragments(List<(Fragment payload, int delay, bool isLinked)> fragments)
+
+    private record ReadyFragment(Fragment payload, int delay, bool isLinked, bool shouldStop, (bool clear, Queue<List<string>>? keyboard) k);
+    private Queue<ReadyFragment> _readyFragments = new();
+    private async Task SetReadyFragments(List<(Fragment payload, int delay, bool isLinked, bool shouldStop)> fragments)
     {
-        bool keyboardIsSent = _keyboardButtons.Count() > 0 ? false : true;
+        bool keyboardIsEmpty = _keyboardButtons.Count() > 0 ? false : true;
 
         Fragment? firstUnlinked = null;
-        Fragment? lastUnLinked = null;
+        Fragment? lastUnlinked = null;
         foreach (var frmt in fragments)
             if (!frmt.isLinked)
             {
                 if (firstUnlinked is null)
                     firstUnlinked = frmt.payload;
-                lastUnLinked = frmt.payload;
+                lastUnlinked = frmt.payload;
             }
-        if (firstUnlinked?.Id == lastUnLinked?.Id)
+        if (firstUnlinked?.Id == lastUnlinked?.Id && keyboardIsEmpty)
+            lastUnlinked = null;
+        else
+            firstUnlinked = null;
+
+        foreach (var fragment in fragments)
+        {
+            if (fragment.payload.Id == firstUnlinked?.Id)
+                _readyFragments.Enqueue(new ReadyFragment(fragment.payload, fragment.delay, fragment.isLinked, fragment.shouldStop, (true, null)));
+            else if (fragment.payload.Id == lastUnlinked?.Id)
+                _readyFragments.Enqueue(new ReadyFragment(fragment.payload, fragment.delay, fragment.isLinked, fragment.shouldStop, (false, _keyboardButtons)));
+            else
+                _readyFragments.Enqueue(new ReadyFragment(fragment.payload, fragment.delay, fragment.isLinked, fragment.shouldStop, (false, null)));
+        }
+
+        await DemonstrateReadyFragments();
+    }
+    private async Task DemonstrateReadyFragments()
+    {
+        while (_readyFragments.TryDequeue(out var readyFragment))
+        {
+            switch (readyFragment.payload.Type)
+            {
+                case FragmentType.Location:
+                case FragmentType.Text:
+                case FragmentType.Media:
+                    await Task.Delay(TimeSpan.FromSeconds(readyFragment.delay));
+                    if (readyFragment.k.clear == true)
+                        await Chat.SendAsync(readyFragment.payload, clearReplyMarkup: true);
+                    else if (readyFragment.k.keyboard is not null)
+                        await Chat.SendAsync(readyFragment.payload, readyFragment.k.keyboard);
+                    else
+                        await Chat.SendAsync(readyFragment.payload);
+                    break;
+                case FragmentType.Timer:
+                    //todo: проверить корректость работы на "ожидании проффесора"
+                    if (readyFragment.payload.Timer?.Target is Target target && target.IsBinded)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(readyFragment.payload.Timer!.Delay));
+                        await _machine.FireAsync<ContentPointer>(_contentTrigger, readyFragment.payload.Timer.Target.Pointer!);
+                        return;
+                    }
+                    else if (readyFragment.payload.Timer?.Delay is int delay)
+                        await Task.Delay(TimeSpan.FromSeconds(delay));
+                    break;
+                default:
+                    break;
+            }
+
+            if (readyFragment.shouldStop is true)
+                return;
+        }
+    }
+
+
+    /*private async Task DemonstrateFragments(List<(Fragment payload, int delay, bool isLinked, bool shouldStop)> fragments)
+    {
+        bool keyboardIsEmpty = _keyboardButtons.Count() > 0 ? false : true;
+
+        Fragment? firstUnlinked = null;
+        Fragment? lastUnlinked = null;
+        foreach (var frmt in fragments)
+            if (!frmt.isLinked)
+            {
+                if (firstUnlinked is null)
+                    firstUnlinked = frmt.payload;
+                lastUnlinked = frmt.payload;
+            }
+        if (firstUnlinked?.Id == lastUnlinked?.Id && keyboardIsEmpty)
+            lastUnlinked = null;
+        else
             firstUnlinked = null;
 
         foreach (var fragment in fragments)
@@ -515,12 +606,13 @@ public class PersonBehaviour : IChatBehaviour
                     await Task.Delay(TimeSpan.FromSeconds(fragment.delay));
                     if (fragment.payload.Id == firstUnlinked?.Id)
                         await Chat.SendAsync(fragment.payload, clearReplyMarkup: true);
-                    else if (fragment.payload.Id == lastUnLinked?.Id)
+                    else if (fragment.payload.Id == lastUnlinked?.Id)
                         await Chat.SendAsync(fragment.payload, _keyboardButtons);
                     else
                         await Chat.SendAsync(fragment.payload);
                     break;
                 case FragmentType.Timer:
+                    //todo: проверить корректость работы на "ожидании проффесора"
                     if (fragment.payload.Timer?.Target is Target target && target.IsBinded)
                     {
                         await Task.Delay(TimeSpan.FromSeconds(fragment.payload.Timer!.Delay));
@@ -534,7 +626,7 @@ public class PersonBehaviour : IChatBehaviour
                     break;
             }
         }
-    }
+    }*/
 
     #endregion Business Logic
 

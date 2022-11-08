@@ -15,14 +15,16 @@ IHost host = Host.CreateDefaultBuilder(args)
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
             .UseSQLiteStorage(Path.Combine("Files", "DataBases", "Schedule.db")));
+        services.AddHangfireServer();
 
         services.AddHttpClient("telegram_bot_client")
                 .AddTypedClient<ITelegramBotClient>((httpClient, sp) =>
                 {
-                    //TelegramBotClientOptions options = new(context.Configuration["Telegram:ApiToken"]);
-                    TelegramBotClientOptions options = new("5433978144:AAGGHlGLYfGu5jlS-XirVzEHEAfy-sPYSy0");
+                    TelegramBotClientOptions options = new(context.Configuration["Telegram:Token"]);
                     return new TelegramBotClient(options, httpClient);
                 });
+
+        UserRepositoryService.Secret = context.Configuration["Secrets:Maker"];
 
         services.AddDbContext<BotDbContext>(contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Scoped);
         services.AddScoped<IUserRepository, UserRepositoryService>();
@@ -33,5 +35,8 @@ IHost host = Host.CreateDefaultBuilder(args)
     .Build();
 
 SeedData.DoWork();
+
+host.Services.GetService<IBackgroundJobClient>();
+RecurringJob.AddOrUpdate("clearing-cached-users", () => UserRepositoryService.ForgetOfflineUsers(), "*/30 * * * *");
 
 await host.RunAsync();
