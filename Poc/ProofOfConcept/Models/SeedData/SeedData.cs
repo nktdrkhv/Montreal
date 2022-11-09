@@ -224,7 +224,14 @@ public static class SeedData
         {
             Name = "start_1_3",
             Fragments = new() { new() { Type = FragmentType.Media,
-            Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId="AwACAgQAAxkBAAIPGWNXRhQNkfLMNJyu1wqX_5YsbQnkAAKjFAACitq4UppZonQM4nTxKgQ"}}}},
+            Media = new() {new(){Type=MediaType.Sound, Sound = new() {Type = SoundType.Voice, Voice=new(){FileId="AwACAgQAAxkBAAIPGWNXRhQNkfLMNJyu1wqX_5YsbQnkAAKjFAACitq4UppZonQM4nTxKgQ"}}}}
+        }}
+        };
+
+        var step1_4 = new Step()
+        {
+            Name = "start_1_4",
+            Fragments = new() { new() { Type = FragmentType.Text, Text = "Одна из <i>особенностей</i> бота – автоматический показ сообщений, при приближении к новой локации. Для это нужно <i>транслировать свою геопозицию</i>. Одного часа хватит...\n\nА ещё у меня есть <i>стикеры</i>, не забудь добавить их к себе в коллекцию: просто нажми на стикер выше ☝️"
         }}
         };
 
@@ -238,6 +245,7 @@ public static class SeedData
             new StepInStage() { AttachedStage = startStage, Payload = step1_1, Order = 2, Delay = 0 },
             new StepInStage() { AttachedStage = startStage, Payload = step1_2, Order = 1, Delay = 0 },
             new StepInStage() { AttachedStage = startStage, Payload = step1_3, Order = 3, Delay = 0 },
+            new StepInStage() { AttachedStage = startStage, Payload = step1_4, Order = 4, Delay = 0 },
         };
         startStage.Steps = order;
 
@@ -245,10 +253,11 @@ public static class SeedData
         {
             Name = "start_2",
             Fragments = new() { new() { Type = FragmentType.Text,
-                Text = "<b>О проекте</b>\nВ процессе заполнения",
+                Text = "<b>«Ефим, куда пойдем?»</b> - это интерактивный гид по Томску от команды Томского политеха\n\nЧат-бот предназначен для самостоятельных прогулок по неклассическим маршрутам Томска, связанным со студенчеством, молодежью и историей шести томских университетов.\n\n<b>Команда проекта.</b>\n\n<b>Координатор проекта:</b>\nЕлизавета Кузьмина\n\n<b>Автор идеи персонажа:</b>\nЖанна Вороная\n\n<b>Авторы маршрутов:</b>\nЕкатерина Кирсанова\nДмитрий Гончаров\nСветлана Григорьева\n\n<b>Редактор:</b>\nНаталья Трунова\n\n<b>Дизайн персонажа, дизайн сайта:</b>Максим Климович\n\n<b>Программирование бота:</b>\nНикита Дорохов\n<b>Фотограф:</b>\nЮрий Савич\n\n<b>Голос персонажа:</b>\nВладимир Мейнерт\n\n<b>Звукорежиссёр:</b>\nВладислав Тунев\n\n<b>Проект реализован при поддержке программы «Родные музеи» компании «Газпром нефть».\nВ Томске инициативу поддерживает «Газмпромнефть - Восток».</b>",
                 Buttons = new() {
                     new() {Type = ButtonType.KeyboardTransition, Label ="Маршруты по Томску", Target = new(){Name = "step=start_3"}},
-                }}}
+                }}
+}
         };
 
         var step3 = new Step()

@@ -27,11 +27,18 @@ public class UserRepositoryService : IUserRepository
     public static string Secret = default!;
     public static void ForgetOfflineUsers()
     {
+        // var scope = serviceProvider.CreateScope();
+        // var logger = scope.ServiceProvider.GetService<ILogger<UserRepositoryService>>();
+        Console.WriteLine("Starting of clearing");
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         foreach (var elem in _cachedUsers)
-            if (elem.Value.LastActivityInUnixTime - now > 2700)
+            if (now - elem.Value.LastActivityInUnixTime > 2700)
                 if (_cachedUsers.TryRemove(elem.Key, out var cachedUser))
+                {
                     cachedUser.ChatBehaviour.Dispose();
+                    //logger?.LogInformation($"User [{cachedUser.ChatBehaviour.Chat.Me()}] is forgotten");
+                    Console.WriteLine($"User [{cachedUser.ChatBehaviour.Chat.Me()}] is forgotten");
+                }
     }
 
     private ILogger<UserRepositoryService> _logger;
@@ -69,7 +76,7 @@ public class UserRepositoryService : IUserRepository
 
         if (_cachedUsers.TryGetValue(id, out var cachedUser))
         {
-            _logger.LogInformation($"User [{id}] restored. Update [{update.Id}] is [{update.Type}]");
+            _logger.LogInformation($"User [{id}]. Update [{update.Id}] is [{update.Type}]");
             if (update.Message?.Text?.StartsWith("/forget") is true && _cachedUsers.TryRemove(id, out var removedUser))
             {
                 removedUser.ChatBehaviour.Dispose();
@@ -106,7 +113,7 @@ public class UserRepositoryService : IUserRepository
                     _provider.GetRequiredService<ILogger<PersonBehaviour>>()),
             };
 
-            _logger.LogInformation($"User [{id} = {user.Username ?? "without nickname"}] 's behaviour is created");
+            _logger.LogInformation($"User [{id} = {user.Username ?? "without a nickname"}] 's behaviour is created");
 
             if (_cachedUsers.TryAdd(id, new() { ChatBehaviour = behaviour, LastActivityInUnixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds() }))
                 return behaviour;

@@ -34,7 +34,7 @@ public class Button
                     ContentType.Route => this.Target.Pointer?.Route?.Label,
                     _ => null,
                 };
-                return _label ?? contentLabel ?? "Кнопка";
+                return _label ?? contentLabel;
             }
         }
         set

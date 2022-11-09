@@ -10,7 +10,7 @@ public interface ITelegramChat
     void Add(Message message);
     void Add(CallbackQuery callback);
 
-    Task<Message> SendAsync(Fragment fragment, Queue<List<string>>? uniteKeyboard = null, bool clearReplyMarkup = false);
+    Task<Message> SendAsync(Fragment fragment, Queue<List<string>>? uniteKeyboard = null, bool clearReplyMarkup = false, bool pin = false);
     Task<Message> SendAsync(string text);
     Task SendAsync(Spot spot);
 
@@ -21,4 +21,8 @@ public interface ITelegramChat
 
     Task DeleteRecievedMessageAsync();
     Task ClearMessageButtons();
+
+    Task UnpinAll();
+
+    string Me();
 }

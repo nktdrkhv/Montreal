@@ -9,6 +9,8 @@ namespace Montreal.Bot.Poc.Infrastructure;
 
 public class TelegramChat : ITelegramChat
 {
+    public string Me() => $"{_user.Id} = {_user.FirstName}";
+
     private ITelegramBotClient _bot;
     private User _user;
     private CancellationToken _ctn;
@@ -20,10 +22,11 @@ public class TelegramChat : ITelegramChat
         _ctn = ctn;
     }
 
-    private int _lastNextMessageId;
+    //private int _lastNextMessageId;
     private Queue<Message> _recievedMessages = new();
     private Queue<CallbackQuery> _recievedCallbacks = new();
     // private Queue<Message> _messagesWithReplyMarkup = new(); //todo: убрать или заменить на _namedSentMessages. Заменяет ли его?
+
     /// <summary>
     /// UniqueId for step in PersonBehaviour and
     /// </summary>
@@ -72,12 +75,13 @@ public class TelegramChat : ITelegramChat
         }
     }
 
-    private IReplyMarkup? CreateNativeButtons(Fragment fragment, out List<string>? uniqueId)
+    private IReplyMarkup? CreateNativeButtons(Fragment fragment, out List<string>? uniqueId, out bool done)
     {
         var inlineButtons = fragment?.Buttons?.Where(b => b.Type is ButtonType.InlineLink or ButtonType.InlineTransition or ButtonType.InlineReplace or ButtonType.InlineNotification or ButtonType.InlinePause).GroupBy(b => b.Line);
         if (inlineButtons?.Count() == 0)
         {
             uniqueId = null;
+            done = false;
             return null;
         }
 
@@ -93,7 +97,7 @@ public class TelegramChat : ITelegramChat
                     case ButtonType.KeyboardTransition:
                         break;
                     case ButtonType.InlinePause:
-                        row.Add(InlineKeyboardButton.WithCallbackData("Далее", "next"));
+                        row.Add(InlineKeyboardButton.WithCallbackData(button.Label ?? "Далее", "next"));
                         uniqueId.Add(button.UniqueId!);
                         break;
                     case ButtonType.InlineLink:
@@ -118,13 +122,14 @@ public class TelegramChat : ITelegramChat
                 inlineKeyboard.Add(row);
         }
 
+        done = true;
         return inlineKeyboard.Count() > 0 ? new InlineKeyboardMarkup(inlineKeyboard) : null;
     }
 
     /*-----------------------------------------------------------------------*/
 
     // public async Task<Message> SendAsync(PreparedFragment fragment);
-    public async Task<Message> SendAsync(Fragment fragment, Queue<List<string>>? uniteKeyboard = null, bool clearReplyMarkup = false)
+    public async Task<Message> SendAsync(Fragment fragment, Queue<List<string>>? uniteKeyboard = null, bool clearReplyMarkup = false, bool pin = false)
     {
         IReplyMarkup? replyMarkup = null;
         List<string>? uniqueId = null;
@@ -133,9 +138,17 @@ public class TelegramChat : ITelegramChat
         MediaType? mediaType = null;
 
         if (!clearReplyMarkup)
-            replyMarkup = CreateNativeButtons(fragment, out uniqueId) ?? CreateNativeButtons(uniteKeyboard);
+            replyMarkup = CreateNativeButtons(fragment, out uniqueId, out _) ?? CreateNativeButtons(uniteKeyboard);
         else
             replyMarkup = new ReplyKeyboardRemove();
+
+        // var replyMarkupAfter = CreateNativeButtons(fragment, out uniqueId, out var isInline) ?? CreateNativeButtons(uniteKeyboard);
+        // if (isInline)
+        //     replyMarkup = new ReplyKeyboardRemove();
+        // else
+        //     replyMarkup = replyMarkupAfter;
+
+        //Message message;
 
         switch (fragment.Type)
         {
@@ -175,16 +188,32 @@ public class TelegramChat : ITelegramChat
                 throw new ArgumentException();
         }
 
+
+
         if (uniqueId is not null && uniqueId.Count > 0 && handler is not null)
         {
             var message = await handler;
             var sentMessage = new SentMessage(fragmentType.Value, mediaType, message.MessageId);
             foreach (var id in uniqueId)
                 _namedSentMessages.Add(id, sentMessage);
+
+            // if (isInline && replyMarkupAfter is not null)
+            //     //await _bot.EditMessageTextAsync()
+            //     await _bot.EditMessageReplyMarkupAsync(_user.Id, message.MessageId, replyMarkupAfter as InlineKeyboardMarkup, _ctn);
+
+            if (pin) await _bot.PinChatMessageAsync(_user.Id, message.MessageId, true, _ctn);
             return await Task.FromResult<Message>(message);
         }
         else if (handler is not null)
-            return await handler;
+        {
+            var message = await handler;
+
+            // if (isInline && replyMarkupAfter is not null)
+            //     await _bot.EditMessageReplyMarkupAsync(_user.Id, message.MessageId, replyMarkupAfter as InlineKeyboardMarkup, _ctn);
+
+            if (pin) await _bot.PinChatMessageAsync(_user.Id, message.MessageId, true, _ctn);
+            return await Task.FromResult<Message>(message);
+        }
         else
             throw new ArgumentNullException();
     }
@@ -215,7 +244,7 @@ public class TelegramChat : ITelegramChat
     {
         if (_namedSentMessages.TryGetValue(uniqueId, out var sentMessage))
         {
-            IReplyMarkup? newMarkup = CreateNativeButtons(fragment, out var newUniqueId);
+            IReplyMarkup? newMarkup = CreateNativeButtons(fragment, out var newUniqueId, out _);
 
             if (sentMessage.fragmentType == fragment.Type)
             {
@@ -280,4 +309,6 @@ public class TelegramChat : ITelegramChat
         }
         _namedSentMessages.Clear();
     }
+
+    public async Task UnpinAll() => await _bot.UnpinAllChatMessages(_user.Id, _ctn);
 }

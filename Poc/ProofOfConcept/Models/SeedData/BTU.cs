@@ -93,12 +93,12 @@ public static class BTU
         };
         var step3 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Text = "Начинаем прогулку с места, где был открыт первый за Уралом технический вуз. <a href=\"https://tpu.ru/\">Это Томский политехнический университет.</a> Посмотри, сильно ли здание изменилось за более чем 120 лет?\n\nВ начале ХХ века этот корпус носил название Лекционный, потому что был открыт первым в 1900 году, и именно здесь начались занятия у будущих инженеров. ",
+            Fragments = new() { new() { Type = FragmentType.Text,Buttons = new() {new Button(){Type=ButtonType.InlinePause}}, Text = "Начинаем прогулку с места, где был открыт первый за Уралом технический вуз. <a href=\"https://tpu.ru/\">Это Томский политехнический университет.</a> Посмотри, сильно ли здание изменилось за более чем 120 лет?\n\nВ начале ХХ века этот корпус носил название Лекционный, потому что был открыт первым в 1900 году, и именно здесь начались занятия у будущих инженеров. ",
            }}
         };
         var step4 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
             Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIUMmNY8lct3xA6Lo2vUR4bqWcjfqigAAKPvjEbeGzISqzT5n8mqH_DAQADAgADeQADKgQ"}, Caption ="Главный корпус ТПУ, начало ХХ в."}}}}
         };
         var step5 = new Step()
@@ -190,7 +190,7 @@ public static class BTU
 
         var step3 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
             Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIULmNY8Jgfin4cC6F-cw_bmqhnPv04AAJ1vjEbeGzISuR4Y9maatYqAQADAgADeQADKgQ"}, Caption ="<i>Но Кирова в Томске не забыли.</i>\n\nУ студентов ТПУ есть давняя традиция: перекрашивать в яркие цвета сапоги у памятника в дни экзаменов, выпускных или перед защитой диплома.\n\nНо долго «обновками» Киров не хвастается – обычно служба кампуса ТПУ моментально перекрашивает сапоги обратно в белый цвет, только вот студенты не сдаются, поэтому история повторяется регулярно."}}}}
         };
         var step4 = new Step()
@@ -199,7 +199,7 @@ public static class BTU
             {
                 new Fragment()
                 {
-                    Type = FragmentType.Media,
+                    Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                     Media = new()
                     {
                          new Media()
@@ -943,7 +943,7 @@ public static class BTU
             {
                 new Fragment()
                 {
-                    Type = FragmentType.Media,
+                    Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                     Media = new()
                     {
                          new Media()
@@ -1161,7 +1161,7 @@ public static class BTU
             {
                 new Fragment()
                 {
-                    Type = FragmentType.Text,
+                    Type = FragmentType.Text, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                     Text = "Тебе нужно вернуться на проспект Ленина и перейти по пешеходному переходу со светофором на другую сторону.\n\nМы — <b>на площади Ново-Соборной.</b> Обрати внимание на здание на углу площади и проспекта Ленина.",
                 }
             }
@@ -1172,7 +1172,7 @@ public static class BTU
             {
                 new Fragment()
                 {
-                    Type = FragmentType.Media,
+                    Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                     Media = new()
                     {
                          new Media()
@@ -1354,7 +1354,7 @@ public static class BTU
             {
                 new Fragment()
                 {
-                    Type = FragmentType.Text,
+                    Type = FragmentType.Text, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                     Text = "У студентов ТУСУРа есть <i>необычная традиция</i>.\n\nКаждый год в День радио, 7 мая, они выкидывают из окон общежития радиотехнического факультета старые телевизоры и другую неработающую технику. Это очень эффектное зрелище!\n\nТрадиция зародилась в 1988 году – с тех пор студенты разбивают старые телевизоры в ознаменование победы технического прогресса. Технический мусор после выбрасывания университет передает на переработку.",
                 }
             }
@@ -1457,12 +1457,12 @@ public static class BTU
     {
         var step1 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
             Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIXhmNZy6AYt1tDORF-51QHjKKR4u11AAI5wzEb6jTRSpub_QIsZa1gAQADAgADeQADKgQ"}, Caption ="А чтобы не устать от новых знаний, предлагаю зайти перекусить по пути!\n\nЕсли любишь пиццу — загляни в <a href=\"https://makelovepizza.ru/tomsk\"><b>“Make Love Pizza”</b></a>. на ​пр. Ленина, 85а. Это кайфовая доставка пиццы и уютные кафешки. Они живут под лозунгом: Кайф! Драйв! Рок - н - ролл! Забегай туда на любимую пиццку или просто послушать винильчик под чашку фильтра.\n\nРебята называют проспект Ленина проспектом Леннона и в своем подвальчике на Леннона проводят вечеринки, тусы, концерты и другие сборища. Шепни, что ты <i>«от Ефима»</i>, и хозяева угостят тебя чашечкой фильтра при любом заказе."}}}}
         };
         var step2 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
             Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIXiGNZzGyCK64g1nX6TzFpG31L4YXsAAI9wzEb6jTRStPiLFI1JN0LAQADAgADeQADKgQ"}, Caption ="А второе место – для сладкоежек и любителей кофе.\n\nЭто кондитерская <a href=\"https://torta-torta.ru/\"><b>TORTA</b></a> на Набережной реки Ушайки, 16. Всего в городе 4 таких заведения, но это знаменито своим акцентом на историю Томска. Здесь и карта города, и эксклюзивные открытки и главное — фирменный торт «Томск»! Интересно, почему до сих пор не придумали торт «Студенческий»?\n\nКроме десертов, у Торты есть завтраки в кондитерской по адресу Фрунзе, 98. Пышные панкейки, сендвичи и многое другое:) А специально для тебя Торта <b>дарит скидку 30%</b> на все кофейные напитки. Просто скажи на баре, что ты <i>«от Ефима»</i>. Заходи и пробуй :)"}}}}
         };
 

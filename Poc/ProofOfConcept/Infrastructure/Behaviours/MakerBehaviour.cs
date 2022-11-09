@@ -1,4 +1,5 @@
 using Stateless;
+using Hangfire;
 using Microsoft.Extensions.Logging;
 using Montreal.Bot.Poc.Interfaces;
 using Montreal.Bot.Poc.Models;
@@ -47,7 +48,13 @@ public class MakerBehaviour : IChatBehaviour
         _machine.Configure(MakerState.FragmentCreation);
     }
 
-    public async Task SubmitAsync(string text) => await Chat.SendAsync($"_Неподдерживаемый тип_");
+    public async Task SubmitAsync(string text)
+    {
+        if (text == "clear")
+            RecurringJob.TriggerJob("clearing-cached-users");
+        else
+            await Chat.SendAsync($"_Неподдерживаемый тип_");
+    }
     public async Task SubmitAsync(Command command) => await Chat.SendAsync($"_Неподдерживаемый тип_");
     public async Task SubmitAsync(Media media)
     {

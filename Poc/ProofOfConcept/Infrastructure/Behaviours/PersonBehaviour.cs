@@ -133,6 +133,7 @@ public class PersonBehaviour : IChatBehaviour
                         }
                         break;
                     case "choose":
+                        await Chat.UnpinAll();
                         await Chat.SendStatusAsync();
                         var chooseStage = _context.Stages.Where(s => s.Type == StageType.RouteList).SingleOrDefault();
                         if (chooseStage is not null)
@@ -201,6 +202,9 @@ public class PersonBehaviour : IChatBehaviour
     private List<(Fragment payload, int delay, bool hasInlineButton, bool shouldStop)> _preparedFragments = new();
 
     private List<(string uniqueId, Step replacement)> _replacementSteps = new();
+
+    private record ReadyFragment(Fragment payload, int delay, bool isLinked, bool shouldStop, (bool clear, Queue<List<string>>? keyboard) k);
+    private Queue<ReadyFragment> _readyFragments = new();
 
     #endregion Business logic variables
 
@@ -281,7 +285,7 @@ public class PersonBehaviour : IChatBehaviour
                 break;
             case ContentType.Route | ContentType.Stage:
             case ContentType.Stage:
-                //todo: при открытии паршрута по ссылке проблемы, если не было обработки ранее
+                //todo: при открытии маршрута по ссылке проблемы, если не было обработки ранее
                 if (_currentContent?.Route is not null && _currentContent?.Stage is not null)
                 {
                     var sequence = (from s in _context.Sequences
@@ -365,10 +369,11 @@ public class PersonBehaviour : IChatBehaviour
     {
         //Chat.ClearMessageButtons();
 
+        /// todo: вынести наружу отчисту шагов
         if (isReplacementProcess)
         {
             _preparedFragments.Clear(); //todo: не нужно при ДАЛЕЕ, т.е. портит далее
-            _readyFragments.Clear(); ////
+            //_readyFragments.Clear(); ////
             _keyboardButtons.Clear();
             //_replacementSteps.Clear();
             //_currentConditions = null;
@@ -387,6 +392,7 @@ public class PersonBehaviour : IChatBehaviour
         if (!isReplacementProcess && pointer.Type.HasFlag(ContentType.Stage) && _currentContent?.Stage is Stage stage)
         {
             HandleStage(stage, _currentContent?.Step);
+            // добавление недостающих кнопок
             if (!stage.IgnoreAutoButtons && pointer.Type.HasFlag(ContentType.Route) && _currentContent?.Route is Route route)
             {
                 var availableStages = (from s in _context.Sequences
@@ -506,9 +512,6 @@ public class PersonBehaviour : IChatBehaviour
 
     private Fragment? FragmentDetermine(Step step) => step.Fragments.Where(f => f.Conditions == null).First(); //todo: compare with current conditions
 
-
-    private record ReadyFragment(Fragment payload, int delay, bool isLinked, bool shouldStop, (bool clear, Queue<List<string>>? keyboard) k);
-    private Queue<ReadyFragment> _readyFragments = new();
     private async Task SetReadyFragments(List<(Fragment payload, int delay, bool isLinked, bool shouldStop)> fragments)
     {
         bool keyboardIsEmpty = _keyboardButtons.Count() > 0 ? false : true;
@@ -550,9 +553,9 @@ public class PersonBehaviour : IChatBehaviour
                 case FragmentType.Media:
                     await Task.Delay(TimeSpan.FromSeconds(readyFragment.delay));
                     if (readyFragment.k.clear == true)
-                        await Chat.SendAsync(readyFragment.payload, clearReplyMarkup: true);
+                        await Chat.SendAsync(readyFragment.payload, clearReplyMarkup: true, pin: readyFragment.payload.Pin);
                     else if (readyFragment.k.keyboard is not null)
-                        await Chat.SendAsync(readyFragment.payload, readyFragment.k.keyboard);
+                        await Chat.SendAsync(readyFragment.payload, readyFragment.k.keyboard, pin: readyFragment.payload.Pin);
                     else
                         await Chat.SendAsync(readyFragment.payload);
                     break;

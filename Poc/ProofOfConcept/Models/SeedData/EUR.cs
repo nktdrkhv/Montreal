@@ -73,7 +73,7 @@ public static class EUR
         {
             Name = "eur_1_coffee_yes",
             Fragments = new() { new() { Type = FragmentType.Text,
-                Text ="Отлично, только тебе по секрету: <b>скажи, что ты от Ефима, и тебе сделают скидку…</b>", Buttons = new(){new Button(){Type = ButtonType.InlineTransition, Label = "А что дальше?", Line =1, Target=new(){Name = "route=eur:stage=eur_1"}}}}}
+                Text ="Отлично, возьми с собой <b>горячий напиток</b>, а если голоден, перекуси на месте, я тебя подожду.", Buttons = new(){new Button(){Type = ButtonType.InlineTransition, Label = "А что дальше?", Line =1, Target=new(){Name = "route=eur:stage=eur_1"}}}}}
         };
         var step3 = new Step()
         {
@@ -252,12 +252,12 @@ public static class EUR
     {
         var step1 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() { new Button() {Label = "Ничего себе!", Type = ButtonType.InlinePause } },
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIfjGNdKLFrp8O6J9CgJcLBJkweL7jXAAJYvzEbIzfpSlBNr7TGE9YDAQADAgADeQADKgQ"}, Caption ="Сейчас ты находишься возле стены. Казалось бы, стена и стена. Но, конечно, это не так, иначе зачем бы я тебя сюда привел? <b>Во-первых, этой стене как минимум 115 лет!</b>"}}}}
         };
         var step2 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() { new Button() { Type = ButtonType.InlinePause } },
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIf7mNeAAEBm0dTpMjwHfPjJg4Ecl3-pAACrMAxGzfK8Up60rHtw_OrNAEAAwIAA3kAAyoE"}, Caption ="Построили ее в 1907 году. И вряд ли строители думали, что у студентов она будет ассоциироваться с музыкой.\n\nДело в том, что в 1979 году британская рок-группа Pink Floyd выпустила альбом под названием The Wall, что в переводе, конечно же, означает стена.Альбом стал легендарным, <b>а у студентов политеха появилась традиция: писать его название на этой стене.</b>"}}}}
         };
         var step3 = new Step()
@@ -355,13 +355,9 @@ public static class EUR
         var step4 = new Step()
         {
             Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIf_GNeF4hJYYd-GyDXrfMYwPy4K10uAALIwDEbN8rxSkf4jaef45tyAQADAgADeQADKgQ"}, Caption ="Идем прямо и затем поворачиваем налево, а дальше вверх по лестнице. Перед тобой должен открыться вот такой вид."}}}}
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIf_GNeF4hJYYd-GyDXrfMYwPy4K10uAALIwDEbN8rxSkf4jaef45tyAQADAgADeQADKgQ"}, Caption ="Идем прямо и затем поворачиваем налево, а дальше вверх по лестнице."}}}}
         };
-        var step5 = new Step()
-        {
-            Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIf_mNeF60saOc_iK5pHKWRtLUhU2rpAALJwDEbN8rxSvOo6r8IoMKnAQADAgADeQADKgQ"}, }}}}
-        };
+
 
         var stage = new Stage()
         {
@@ -383,7 +379,6 @@ public static class EUR
                 new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 0 },
                 new() {AttachedStage = stage, Payload = step3, Order = 3, Delay = 0 },
                 new() {AttachedStage = stage, Payload = step4, Order = 4, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step5, Order = 5, Delay = 0 },
             };
         stage.Steps = order;
         return stage;
@@ -392,19 +387,33 @@ public static class EUR
     {
         var step1 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Text = "Поверишь ли ты в то, что там, где ты сейчас стоишь, был огород служителей политеха?\n\nА он был. Жители корпусов любили побаловать себя свежими овощами, выращенными буквально под окнами квартир. А когда приходила зима, и снег покрывал профессорские грядки, студенты устраивали здесь нешуточные снежные баталии!\n\nА кое-кто поумнее, вроде профессора Бориса Петровича Вейнберга, заливал ледовые башни для экспериментов. Между прочим, в результате был создан термобур и в придачу устройство для консервирования града! Время шло, все менялось – так и бывшие огороды превратились в обычный двор.\n\nНо открою тебе секрет: здесь некоторые жильцы из профессорских квартир до сих пор держат небольшие грядки – выращивают клубнику. Но где, не покажу. Пусть это останется небольшой тайной.", } }
+            Fragments = new() { new() { Type = FragmentType.Media,
+                Media = new() {new(){Type=MediaType.Photo, Caption = "Перед тобой должен открыться вот такой вид.",Photo = new(){FileId="AgACAgIAAxkBAAIgAAFjXhmyaMe1aXgUx6fuP44SL4M_rQACy8AxGzfK8UrMAyiACQb8bwEAAwIAA3kAAyoE"}, }}}}
+        };
+
+        var step2 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Text, Buttons = new() { new Button() { Type = ButtonType.InlinePause } }, Text = "Поверишь ли ты в то, что там, где ты сейчас стоишь, был огород служителей политеха?\n\nА он был. Жители корпусов любили побаловать себя свежими овощами, выращенными буквально под окнами квартир. А когда приходила зима, и снег покрывал профессорские грядки, студенты устраивали здесь нешуточные снежные баталии!\n\nА кое-кто поумнее, вроде профессора Бориса Петровича Вейнберга, заливал ледовые башни для экспериментов. Между прочим, в результате был создан термобур и в придачу устройство для консервирования града! Время шло, все менялось – так и бывшие огороды превратились в обычный двор.\n\nНо открою тебе секрет: здесь некоторые жильцы из профессорских квартир до сих пор держат небольшие грядки – выращивают клубнику. Но где, не покажу. Пусть это останется небольшой тайной.", } }
         };
         var step3 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgAmNeGdOWTuyCne1cvhmz8iddV2CeAALMwDEbN8rxSj9QMsVylRuCAQADAgADeQADKgQ"}, }}}}
+            Fragments = new() { new() { Type = FragmentType.Text, Buttons = new() { new Button() { Type = ButtonType.InlinePause } }, Text = "Как же здесь тихо и спокойно, как будто время остановилось, правда? Насладишься этой атмосферой, можем следовать дальше по маршруту до следующей точки.", } }
         };
-        var step2 = new Step()
+        var step4 = new Step()
         {
             Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgAAFjXhmyaMe1aXgUx6fuP44SL4M_rQACy8AxGzfK8UrMAyiACQb8bwEAAwIAA3kAAyoE"}, Caption ="Как же здесь тихо и спокойно, как будто время остановилось, правда? Насладишься этой атмосферой, можем следовать дальше по маршруту до следующей точки."}}}}
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIf_mNeF60saOc_iK5pHKWRtLUhU2rpAALJwDEbN8rxSvOo6r8IoMKnAQADAgADeQADKgQ"}}}}}
         };
-
+        var step5 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() { new Button() { Type = ButtonType.InlinePause } },
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgLGNeWTAQEK6AHy48Cgg9wWZtahhMAAKCwTEbN8rxSjQIW5Dzn-InAQADAgADeQADKgQ"}}}}}
+        };
+        var step6 = new Step()
+        {
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() { new Button() { Type = ButtonType.InlinePause } },
+                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgAmNeGdOWTuyCne1cvhmz8iddV2CeAALMwDEbN8rxSj9QMsVylRuCAQADAgADeQADKgQ"}, }}}}
+        };
 
         var stage = new Stage()
         {
@@ -425,6 +434,9 @@ public static class EUR
                 new() {AttachedStage = stage, Payload = step1, Order = 1, Delay = 0 },
                 new() {AttachedStage = stage, Payload = step2, Order = 2, Delay = 0 },
                 new() {AttachedStage = stage, Payload = step3, Order = 3, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step4, Order = 4, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step5, Order = 5, Delay = 0 },
+                new() {AttachedStage = stage, Payload = step6, Order = 6, Delay = 0 },
             };
         stage.Steps = order;
         return stage;
@@ -664,12 +676,6 @@ public static class EUR
             Fragments = new() { new() { Type = FragmentType.Media,
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgKmNeWPXwpSZINsf6IWZOH3naEVtmAAKBwTEbN8rxStXaIWVJmBM-AQADAgADeQADKgQ"}, Caption ="На этом с Квестовым походом все. Надеюсь, тебе понравилось!\n\nИсследовать старинные здания интересно, никогда не знаешь, что еще в них найдешь. Наша прогулка на этом не закончилась, давай двигаться дальше к следующей точке."}}}}
         };
-        var step8 = new Step()
-        {
-            Fragments = new() { new() { Type = FragmentType.Media,
-                Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgLGNeWTAQEK6AHy48Cgg9wWZtahhMAAKCwTEbN8rxSjQIW5Dzn-InAQADAgADeQADKgQ"}}}}}
-        };
-
 
         var stage = new Stage()
         {
@@ -694,7 +700,6 @@ public static class EUR
                 new() {AttachedStage = stage, Payload = step5, Order = 5, Delay = 0 },
                 new() {AttachedStage = stage, Payload = step6, Order = 6, Delay = 0 },
                 new() {AttachedStage = stage, Payload = step7, Order = 8, Delay = 0 },
-                new() {AttachedStage = stage, Payload = step8, Order = 9, Delay = 0 },
             };
         stage.Steps = order;
         return stage;
@@ -708,7 +713,7 @@ public static class EUR
         };
         var step2 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Media,
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() {new Button(){Type=ButtonType.InlinePause}},
                 Media = new() {new(){Type=MediaType.Photo, Photo = new(){FileId="AgACAgIAAxkBAAIgMGNeWnzhAypvMjgZuMdM4Lip0ntJAAKHwTEbN8rxSv8YUW3dZypjAQADAgADeQADKgQ"}, Caption ="Правда, с небольшими погрешностями: кое-где пришлось замуровывать окна! Видишь, вон те два?\n\nПодозреваю, что от них сильно дуло, так что кирпичи укладывали второпях. Присмотрись, там даже оконную раму забыли вытащить. А может, там еще какой исторический артефакт припрятан… Такое вот оно: делится на две части, но никак не разделить. В двух словах: делимое неделимое."}}}}
         };
         var step3 = new Step()
@@ -768,7 +773,7 @@ public static class EUR
         };
         var step4 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Text = "Еще чуть-чуть подождем. Ты же никуда не торопишься?"/*, Timer = new() { Delay = 4 } */} }
+            Fragments = new() { new() { Type = FragmentType.Text, Buttons = new() { new Button() { Type = ButtonType.InlinePause } }, Text = "Еще чуть-чуть подождем. Ты же никуда не торопишься?"/*, Timer = new() { Delay = 4 } */} }
         };
         var step5 = new Step()
         {
@@ -805,8 +810,9 @@ public static class EUR
     {
         var step1 = new Step()
         {
-            Fragments = new() { new() { Type = FragmentType.Text, Buttons = new() { new Button() { Type = ButtonType.InlinePause } }, Text = "Мы сейчас стоим перед проходом через северное крыло Главного корпуса. Пройдем через него мы чуть позже. А пока я хочу, чтобы ты нашел вот этот балкон. <b>ФОТОГРАФИЯ БАЛКОНА?</b> Видишь его?", } }
+            Fragments = new() { new() { Type = FragmentType.Media, Buttons = new() { new Button() { Type = ButtonType.InlinePause } }, Media = new() { new() { Type = MediaType.Photo, Photo = new() { FileId = "AgACAgIAAxkBAAIuFGNrOmUHHWMf04cDf6qi7MyoYtStAAL-wjEbhc9YS5IU9pCkwZd7AQADAgADeQADKwQ" }, Caption = "Мы сейчас стоим перед проходом через северное крыло Главного корпуса. Пройдем через него мы чуть позже. А пока я хочу, чтобы ты нашел вот этот балкон. Видишь его?" } } } }
         };
+
         var step2 = new Step()
         {
             Fragments = new() { new() { Type = FragmentType.Text, Buttons = new() { new Button() { Type = ButtonType.InlinePause } }, Text = "Это еще одна малозаметная архитектурная особенность этого корпуса — балконы. И их сразу два! Признайся, не заметил их? Оба находятся в северном крыле корпуса. Один – с видом на Университетскую рощу, другой – во внутреннем дворе.\n\nИнтересно, что изначально в проекте никаких балконов не было. Лишь со временем, когда в проект внесли две геодезические лаборатории, в Главном корпусе появились «смотровые площадки» для геодезической съемки. Случилось это в 1908 году.\n\nСейчас, правда, балконы по назначению не используют." } }

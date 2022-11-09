@@ -17,4 +17,5 @@ public class Fragment
 
     public List<Button>? Buttons { get; set; }
     public Condition? Conditions { get; set; }
+    public bool Pin { get; set; } = false;
 }
