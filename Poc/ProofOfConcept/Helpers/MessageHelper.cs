@@ -35,7 +35,7 @@ public static class MessageHelper
         var caption = message?.Caption;
         var media = message!.Type switch
         {
-            MessageType.Photo => new Media() { Type = MediaType.Photo, Photo = message.Photo![^1], Caption = caption },
+            MessageType.Photo => new Media() { Type = MediaType.Photo, Photo = message.Photo!.Last(), Caption = caption },
             MessageType.Audio => new Media() { Type = MediaType.Sound, Sound = new() { Type = SoundType.Audio, Audio = message.Audio }, Caption = caption },
             MessageType.Voice => new Media() { Type = MediaType.Sound, Sound = new() { Type = SoundType.Voice, Voice = message.Voice }, Caption = caption },
             MessageType.VideoNote => new Media() { Type = MediaType.VideoNote, VideoNote = message.VideoNote, Caption = caption },

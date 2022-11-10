@@ -11,13 +11,13 @@ public class TelegramChat : ITelegramChat
 {
     public string Me() => $"{_user.Id} = {_user.FirstName}";
 
-    private ITelegramBotClient _bot;
+    public ITelegramBotClient Bot { get; set; }
     private User _user;
     private CancellationToken _ctn;
 
     public TelegramChat(ITelegramBotClient bot, User user, CancellationToken ctn)
     {
-        _bot = bot;
+        Bot = bot;
         _user = user;
         _ctn = ctn;
     }
@@ -153,7 +153,7 @@ public class TelegramChat : ITelegramChat
         switch (fragment.Type)
         {
             case FragmentType.Text:
-                handler = _bot.SendTextMessageAsync(_user.Id, fragment.Text!, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html, disableWebPagePreview: true);
+                handler = Bot.SendTextMessageAsync(_user.Id, fragment.Text!, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html, disableWebPagePreview: true);
                 fragmentType = FragmentType.Text;
                 break;
             case FragmentType.Media:
@@ -162,15 +162,15 @@ public class TelegramChat : ITelegramChat
                 mediaType = media.Type;
                 handler = media!.Type switch
                 {
-                    MediaType.Photo => _bot.SendPhotoAsync(_user.Id, media.Photo!.FileId, media?.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
+                    MediaType.Photo => Bot.SendPhotoAsync(_user.Id, media.Photo!.FileId, media?.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
 
                     MediaType.Sound when media.Sound!.Type == SoundType.Audio
-                        => _bot.SendAudioAsync(_user.Id, media.Sound.Audio!.FileId, caption: media?.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
+                        => Bot.SendAudioAsync(_user.Id, media.Sound.Audio!.FileId, caption: media?.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
 
                     MediaType.Sound when media.Sound!.Type == SoundType.Voice
-                    => _bot.SendVoiceAsync(_user.Id, media.Sound.Voice!.FileId, caption: media?.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
+                    => Bot.SendVoiceAsync(_user.Id, media.Sound.Voice!.FileId, caption: media?.Caption, replyMarkup: replyMarkup, disableNotification: true, parseMode: ParseMode.Html),
 
-                    MediaType.Sticker => _bot.SendStickerAsync(_user.Id, media.Sticker!.FileId, disableNotification: true, replyMarkup: replyMarkup, cancellationToken: _ctn),
+                    MediaType.Sticker => Bot.SendStickerAsync(_user.Id, media.Sticker!.FileId, disableNotification: true, replyMarkup: replyMarkup, cancellationToken: _ctn),
 
                     _ => throw new ArgumentException(),
                 };
@@ -180,9 +180,9 @@ public class TelegramChat : ITelegramChat
                 var spot = fragment.Location;
                 if (spot?.Latitude is double latitude && spot?.Longitude is double longtitude)
                     if (spot?.Address is string address && spot?.Label is string label)
-                        handler = _bot.SendVenueAsync(_user.Id, latitude, longtitude, label, address, replyMarkup: replyMarkup);
+                        handler = Bot.SendVenueAsync(_user.Id, latitude, longtitude, label, address, replyMarkup: replyMarkup);
                     else
-                        handler = _bot.SendLocationAsync(_user.Id, latitude, longtitude, replyMarkup: replyMarkup, cancellationToken: _ctn);
+                        handler = Bot.SendLocationAsync(_user.Id, latitude, longtitude, replyMarkup: replyMarkup, cancellationToken: _ctn);
                 break;
             default:
                 throw new ArgumentException();
@@ -201,7 +201,7 @@ public class TelegramChat : ITelegramChat
             //     //await _bot.EditMessageTextAsync()
             //     await _bot.EditMessageReplyMarkupAsync(_user.Id, message.MessageId, replyMarkupAfter as InlineKeyboardMarkup, _ctn);
 
-            if (pin) await _bot.PinChatMessageAsync(_user.Id, message.MessageId, true, _ctn);
+            if (pin) await Bot.PinChatMessageAsync(_user.Id, message.MessageId, true, _ctn);
             return await Task.FromResult<Message>(message);
         }
         else if (handler is not null)
@@ -211,32 +211,32 @@ public class TelegramChat : ITelegramChat
             // if (isInline && replyMarkupAfter is not null)
             //     await _bot.EditMessageReplyMarkupAsync(_user.Id, message.MessageId, replyMarkupAfter as InlineKeyboardMarkup, _ctn);
 
-            if (pin) await _bot.PinChatMessageAsync(_user.Id, message.MessageId, true, _ctn);
+            if (pin) await Bot.PinChatMessageAsync(_user.Id, message.MessageId, true, _ctn);
             return await Task.FromResult<Message>(message);
         }
         else
             throw new ArgumentNullException();
     }
 
-    public async Task<Message> SendAsync(string text) => await _bot.SendTextMessageAsync(_user.Id, text, parseMode: ParseMode.MarkdownV2, cancellationToken: _ctn);
+    public async Task<Message> SendAsync(string text) => await Bot.SendTextMessageAsync(_user.Id, text, parseMode: ParseMode.MarkdownV2, cancellationToken: _ctn);
 
     public async Task SendAsync(Spot spot)
     {
         if (spot.Latitude is double latitude && spot.Longitude is double longtitude)
             if (spot.Address is string address && spot.Label is string label)
-                await _bot.SendVenueAsync(_user.Id, latitude, longtitude, label, address);
+                await Bot.SendVenueAsync(_user.Id, latitude, longtitude, label, address);
             else
-                await _bot.SendLocationAsync(_user.Id, latitude, longtitude);
+                await Bot.SendLocationAsync(_user.Id, latitude, longtitude);
     }
 
     public async Task SendAndDeleteAsync(string text, int delay)
     {
-        var message = await _bot.SendTextMessageAsync(_user.Id, text, cancellationToken: _ctn);
+        var message = await Bot.SendTextMessageAsync(_user.Id, text, cancellationToken: _ctn);
         await Task.Delay(TimeSpan.FromSeconds(delay));
-        await _bot.DeleteMessageAsync(_user.Id, message.MessageId, _ctn);
+        await Bot.DeleteMessageAsync(_user.Id, message.MessageId, _ctn);
     }
 
-    public async Task SendStatusAsync(ChatAction action = ChatAction.Typing) => await _bot.SendChatActionAsync(_user.Id, action, _ctn);
+    public async Task SendStatusAsync(ChatAction action = ChatAction.Typing) => await Bot.SendChatActionAsync(_user.Id, action, _ctn);
 
     /*-----------------------------------------------------------------------*/
 
@@ -251,15 +251,15 @@ public class TelegramChat : ITelegramChat
                 switch (fragment.Type)
                 {
                     case FragmentType.Text:
-                        await _bot.EditMessageTextAsync(_user.Id, sentMessage.message, fragment.Text!, ParseMode.Html, replyMarkup: newMarkup as InlineKeyboardMarkup, cancellationToken: _ctn);
+                        await Bot.EditMessageTextAsync(_user.Id, sentMessage.message, fragment.Text!, ParseMode.Html, replyMarkup: newMarkup as InlineKeyboardMarkup, cancellationToken: _ctn);
                         break;
                     case FragmentType.Media:
                         var media = fragment.Media!.First();
                         switch (sentMessage.mediaType!)
                         {
                             case MediaType.Photo:
-                                await _bot.EditMessageMediaAsync(_user.Id, sentMessage.message, new InputMediaPhoto(media.Photo!.FileId), newMarkup as InlineKeyboardMarkup, _ctn);
-                                await _bot.EditMessageCaptionAsync(_user.Id, sentMessage.message, media.Caption, ParseMode.Html, replyMarkup: newMarkup as InlineKeyboardMarkup);
+                                await Bot.EditMessageMediaAsync(_user.Id, sentMessage.message, new InputMediaPhoto(media.Photo!.FileId), newMarkup as InlineKeyboardMarkup, _ctn);
+                                await Bot.EditMessageCaptionAsync(_user.Id, sentMessage.message, media.Caption, ParseMode.Html, replyMarkup: newMarkup as InlineKeyboardMarkup);
                                 break;
                             default:
                                 throw new ArgumentException();
@@ -279,7 +279,7 @@ public class TelegramChat : ITelegramChat
             }
             else
             {
-                await _bot.DeleteMessageAsync(_user.Id, sentMessage.message, _ctn);
+                await Bot.DeleteMessageAsync(_user.Id, sentMessage.message, _ctn);
                 await SendAsync(fragment);
             }
         }
@@ -291,7 +291,7 @@ public class TelegramChat : ITelegramChat
     public async Task DeleteRecievedMessageAsync()
     {
         if (_recievedMessages.TryDequeue(out var message))
-            await _bot.DeleteMessageAsync(_user.Id, message.MessageId);
+            await Bot.DeleteMessageAsync(_user.Id, message.MessageId);
     }
 
     public async Task ClearMessageButtons()
@@ -303,12 +303,12 @@ public class TelegramChat : ITelegramChat
         {
             try
             {
-                await _bot.EditMessageReplyMarkupAsync(_user!.Id, namedMessage.message, null, _ctn);
+                await Bot.EditMessageReplyMarkupAsync(_user!.Id, namedMessage.message, null, _ctn);
             }
             catch { }
         }
         _namedSentMessages.Clear();
     }
 
-    public async Task UnpinAll() => await _bot.UnpinAllChatMessages(_user.Id, _ctn);
+    public async Task UnpinAll() => await Bot.UnpinAllChatMessages(_user.Id, _ctn);
 }

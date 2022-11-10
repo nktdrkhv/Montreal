@@ -3,6 +3,7 @@ using Hangfire;
 using Microsoft.Extensions.Logging;
 using Montreal.Bot.Poc.Interfaces;
 using Montreal.Bot.Poc.Models;
+using Montreal.Bot.Poc.Helpers;
 
 namespace Montreal.Bot.Poc.Infrastructure.Behaviours;
 
@@ -50,7 +51,11 @@ public class MakerBehaviour : IChatBehaviour
 
     public async Task SubmitAsync(string text)
     {
-        if (text == "clear")
+        if (text == "backup")
+        {
+            FileHelper.BackupFiles(Chat.Bot);
+        }
+        else if (text == "clear")
             RecurringJob.TriggerJob("clearing-cached-users");
         else
             await Chat.SendAsync($"_Неподдерживаемый тип_");

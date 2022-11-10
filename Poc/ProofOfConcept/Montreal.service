@@ -4,11 +4,18 @@ Description=Yefim Bot
 [Service]
 Type=notify
 ExecStart=/usr/bin/dotnet /srv/Montreal/Montreal.Bot.Poc.dll
+WorkingDirectory=/srv/Montreal
 SyslogIdentifier=Montreal
 User=root
 Restart=always                    
 RestartSec=2
-Environment=DOTNET_ROOT=/usr/lib64/dotnet
+KillSignal=SIGINT
+
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
 
 [Install]
 WantedBy=multi-user.target
+
+[Unit]
+Description=Yefim Bot

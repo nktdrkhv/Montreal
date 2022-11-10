@@ -1,5 +1,5 @@
+using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
 using Montreal.Bot.Poc.Models;
 
@@ -7,6 +7,8 @@ namespace Montreal.Bot.Poc.Interfaces;
 
 public interface ITelegramChat
 {
+    ITelegramBotClient Bot { get; set; }
+
     void Add(Message message);
     void Add(CallbackQuery callback);
 
